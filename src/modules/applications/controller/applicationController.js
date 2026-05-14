@@ -7,6 +7,7 @@ import ExcelJS from "exceljs";
 export const getApplicationsForJob = async (req, res) => {
   try {
     const { jobId } = req.params;
+    const { status } = req.query;
 
     if (req.user.role !== "Admin") {
       return res.status(403).json({
@@ -17,8 +18,13 @@ export const getApplicationsForJob = async (req, res) => {
       });
     }
 
+    const where = { jobId };
+    if (status) {
+      where.status = status;
+    }
+
     const applications = await prisma.application.findMany({
-      where: { jobId },
+      where,
       include: {
         applicant: {
           include: {
@@ -41,6 +47,53 @@ export const getApplicationsForJob = async (req, res) => {
     });
   } catch (error) {
     console.error("GET APPLICATIONS ERROR:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+      code: 500,
+      errors: [error.message],
+    });
+  }
+};
+
+/**
+ * GET ALL APPLICATIONS (Admin)
+ */
+export const getAllApplications = async (req, res) => {
+  try {
+    if (req.user.role !== "Admin") {
+      return res.status(403).json({
+        status: "error",
+        message: "Only admins can view all applications",
+        code: 403,
+        errors: ["Unauthorized"],
+      });
+    }
+
+    const applications = await prisma.application.findMany({
+      include: {
+        applicant: {
+          include: {
+            account: {
+              select: { id: true, name: true, email: true },
+            },
+          },
+        },
+        job: {
+          select: { id: true, title: true, company: true },
+        },
+      },
+      orderBy: { appliedAt: 'desc' },
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "All applications fetched successfully",
+      code: 200,
+      data: applications,
+    });
+  } catch (error) {
+    console.error("GET ALL APPLICATIONS ERROR:", error);
     return res.status(500).json({
       status: "error",
       message: "Internal server error",
@@ -144,6 +197,169 @@ export const updateApplicationStatus = async (req, res) => {
     });
   } catch (error) {
     console.error("UPDATE APPLICATION STATUS ERROR:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+      code: 500,
+      errors: [error.message],
+    });
+  }
+};
+
+/**
+ * WITHDRAW APPLICATION (Applicant)
+ */
+export const withdrawApplication = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+
+    if (req.user.role !== "Applicant") {
+      return res.status(403).json({
+        status: "error",
+        message: "Only applicants can withdraw applications",
+        code: 403,
+        errors: ["Unauthorized"],
+      });
+    }
+
+    const applicant = await prisma.applicant.findUnique({
+      where: { accountId: req.user.id },
+    });
+
+    if (!applicant) {
+      return res.status(404).json({
+        status: "error",
+        message: "Applicant profile not found",
+        code: 404,
+        errors: ["Applicant profile not found"],
+      });
+    }
+
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      include: { applicant: true },
+    });
+
+    if (!application) {
+      return res.status(404).json({
+        status: "error",
+        message: "Application not found",
+        code: 404,
+        errors: ["Application not found"],
+      });
+    }
+
+    if (application.applicantId !== applicant.id) {
+      return res.status(403).json({
+        status: "error",
+        message: "You can only withdraw your own applications",
+        code: 403,
+        errors: ["Unauthorized"],
+      });
+    }
+
+    if (application.status === "Accepted") {
+      return res.status(400).json({
+        status: "error",
+        message: "Cannot withdraw an accepted application",
+        code: 400,
+        errors: ["Application already accepted"],
+      });
+    }
+
+    await prisma.application.delete({ where: { id: applicationId } });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Application withdrawn successfully",
+      code: 200,
+    });
+  } catch (error) {
+    console.error("WITHDRAW APPLICATION ERROR:", error);
+    return res.status(500).json({
+      status: "error",
+      message: "Internal server error",
+      code: 500,
+      errors: [error.message],
+    });
+  }
+};
+
+/**
+ * UPDATE APPLICATION (Applicant)
+ */
+export const updateApplication = async (req, res) => {
+  try {
+    const { applicationId } = req.params;
+    const { resume } = req.body;
+
+    if (req.user.role !== "Applicant") {
+      return res.status(403).json({
+        status: "error",
+        message: "Only applicants can update applications",
+        code: 403,
+        errors: ["Unauthorized"],
+      });
+    }
+
+    const applicant = await prisma.applicant.findUnique({
+      where: { accountId: req.user.id },
+    });
+
+    if (!applicant) {
+      return res.status(404).json({
+        status: "error",
+        message: "Applicant profile not found",
+        code: 404,
+        errors: ["Applicant profile not found"],
+      });
+    }
+
+    const application = await prisma.application.findUnique({
+      where: { id: applicationId },
+      include: { applicant: true },
+    });
+
+    if (!application) {
+      return res.status(404).json({
+        status: "error",
+        message: "Application not found",
+        code: 404,
+        errors: ["Application not found"],
+      });
+    }
+
+    if (application.applicantId !== applicant.id) {
+      return res.status(403).json({
+        status: "error",
+        message: "You can only update your own applications",
+        code: 403,
+        errors: ["Unauthorized"],
+      });
+    }
+
+    if (application.status !== "Applied") {
+      return res.status(400).json({
+        status: "error",
+        message: "Can only update applications with 'Applied' status",
+        code: 400,
+        errors: ["Application status not eligible for update"],
+      });
+    }
+
+    const updatedApplication = await prisma.application.update({
+      where: { id: applicationId },
+      data: { resume },
+    });
+
+    return res.status(200).json({
+      status: "success",
+      message: "Application updated successfully",
+      code: 200,
+      data: updatedApplication,
+    });
+  } catch (error) {
+    console.error("UPDATE APPLICATION ERROR:", error);
     return res.status(500).json({
       status: "error",
       message: "Internal server error",

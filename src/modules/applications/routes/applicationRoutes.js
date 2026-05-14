@@ -5,14 +5,20 @@ import {
   getApplicationDetails,
   updateApplicationStatus,
   downloadApplicantsExcel,
+  getAllApplications,
+  withdrawApplication,
+  updateApplication,
 } from "../controller/applicationController.js";
 
 const router = express.Router();
 router.use(verifyToken);
 
-router.get("/:jobId/applications", getApplicationsForJob);
-router.get("/applications/:applicationId", getApplicationDetails);
-router.put("/applications/:applicationId/status", updateApplicationStatus);
-router.get("/:jobId/applications/download", downloadApplicantsExcel);
+router.get("/applications", getAllApplications); // Admin - get all applications
+router.get("/:jobId/applications", getApplicationsForJob); // Admin - get applications for job
+router.get("/applications/:applicationId", getApplicationDetails); // Admin
+router.put("/applications/:applicationId/status", updateApplicationStatus); // Admin
+router.put("/applications/:applicationId/withdraw", withdrawApplication); // Applicant
+router.put("/applications/:applicationId", updateApplication); // Applicant
+router.get("/:jobId/applications/download", downloadApplicantsExcel); // Admin
 
 export default router;

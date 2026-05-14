@@ -1,5 +1,6 @@
 import express from "express";
-import { getUsers, register } from "#/modules/accounts/controller/userController.js";
+import { getUsers, register, getMe, updateMe, changePassword, createUser, getUserById, updateUserById } from "#/modules/accounts/controller/userController.js";
+import { verifyToken } from "#/middleware/auth.js";
 
 const router = express.Router();
 
@@ -48,39 +49,15 @@ const router = express.Router();
  *               $ref: '#/components/schemas/ErrorResponse'
  */
 router.post("/register", register);
-/**
- * @openapi
- * /api/users:
- *   get:
- *     tags:
- *       - Users
- *     summary: Get all users
- *     description: Fetch all registered accounts
- *     security:
- *       - bearerAuth: []
- *
- *     responses:
- *       200:
- *         description: Users fetched successfully
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/UsersResponse'
- *
- *       404:
- *         description: No users found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- *
- *       500:
- *         description: Failed to fetch users
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
- */
-router.get("/", getUsers);
+
+// Protected routes
+router.use(verifyToken);
+router.get("/", getUsers); // Admin
+router.post("/", createUser); // Admin
+router.get("/me", getMe);
+router.put("/me", updateMe);
+router.put("/me/password", changePassword);
+router.get("/:id", getUserById); // Admin
+router.put("/:id", updateUserById); // Admin
 
 export default router;

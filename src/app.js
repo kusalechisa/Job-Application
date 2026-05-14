@@ -6,6 +6,7 @@ import userRoutes from "#/modules/accounts/routes/userRoutes.js";
 import jobRoutes from "#/modules/jobs/routes/jobRoutes.js";
 import applicantRoutes from "#/modules/applicants/routes/applicantRoutes.js";
 import applicationRoutes from "#/modules/applications/routes/applicationRoutes.js";
+import statsRoutes from "#/modules/applications/routes/statsRoutes.js";
 import swaggerUi from "swagger-ui-express";
 import specs from "../api-doc/swagger.js";
 import { prisma } from "#/prisma.js";
@@ -44,6 +45,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/jobs", jobRoutes);
 app.use("/api/jobs", applicantRoutes);
 app.use("/api/jobs", applicationRoutes);
+app.use("/api/stats", statsRoutes);
 
 app.use((err, req, res, next) => {
   console.error("Unhandled request error:", {
