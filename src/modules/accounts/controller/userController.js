@@ -53,6 +53,14 @@ export const register = async (req, res) => {
       },
     });
 
+    if ((role || "Applicant") === "Applicant") {
+      await prisma.applicant.create({
+        data: {
+          accountId: user.id,
+        },
+      });
+    }
+
     // =========================
     // REMOVE SENSITIVE DATA
     // =========================
