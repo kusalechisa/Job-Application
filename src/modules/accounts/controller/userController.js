@@ -53,13 +53,7 @@ export const register = async (req, res) => {
       },
     });
 
-    if ((role || "Applicant") === "Applicant") {
-      await prisma.applicant.create({
-        data: {
-          accountId: user.id,
-        },
-      });
-    }
+    // Note: Applicant profile will be created separately when user fills out their profile
 
     // =========================
     // REMOVE SENSITIVE DATA
@@ -311,11 +305,7 @@ export const createUser = async (req, res) => {
       },
     });
 
-    if ((role || "Applicant") === "Applicant") {
-      await prisma.applicant.create({
-        data: { accountId: user.id },
-      });
-    }
+    // Note: Applicant profile will be created separately when user fills out their profile
 
     const { password: _, ...safeUser } = user;
     return res.status(201).json({
