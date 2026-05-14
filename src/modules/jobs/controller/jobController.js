@@ -33,7 +33,7 @@ export const createJob = async (req, res) => {
         description,
         company,
         location,
-        salary,
+        salary: salary ? salary.toString() : null,
         postedById,
       },
     });
@@ -197,7 +197,7 @@ export const updateJob = async (req, res) => {
         ...(description && { description }),
         ...(company && { company }),
         ...(location && { location }),
-        ...(salary !== undefined && { salary }),
+        ...(salary !== undefined && { salary: salary.toString() }),
       },
     });
 
