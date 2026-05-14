@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "setup-db": "node setup-db.js && npx prisma migrate deploy",
     "start": "node ./src/app.js",
-    "dev": "nodemon ./src/app.js",
+    "dev": "npm run setup-db && nodemon ./src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "imports": {
