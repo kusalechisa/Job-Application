@@ -1,11 +1,11 @@
 import fs from "fs";
-import { prisma } from "#/prisma.js";
+import { prisma } from "#src/prisma.js";
 import multer from "multer";
 import path from "path";
 import {
   buildApplicantProfileData,
   buildApplicantUpdateData,
-} from "#/modules/applicants/utils/applicantProfileUtils.js";
+} from "#src/modules/applicants/utils/applicantProfileUtils.js";
 
 const ensureDir = (dir) => {
   fs.mkdirSync(dir, { recursive: true });

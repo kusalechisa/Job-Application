@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { prisma } from "#/prisma.js";
+import { prisma } from "#src/prisma.js";
 
 /**
  * REGISTER USER

@@ -1,18 +1,20 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import authRoutes from "#/modules/auth/routes/authRoutes.js";
-import userRoutes from "#/modules/accounts/routes/userRoutes.js";
-import jobRoutes from "#/modules/jobs/routes/jobRoutes.js";
-import applicantRoutes from "#/modules/applicants/routes/applicantRoutes.js";
-import applicationRoutes from "#/modules/applications/routes/applicationRoutes.js";
-import statsRoutes from "#/modules/applications/routes/statsRoutes.js";
+import { fileURLToPath } from "url";
+import path from "path";
+import authRoutes from "#src/modules/auth/routes/authRoutes.js";
+import userRoutes from "#src/modules/accounts/routes/userRoutes.js";
+import jobRoutes from "#src/modules/jobs/routes/jobRoutes.js";
+import applicantRoutes from "#src/modules/applicants/routes/applicantRoutes.js";
+import applicationRoutes from "#src/modules/applications/routes/applicationRoutes.js";
+import statsRoutes from "#src/modules/applications/routes/statsRoutes.js";
 import swaggerUi from "swagger-ui-express";
 import specs from "../api-doc/swagger.js";
-import { prisma } from "#/prisma.js";
+import { prisma } from "#src/prisma.js";
 
 const app = express();
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 8000;
 
 const maskDatabaseUrl = (connectionString) => {
   if (!connectionString) return "not configured";
@@ -34,9 +36,14 @@ const getBackendInfo = () => {
   };
 };
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use("/uploads", express.static(path.join(__dirname, "../../uploads")));
 
 // Swagger
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));

@@ -1,4 +1,4 @@
-import { prisma } from "#/prisma.js";
+import { prisma } from "#src/prisma.js";
 
 /**
  * GET JOB STATS (Admin)

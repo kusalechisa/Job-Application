@@ -1,4 +1,4 @@
-import { prisma } from "#/prisma.js";
+import { prisma } from "#src/prisma.js";
 import ExcelJS from "exceljs";
 
 /**

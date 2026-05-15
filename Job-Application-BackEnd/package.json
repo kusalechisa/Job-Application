@@ -4,13 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "setup-db": "node setup-db.js && npx prisma migrate deploy && npx prisma generate",
+    "setup-db": "npx prisma migrate deploy && npx prisma generate",
     "start": "node ./src/app.js",
     "dev": "npm run setup-db && nodemon ./src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "imports": {
-    "#/*": "./src/*"
+    "#src/*.js": "./src/*.js"
   },
   "keywords": [],
   "author": "",
