@@ -50,9 +50,9 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/jobs", jobRoutes);
-app.use("/api/jobs", applicantRoutes);
 app.use("/api/jobs", applicationRoutes);
+app.use("/api/jobs", applicantRoutes);
+app.use("/api/jobs", jobRoutes);
 app.use("/api/stats", statsRoutes);
 
 app.use((err, req, res, next) => {
