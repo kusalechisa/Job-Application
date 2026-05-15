@@ -29,6 +29,7 @@ export default function App() {
             <Route path="/joblist" element={<JobList />} />
             <Route path="/appliedjobs" element={<AppliedJobList />} />
           </Route>
+          <Route path="*" element={<Login />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
