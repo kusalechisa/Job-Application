@@ -50,7 +50,7 @@ outputType = "console"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "cd Job-Application-BackEnd && npm run start"
-waitForPort = 8000
+waitForPort = 5002
 
 [[ports]]
 localPort = 5000
@@ -61,8 +61,8 @@ localPort = 5002
 externalPort = 3000
 
 [[ports]]
-localPort = 8000
-externalPort = 8000
+localPort = 5002
+externalPort = 5002
 
 [deployment]
 deploymentTarget = "autoscale"

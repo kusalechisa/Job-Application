@@ -14,7 +14,7 @@ import specs from "../api-doc/swagger.js";
 import { prisma } from "#src/prisma.js";
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 5002;
 
 const maskDatabaseUrl = (connectionString) => {
   if (!connectionString) return "not configured";
