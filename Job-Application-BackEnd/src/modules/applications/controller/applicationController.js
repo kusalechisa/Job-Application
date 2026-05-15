@@ -1,5 +1,6 @@
 import { prisma } from "#src/prisma.js";
 import ExcelJS from "exceljs";
+import { sendStatusNotification } from "#src/utils/email.js";
 
 /**
  * GET APPLICATIONS FOR A JOB (Admin)
@@ -187,7 +188,23 @@ export const updateApplicationStatus = async (req, res) => {
     const application = await prisma.application.update({
       where: { id: applicationId },
       data: { status },
+      include: {
+        applicant: {
+          include: {
+            account: { select: { name: true, email: true } },
+          },
+        },
+        job: { select: { title: true, company: true } },
+      },
     });
+
+    sendStatusNotification({
+      applicantEmail: application.applicant.account.email,
+      applicantName: application.applicant.account.name,
+      jobTitle: application.job.title,
+      company: application.job.company,
+      status,
+    }).catch((err) => console.error("Email notification failed:", err.message));
 
     return res.status(200).json({
       status: "success",
