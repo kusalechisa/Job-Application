@@ -22,29 +22,25 @@ import logoImage from "../assets/Logo.png";
 
 export default function AppSidebar() {
   const location = useLocation();
-  const { logout }=useAuth()
+  const { logout } = useAuth()
   return (
-    <Sidebar >
-      
-       <div className="flex flex-col items-center gap-3 px-4 py-4 border-b border-blue-800">
+    <Sidebar className="bg-slate-950 text-slate-100 shadow-xl shadow-slate-900/30">
+      <div className="flex flex-col items-center gap-3 px-4 py-6 border-b border-slate-800">
+        <div className="w-12 h-12 rounded-2xl bg-slate-800 p-2 flex items-center justify-center shadow-inner shadow-slate-900/30">
+          <img
+            src={logoImage}
+            alt="Logo"
+            className="w-full h-full object-contain"
+          />
+        </div>
 
-        {/* LOGO */}
-          <div className="w-10 h-10 rounded-lg flex items-center justify-center overflow-hidden">
-            <img
-              src={logoImage}
-              alt="Logo"
-              className="w-full h-full object-contain"
-            />
-          </div>
-
-          {/* TEXT */}
-          <div className="flex flex-col items-center text-center leading-tight">
-            <h1 className="text-sm font-semibold">A-Mesob </h1>
-            <p className="text-xs text-blue-300">Job Application System</p>
-          </div>
-
+        <div className="flex flex-col items-center text-center leading-tight">
+          <h1 className="text-sm font-semibold text-white">A-Mesob</h1>
+          <p className="text-xs text-slate-400">Job Application System</p>
+        </div>
       </div>
-      <SidebarContent>
+
+      <SidebarContent className="px-3 py-4">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-2">
@@ -94,13 +90,12 @@ export default function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {/* FAKE LOGOUT (UI ONLY) */}
-      <SidebarFooter>
+      <SidebarFooter className="px-4 pb-6 pt-3">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={()=>logout()}
-              className="text-red-500"
+              onClick={() => logout()}
+              className="text-red-400 hover:bg-red-600 hover:text-white"
             >
               <LogOut size={18} />
               <span>Logout</span>

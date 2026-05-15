@@ -63,82 +63,80 @@ export default function Register() {
   };
 
   return (
-    <div className="min-h-screen px-6 sm:px-8 md:px-12 lg:px-16 py-6">
-      <Card className="w-full shadow-lg rounded-2xl">
-        <CardHeader>
-          <CardTitle className="text-center text-xl">
-            Applicant Profile
-          </CardTitle>
-        </CardHeader>
+    <div className="min-h-screen bg-slate-100 px-4 py-8 dark:bg-slate-950">
+      <div className="mx-auto w-full max-w-4xl">
+        <Card className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          <div className="bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 px-8 py-10 text-white">
+            <CardTitle className="text-3xl font-semibold text-center">
+              Applicant Profile
+            </CardTitle>
+            <p className="mx-auto mt-3 max-w-xl text-center text-sm text-slate-100/90">
+              Complete your profile to apply for job listings and track your applications.
+            </p>
+          </div>
 
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4  ml-12 max-w-2xl">
+          <CardContent className="px-6 py-8 lg:px-10">
+            <form onSubmit={handleSubmit} className="grid gap-6 text-slate-900 dark:text-slate-100">
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>First Name</Label>
+                  <Input name="firstName" value={form.firstName} onChange={handleChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Middle Name</Label>
+                  <Input name="middleName" value={form.middleName} onChange={handleChange} />
+                </div>
+              </div>
 
-            {/* First Name */}
-            <div className="space-y-2">
-              <Label>First Name</Label>
-              <Input name="firstName" value={form.firstName} onChange={handleChange} />
-            </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Last Name</Label>
+                  <Input name="lastName" value={form.lastName} onChange={handleChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Gender</Label>
+                  <select
+                    name="gender"
+                    value={form.gender}
+                    onChange={handleChange}
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-slate-900 outline-none transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
+              </div>
 
-            {/* Middle Name */}
-            <div className="space-y-2">
-              <Label>Middle Name</Label>
-              <Input name="middleName" value={form.middleName} onChange={handleChange} />
-            </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Date of Birth</Label>
+                  <Input type="date" name="dob" value={form.dob} onChange={handleChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Phone Number</Label>
+                  <Input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} />
+                </div>
+              </div>
 
-            {/* Last Name */}
-            <div className="space-y-2">
-              <Label>Last Name</Label>
-              <Input name="lastName" value={form.lastName} onChange={handleChange} />
-            </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Home Phone Number</Label>
+                  <Input name="homePhoneNumber" value={form.homePhoneNumber} onChange={handleChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label>CV Upload</Label>
+                  <Input type="file" name="cv" onChange={handleChange} className="rounded-lg border border-slate-300 bg-white text-slate-900" />
+                </div>
+              </div>
 
-            {/* Gender */}
-            <div className="space-y-2">
-              <Label>Gender</Label>
-              <select
-                name="gender"
-                value={form.gender}
-                onChange={handleChange}
-                className="w-full border rounded-md px-3 py-2"
-              >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-            </div>
-
-            {/* DOB */}
-            <div className="space-y-2">
-              <Label>Date of Birth</Label>
-              <Input type="date" name="dob" value={form.dob} onChange={handleChange} />
-            </div>
-
-            {/* Phone Number */}
-            <div className="space-y-2">
-              <Label>Phone Number</Label>
-              <Input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} />
-            </div>
-
-            {/* Home Phone */}
-            <div className="space-y-2">
-              <Label>Home Phone Number</Label>
-              <Input name="homePhoneNumber" value={form.homePhoneNumber} onChange={handleChange} />
-            </div>
-
-            {/* CV Upload */}
-            <div className="space-y-2">
-              <Label>CV Upload</Label>
-              <Input type="file" name="cv" onChange={handleChange} />
-            </div>
-
-            {/* Submit */}
-            <Button className="w-full" type="submit" disabled={loading}>
-              {loading ? "Submitting..." : "Register"}
-            </Button>
-
-          </form>
-        </CardContent>
-      </Card>
+              <Button className="w-full bg-sky-600 text-white hover:bg-sky-700" type="submit" disabled={loading}>
+                {loading ? "Submitting..." : "Register"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
