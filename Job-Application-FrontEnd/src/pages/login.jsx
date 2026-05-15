@@ -1,8 +1,7 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { login as LoginAPI } from "../../api/Endpoints/Auth.jsx";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import fingerImage from "../assets/finger.png";
 import logoImage from "../assets/Logo.png";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,16 +13,21 @@ export default function Login() {
     email: "",
     password: "",
   });
-
+  const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await LoginAPI(form);
-    console.log(res.data,"response")
-    login(res.data);
-    navigate("/admin");
+    setError("");
+
+    try {
+      const res = await LoginAPI(form);
+      login(res.data);
+      navigate("/app-dashboard");
+    } catch (err) {
+      setError(err?.response?.data?.message || "Login failed. Please check your credentials.");
+    }
   };
 
   return (
@@ -45,6 +49,7 @@ export default function Login() {
 
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-5 px-6 pb-8">
+              {error && <div className="rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{error}</div>}
               <div className="space-y-2">
                 <Label className="text-slate-200">Email</Label>
                 <Input
@@ -70,6 +75,13 @@ export default function Login() {
               <Button type="submit" className="w-full bg-gradient-to-r from-sky-500 to-cyan-500 text-white shadow-lg shadow-cyan-500/20 hover:from-sky-400 hover:to-cyan-400">
                 Sign In
               </Button>
+
+              <p className="text-center text-sm text-slate-400">
+                Don&apos;t have an account?{' '}
+                <Link to="/register" className="font-semibold text-sky-300 hover:text-white">
+                  Register
+                </Link>
+              </p>
             </form>
           </CardContent>
         </Card>

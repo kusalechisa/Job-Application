@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { register } from "../../api/Endpoints/Auth.jsx";
-
+import { Link, useNavigate } from "react-router-dom";
+import { login as LoginAPI, register as RegisterAPI } from "../../api/Endpoints/Auth.jsx";
+import { createApplicantProfile } from "../../api/Endpoints/Jobs.jsx";
+import { useAuth } from "../context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,18 +13,22 @@ export default function Register() {
     firstName: "",
     middleName: "",
     lastName: "",
+    email: "",
+    password: "",
     gender: "",
     dob: "",
     phoneNumber: "",
-    homePhoneNumber: "",
+    address: "",
     cv: null,
   });
 
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-
     setForm({
       ...form,
       [name]: name === "cv" ? files[0] : value,
@@ -31,32 +37,36 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
       setLoading(true);
 
-      const formData = new FormData();
-      Object.entries(form).forEach(([key, value]) => {
-        formData.append(key, value);
+      const fullName = [form.firstName, form.middleName, form.lastName].filter(Boolean).join(" ");
+      await RegisterAPI({
+        name: fullName,
+        email: form.email,
+        password: form.password,
+        role: "Applicant",
       });
 
-      await register(formData);
-
-      alert("Registered successfully");
-
-      setForm({
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        gender: "",
-        dob: "",
-        phoneNumber: "",
-        homePhoneNumber: "",
-        cv: null,
+      const loginRes = await LoginAPI({
+        email: form.email,
+        password: form.password,
       });
 
+      login(loginRes.data);
+
+      const profileData = new FormData();
+      profileData.append("phone", form.phoneNumber);
+      profileData.append("address", form.address);
+      profileData.append("gender", form.gender);
+      if (form.cv) profileData.append("resume", form.cv);
+
+      await createApplicantProfile(profileData);
+      navigate("/app-dashboard");
     } catch (err) {
-      alert("Registration failed");
+      setError(err?.response?.data?.message || "Registration failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -67,17 +77,17 @@ export default function Register() {
       <div className="mx-auto w-full max-w-4xl">
         <Card className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900">
           <div className="bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 px-8 py-10 text-white">
-            <CardTitle className="text-3xl font-semibold text-center">
-              Applicant Profile
-            </CardTitle>
+            <CardTitle className="text-3xl font-semibold text-center">Applicant Registration</CardTitle>
             <p className="mx-auto mt-3 max-w-xl text-center text-sm text-slate-100/90">
-              Complete your profile to apply for job listings and track your applications.
+              Create your applicant account and upload your resume to begin applying.
             </p>
           </div>
 
           <CardContent className="px-6 py-8 lg:px-10">
             <form onSubmit={handleSubmit} className="grid gap-6 text-slate-900 dark:text-slate-100">
-              <div className="grid gap-4 md:grid-cols-2">
+              {error && <div className="rounded-xl bg-rose-500/10 px-4 py-3 text-sm text-rose-700">{error}</div>}
+
+              <div className="grid gap-4 md:grid-cols-3">
                 <div className="space-y-2">
                   <Label>First Name</Label>
                   <Input name="firstName" value={form.firstName} onChange={handleChange} />
@@ -86,13 +96,35 @@ export default function Register() {
                   <Label>Middle Name</Label>
                   <Input name="middleName" value={form.middleName} onChange={handleChange} />
                 </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Last Name</Label>
                   <Input name="lastName" value={form.lastName} onChange={handleChange} />
                 </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Email</Label>
+                  <Input type="email" name="email" value={form.email} onChange={handleChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Password</Label>
+                  <Input type="password" name="password" value={form.password} onChange={handleChange} />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Phone Number</Label>
+                  <Input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Address</Label>
+                  <Input name="address" value={form.address} onChange={handleChange} />
+                </div>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Gender</Label>
                   <select
@@ -106,33 +138,22 @@ export default function Register() {
                     <option value="Female">Female</option>
                   </select>
                 </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Date of Birth</Label>
-                  <Input type="date" name="dob" value={form.dob} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <Label>Phone Number</Label>
-                  <Input name="phoneNumber" value={form.phoneNumber} onChange={handleChange} />
-                </div>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>Home Phone Number</Label>
-                  <Input name="homePhoneNumber" value={form.homePhoneNumber} onChange={handleChange} />
-                </div>
                 <div className="space-y-2">
                   <Label>CV Upload</Label>
-                  <Input type="file" name="cv" onChange={handleChange} className="rounded-lg border border-slate-300 bg-white text-slate-900" />
+                  <Input type="file" name="cv" onChange={handleChange} />
                 </div>
               </div>
 
               <Button className="w-full bg-sky-600 text-white hover:bg-sky-700" type="submit" disabled={loading}>
                 {loading ? "Submitting..." : "Register"}
               </Button>
+
+              <p className="text-center text-sm text-slate-500 dark:text-slate-400">
+                Already have an account?{' '}
+                <Link to="/login" className="font-semibold text-sky-600 hover:text-sky-500">
+                  Log in
+                </Link>
+              </p>
             </form>
           </CardContent>
         </Card>

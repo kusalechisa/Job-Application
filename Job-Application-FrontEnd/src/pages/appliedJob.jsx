@@ -1,69 +1,91 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { appliedJobs } from "@/mock/mockData";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { getMyApplications } from "../../api/Endpoints/Jobs.jsx";
+import { useAuth } from "../context/AuthContext";
 
 export default function AppliedJobList() {
+  const [applications, setApplications] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 3;
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const itemsPerPage = 5;
+  const { token } = useAuth();
+  const navigate = useNavigate();
 
-  const totalPages = Math.ceil(appliedJobs.length / itemsPerPage);
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
 
-  const paginatedData = appliedJobs.slice(
+    const loadApplications = async () => {
+      setLoading(true);
+      setError("");
+      try {
+        const res = await getMyApplications();
+        setApplications(res.data.data || []);
+      } catch (err) {
+        setError(err?.response?.data?.message || "Unable to load your applications.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadApplications();
+  }, [token]);
+
+  const paginatedData = applications.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  const totalPages = Math.max(1, Math.ceil(applications.length / itemsPerPage));
 
   return (
     <div className="min-h-screen p-4 sm:p-6">
       <Card className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm shadow-slate-200/40 dark:border-slate-800 dark:bg-slate-900">
         <CardHeader>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <CardTitle className="text-2xl font-semibold text-slate-900 dark:text-slate-100">
-              Applied Jobs
-            </CardTitle>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Track the status of your job applications in one place.
-            </p>
+            <CardTitle className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Applied Jobs</CardTitle>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Track the status of your job applications in one place.</p>
           </div>
         </CardHeader>
 
         <CardContent className="p-0">
+          {error && <div className="px-4 py-3 text-sm text-rose-600">{error}</div>}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-slate-100 dark:bg-slate-800">
                 <TableRow>
-                  <TableHead>First Name</TableHead>
-                  <TableHead>Middle Name</TableHead>
-                  <TableHead>Last Name</TableHead>
-                  <TableHead>Applied Position</TableHead>
-                  <TableHead>Remark</TableHead>
+                  <TableHead>Job</TableHead>
+                  <TableHead>Company</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Applied On</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedData.map((item) => (
-                  <TableRow key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
-                    <TableCell>{item.firstName}</TableCell>
-                    <TableCell>{item.middleName}</TableCell>
-                    <TableCell>{item.lastName}</TableCell>
-                    <TableCell>{item.position}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex rounded-full px-3 py-1 text-xs font-semibold ${
-                          item.remark === "Approved"
-                            ? "bg-emerald-100 text-emerald-700"
-                            : item.remark === "Pending"
-                            ? "bg-amber-100 text-amber-700"
-                            : "bg-rose-100 text-rose-700"
-                        }`}
-                      >
-                        {item.remark}
-                      </span>
-                    </TableCell>
+                {loading ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="py-8 text-center text-slate-500 dark:text-slate-400">Loading applications...</TableCell>
                   </TableRow>
-                ))}
+                ) : paginatedData.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="py-8 text-center text-slate-500 dark:text-slate-400">No applications found.</TableCell>
+                  </TableRow>
+                ) : (
+                  paginatedData.map((item) => (
+                    <TableRow key={item.id} className="hover:bg-slate-50 dark:hover:bg-slate-800">
+                      <TableCell>{item.job?.title || "-"}</TableCell>
+                      <TableCell>{item.job?.company || "-"}</TableCell>
+                      <TableCell>{item.job?.location || "-"}</TableCell>
+                      <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
