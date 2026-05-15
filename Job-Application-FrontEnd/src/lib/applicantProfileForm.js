@@ -32,27 +32,45 @@ export const EMPTY_APPLICANT_PROFILE = {
   resume: null,
 };
 
+function parseAccountName(name = "") {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return { firstName: "", middleName: "", lastName: "" };
+  if (parts.length === 1) return { firstName: parts[0], middleName: "", lastName: "" };
+  if (parts.length === 2) return { firstName: parts[0], middleName: "", lastName: parts[1] };
+  return {
+    firstName: parts[0],
+    middleName: parts.slice(1, -1).join(" "),
+    lastName: parts[parts.length - 1],
+  };
+}
+
 export function profileToForm(profile, accountEmail = "") {
   const formatDate = (value) => {
     if (!value) return "";
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "";
-    return date.toISOString().slice(0, 10);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   const joinList = (items) => (Array.isArray(items) ? items.join(", ") : "");
 
+  const account = profile.account || {};
+  const nameFromAccount = parseAccountName(account.name || "");
+
   return {
-    firstName: profile.firstName || "",
-    lastName: profile.lastName || "",
-    middleName: profile.middleName || "",
+    firstName: profile.firstName || nameFromAccount.firstName || "",
+    lastName: profile.lastName || nameFromAccount.lastName || "",
+    middleName: profile.middleName || nameFromAccount.middleName || "",
     dateOfBirth: formatDate(profile.dateOfBirth),
     nationality: profile.nationality || "",
     maritalStatus: profile.maritalStatus || "",
     profilePicture: null,
     phone: profile.phone || "",
     alternativePhone: profile.alternativePhone || "",
-    email: profile.email || accountEmail || "",
+    email: profile.email || account.email || accountEmail || "",
     address: profile.address || "",
     city: profile.city || "",
     subCity: profile.subCity || "",

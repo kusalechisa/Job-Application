@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getApplicantProfile, createApplicantProfile, updateApplicantProfile } from "../../api/Endpoints/Jobs.jsx";
 import { getApiErrorMessage } from "@/lib/apiError";
 import {
@@ -6,6 +6,7 @@ import {
   profileToForm,
   formToFormData,
 } from "@/lib/applicantProfileForm";
+import { useAuth } from "../context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,7 +23,17 @@ function SectionTitle({ children }) {
   );
 }
 
+function applyProfileToState(profile, setters) {
+  const accountEmail = profile.account?.email || "";
+  setters.setAccountEmail(accountEmail);
+  setters.setForm(profileToForm(profile, accountEmail));
+  setters.setCurrentResume(profile.resume || "");
+  setters.setCurrentProfilePicture(profile.profilePicture || "");
+  setters.setHasProfile(true);
+}
+
 export default function ApplicantProfile() {
+  const { token } = useAuth();
   const [form, setForm] = useState(EMPTY_APPLICANT_PROFILE);
   const [accountEmail, setAccountEmail] = useState("");
   const [hasProfile, setHasProfile] = useState(false);
@@ -33,24 +44,38 @@ export default function ApplicantProfile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await getApplicantProfile();
-        const profile = res.data.data;
-        setAccountEmail(profile.account?.email || "");
-        setForm(profileToForm(profile, profile.account?.email));
-        setCurrentResume(profile.resume || "");
-        setCurrentProfilePicture(profile.profilePicture || "");
-        setHasProfile(true);
-      } catch {
-        setHasProfile(false);
-      } finally {
-        setLoading(false);
+  const loadProfile = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setLoading(true);
+    if (!silent) setError("");
+    try {
+      const res = await getApplicantProfile();
+      const profile = res.data?.data;
+      if (!profile) {
+        throw new Error("Profile data was not returned from the server.");
       }
-    };
-    load();
+      applyProfileToState(profile, {
+        setAccountEmail,
+        setForm,
+        setCurrentResume,
+        setCurrentProfilePicture,
+        setHasProfile,
+      });
+    } catch (err) {
+      setHasProfile(false);
+      setForm(EMPTY_APPLICANT_PROFILE);
+      const status = err?.response?.status;
+      if (status !== 404) {
+        setError(getApiErrorMessage(err, "Failed to load your profile."));
+      }
+    } finally {
+      if (!silent) setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    if (!token) return;
+    loadProfile();
+  }, [token, loadProfile]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -70,10 +95,11 @@ export default function ApplicantProfile() {
       if (hasProfile) {
         await updateApplicantProfile(data);
         setSuccess("Profile updated successfully.");
+        await loadProfile({ silent: true });
       } else {
         await createApplicantProfile(data);
-        setHasProfile(true);
         setSuccess("Profile created successfully.");
+        await loadProfile({ silent: true });
       }
     } catch (err) {
       setError(getApiErrorMessage(err, "Failed to save profile."));
