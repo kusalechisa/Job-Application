@@ -154,6 +154,17 @@ export default function ApplicantProfile() {
                   <Input name="nationality" value={form.nationality} onChange={handleChange} />
                 </div>
                 <div className="space-y-2">
+                  <Label>Gender</Label>
+                  <select name="gender" value={form.gender} onChange={handleChange} className={selectClass}>
+                    <option value="">Select</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Non-binary">Non-binary</option>
+                    <option value="Prefer not to say">Prefer not to say</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
                   <Label>Marital Status</Label>
                   <select name="maritalStatus" value={form.maritalStatus} onChange={handleChange} className={selectClass}>
                     <option value="">Select</option>

@@ -41,6 +41,7 @@ model Applicant {
   middleName String?
   dateOfBirth DateTime?
   nationality String?
+  gender String?
   maritalStatus String?
   profilePicture String?
 

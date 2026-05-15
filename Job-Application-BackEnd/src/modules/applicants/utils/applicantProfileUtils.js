@@ -3,6 +3,7 @@ const TEXT_FIELDS = [
   "lastName",
   "middleName",
   "nationality",
+  "gender",
   "maritalStatus",
   "phone",
   "alternativePhone",
