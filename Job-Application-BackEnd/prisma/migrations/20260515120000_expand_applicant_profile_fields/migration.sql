@@ -1,0 +1,32 @@
+-- AlterTable
+ALTER TABLE "Applicant" DROP COLUMN IF EXISTS "gender";
+
+ALTER TABLE "Applicant"
+ADD COLUMN     "firstName" TEXT,
+ADD COLUMN     "lastName" TEXT,
+ADD COLUMN     "middleName" TEXT,
+ADD COLUMN     "dateOfBirth" TIMESTAMP(3),
+ADD COLUMN     "nationality" TEXT,
+ADD COLUMN     "maritalStatus" TEXT,
+ADD COLUMN     "profilePicture" TEXT,
+ADD COLUMN     "alternativePhone" TEXT,
+ADD COLUMN     "email" TEXT,
+ADD COLUMN     "city" TEXT,
+ADD COLUMN     "subCity" TEXT,
+ADD COLUMN     "region" TEXT,
+ADD COLUMN     "profession" TEXT,
+ADD COLUMN     "currentJobTitle" TEXT,
+ADD COLUMN     "yearsOfExperience" INTEGER,
+ADD COLUMN     "employmentStatus" TEXT,
+ADD COLUMN     "portfolioUrl" TEXT,
+ADD COLUMN     "linkedinUrl" TEXT,
+ADD COLUMN     "githubUrl" TEXT,
+ADD COLUMN     "highestEducation" TEXT,
+ADD COLUMN     "university" TEXT,
+ADD COLUMN     "college" TEXT,
+ADD COLUMN     "fieldOfStudy" TEXT,
+ADD COLUMN     "graduationYear" INTEGER,
+ADD COLUMN     "skills" TEXT[] DEFAULT ARRAY[]::TEXT[],
+ADD COLUMN     "languages" TEXT[] DEFAULT ARRAY[]::TEXT[],
+ADD COLUMN     "technicalSkills" TEXT[] DEFAULT ARRAY[]::TEXT[],
+ADD COLUMN     "softSkills" TEXT[] DEFAULT ARRAY[]::TEXT[];

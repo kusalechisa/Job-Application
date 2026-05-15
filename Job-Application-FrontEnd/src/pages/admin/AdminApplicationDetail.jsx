@@ -66,9 +66,12 @@ export default function AdminApplicationDetail() {
           {error && <p className="text-rose-600">{error}</p>}
           {success && <p className="text-emerald-600">{success}</p>}
           <p><strong>Job:</strong> {application.job?.title} at {application.job?.company}</p>
-          <p><strong>Applicant:</strong> {applicant?.account?.name} ({applicant?.account?.email})</p>
-          <p><strong>Phone:</strong> {applicant?.phone || "—"}</p>
-          <p><strong>Address:</strong> {applicant?.address || "—"}</p>
+          <p><strong>Applicant:</strong> {[applicant?.firstName, applicant?.middleName, applicant?.lastName].filter(Boolean).join(" ") || applicant?.account?.name} ({applicant?.email || applicant?.account?.email})</p>
+          <p><strong>Phone:</strong> {applicant?.phone || "—"}{applicant?.alternativePhone ? ` / ${applicant.alternativePhone}` : ""}</p>
+          <p><strong>Location:</strong> {[applicant?.address, applicant?.subCity, applicant?.city, applicant?.region].filter(Boolean).join(", ") || "—"}</p>
+          <p><strong>Profession:</strong> {applicant?.profession || applicant?.currentJobTitle || "—"}</p>
+          <p><strong>Education:</strong> {[applicant?.highestEducation, applicant?.fieldOfStudy, applicant?.university].filter(Boolean).join(" · ") || "—"}</p>
+          <p><strong>Skills:</strong> {applicant?.technicalSkills?.length ? applicant.technicalSkills.join(", ") : applicant?.skills?.length ? applicant.skills.join(", ") : "—"}</p>
           <p><strong>Resume:</strong> {application.resume || applicant?.resume || "—"}</p>
           <p><strong>Applied:</strong> {new Date(application.appliedAt).toLocaleString()}</p>
           <div className="flex flex-wrap items-end gap-3 border-t border-slate-200 pt-4 dark:border-slate-800">

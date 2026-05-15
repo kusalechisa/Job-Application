@@ -35,10 +35,44 @@ model Applicant {
   id String @id @default(uuid())
   accountId String @unique
   account Account @relation(fields: [accountId], references: [id])
+
+  firstName String?
+  lastName String?
+  middleName String?
+  dateOfBirth DateTime?
+  nationality String?
+  maritalStatus String?
+  profilePicture String?
+
   phone String?
+  alternativePhone String?
+  email String?
   address String?
-  gender String?
+  city String?
+  subCity String?
+  region String?
+
+  profession String?
+  currentJobTitle String?
+  yearsOfExperience Int?
+  employmentStatus String?
+  portfolioUrl String?
+  linkedinUrl String?
+  githubUrl String?
+
+  highestEducation String?
+  university String?
+  college String?
+  fieldOfStudy String?
+  graduationYear Int?
+
+  skills String[] @default([])
+  languages String[] @default([])
+  technicalSkills String[] @default([])
+  softSkills String[] @default([])
+
   resume String?
+
   applications Application[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -69,4 +103,3 @@ model Application {
   appliedAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
-

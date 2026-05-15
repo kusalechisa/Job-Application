@@ -1,43 +1,65 @@
+import fs from "fs";
 import { prisma } from "#/prisma.js";
 import multer from "multer";
 import path from "path";
+import {
+  buildApplicantProfileData,
+  buildApplicantUpdateData,
+} from "#/modules/applicants/utils/applicantProfileUtils.js";
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/resumes/');
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-  }
-});
+const ensureDir = (dir) => {
+  fs.mkdirSync(dir, { recursive: true });
+};
 
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      if (file.fieldname === "profilePicture") {
+        const dir = "uploads/profile-pictures/";
+        ensureDir(dir);
+        cb(null, dir);
+        return;
+      }
+      const dir = "uploads/resumes/";
+      ensureDir(dir);
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
+    if (file.fieldname === "profilePicture") {
+      const allowedTypes = /jpeg|jpg|png|gif|webp/;
+      const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+      const mimetype = allowedTypes.test(file.mimetype);
+      if (mimetype && extname) return cb(null, true);
+      return cb(new Error("Only JPEG, PNG, GIF, and WEBP images are allowed for profile pictures"));
+    }
+
     const allowedTypes = /pdf|doc|docx|txt/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
-
-    if (mimetype && extname) {
-      return cb(null, true);
-    } else {
-      cb(new Error('Only PDF, DOC, DOCX, and TXT files are allowed'));
-    }
-  }
+    if (mimetype && extname) return cb(null, true);
+    return cb(new Error("Only PDF, DOC, DOCX, and TXT files are allowed for resumes"));
+  },
 });
+
+const profileUpload = upload.fields([
+  { name: "resume", maxCount: 1 },
+  { name: "profilePicture", maxCount: 1 },
+]);
 
 /**
  * CREATE APPLICANT PROFILE
  */
 export const createApplicantProfile = [
-  upload.single('resume'),
+  profileUpload,
   async (req, res) => {
     try {
       const accountId = req.user.id;
-      const { phone, address, gender } = req.body;
 
       if (req.user.role !== "Applicant") {
         return res.status(403).json({
@@ -48,7 +70,6 @@ export const createApplicantProfile = [
         });
       }
 
-      // Check if profile already exists
       const existingProfile = await prisma.applicant.findUnique({
         where: { accountId },
       });
@@ -62,18 +83,12 @@ export const createApplicantProfile = [
         });
       }
 
-      let resume = req.body.resume; // text resume
-      if (req.file) {
-        resume = req.file.path; // file path
-      }
+      const profileData = buildApplicantProfileData(req.body, req.files);
 
       const profile = await prisma.applicant.create({
         data: {
           accountId,
-          phone,
-          address,
-          gender,
-          resume,
+          ...profileData,
         },
       });
 
@@ -92,7 +107,7 @@ export const createApplicantProfile = [
         errors: [error.message],
       });
     }
-  }
+  },
 ];
 
 /**
@@ -150,11 +165,10 @@ export const getApplicantProfile = async (req, res) => {
  * UPDATE APPLICANT PROFILE
  */
 export const updateApplicantProfile = [
-  upload.single('resume'),
+  profileUpload,
   async (req, res) => {
     try {
       const accountId = req.user.id;
-      const { phone, address, gender } = req.body;
 
       if (req.user.role !== "Applicant") {
         return res.status(403).json({
@@ -178,19 +192,11 @@ export const updateApplicantProfile = [
         });
       }
 
-      let resume = req.body.resume; // text resume
-      if (req.file) {
-        resume = req.file.path; // file path
-      }
+      const updateData = buildApplicantUpdateData(req.body, req.files);
 
       const updatedProfile = await prisma.applicant.update({
         where: { accountId },
-        data: {
-          ...(phone !== undefined && { phone }),
-          ...(address !== undefined && { address }),
-          ...(gender !== undefined && { gender }),
-          ...(resume !== undefined && { resume }),
-        },
+        data: updateData,
       });
 
       return res.status(200).json({
@@ -208,7 +214,7 @@ export const updateApplicantProfile = [
         errors: [error.message],
       });
     }
-  }
+  },
 ];
 
 /**
@@ -285,7 +291,7 @@ export const applyForJob = async (req, res) => {
       data: {
         jobId,
         applicantId: applicant.id,
-        resume: applicant.resume, // Use resume from profile
+        resume: applicant.resume,
       },
     });
 
@@ -305,6 +311,7 @@ export const applyForJob = async (req, res) => {
     });
   }
 };
+
 /**
  * GET MY APPLICATIONS (Applicant)
  */
