@@ -1,0 +1,16 @@
+{
+  "name": "A-Mesob Job Application",
+  "short_name": "A-Mesob Jobs",
+  "description": "Job application system for applicants and employers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

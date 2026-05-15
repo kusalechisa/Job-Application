@@ -50,7 +50,12 @@ export default function JobList() {
       await applyForJob(jobId);
       setSuccess("Application submitted successfully.");
     } catch (err) {
-      setError(err?.response?.data?.message || "Unable to submit application.");
+      const errorMessage = err?.response?.data?.message || "Unable to submit application.";
+      if (errorMessage.includes("Applicant profile not found")) {
+        setError("Please complete your applicant profile before applying for jobs.");
+      } else {
+        setError(errorMessage);
+      }
     }
   };
 

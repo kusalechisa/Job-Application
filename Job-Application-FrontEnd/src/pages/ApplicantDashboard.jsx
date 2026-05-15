@@ -17,11 +17,17 @@ export default function ApplicantDashboard() {
         const jobsRes = await getJobs({ page: 1, limit: 1 });
         setJobCount(jobsRes.data.pagination?.total ?? 0);
         if (token) {
-          const appsRes = await getMyApplications();
-          setApplicationCount(appsRes.data.data?.length ?? 0);
+          try {
+            const appsRes = await getMyApplications();
+            setApplicationCount(appsRes.data.data?.length ?? 0);
+          } catch (appsError) {
+            // If no applicant profile exists, applications count will be 0
+            console.log("No applicant profile found, showing 0 applications");
+            setApplicationCount(0);
+          }
         }
       } catch (error) {
-        console.error(error);
+        console.error("Error loading dashboard:", error);
       } finally {
         setLoading(false);
       }
