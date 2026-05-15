@@ -80,6 +80,9 @@ export default function ApplicantDashboard() {
               <Link to="/appliedjobs" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 transition hover:border-sky-400 hover:bg-sky-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-800">
                 View application status
               </Link>
+              <Link to="/profile" className="block rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 transition hover:border-sky-400 hover:bg-sky-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200 dark:hover:bg-slate-800">
+                Update applicant profile
+              </Link>
             </div>
           </div>
         </div>
@@ -87,3 +90,7 @@ export default function ApplicantDashboard() {
     </div>
   );
 }
+
+
+
+

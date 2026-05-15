@@ -116,7 +116,7 @@ export default function JobList() {
                         <TableCell className="flex flex-wrap gap-2">
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon">
+                              <Button variant="ghost" size="icon" onClick={() => navigate(`/jobs/${job.id}`)}>
                                 <Eye className="w-4 h-4" />
                               </Button>
                             </TooltipTrigger>
@@ -153,3 +153,7 @@ export default function JobList() {
     </div>
   );
 }
+
+
+
+

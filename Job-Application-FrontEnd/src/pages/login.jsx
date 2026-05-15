@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as LoginAPI } from "../../api/Endpoints/Auth.jsx";
 import { useAuth } from "../context/AuthContext";
+import { getDashboardPath } from "@/lib/constants";
 import logoImage from "../assets/Logo.png";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,7 +25,7 @@ export default function Login() {
     try {
       const res = await LoginAPI(form);
       login(res.data);
-      navigate("/app-dashboard");
+      navigate(getDashboardPath(res.data.user.role));
     } catch (err) {
       setError(err?.response?.data?.message || "Login failed. Please check your credentials.");
     }
@@ -40,9 +41,9 @@ export default function Login() {
 
           <CardHeader>
             <CardTitle className="text-3xl font-semibold text-center text-white">
-              Applicant Login
+              Sign In
               <p className="mt-2 text-sm font-normal text-slate-300">
-                Access your job dashboard and applied positions.
+                Access your dashboard as an applicant or admin.
               </p>
             </CardTitle>
           </CardHeader>
@@ -77,6 +78,11 @@ export default function Login() {
               </Button>
 
               <p className="text-center text-sm text-slate-400">
+                <Link to="/forgot-password" className="font-semibold text-sky-300 hover:text-white">
+                  Forgot password?
+                </Link>
+              </p>
+              <p className="text-center text-sm text-slate-400">
                 Don&apos;t have an account?{' '}
                 <Link to="/register" className="font-semibold text-sky-300 hover:text-white">
                   Register
@@ -89,3 +95,7 @@ export default function Login() {
     </div>
   );
 }
+
+
+
+

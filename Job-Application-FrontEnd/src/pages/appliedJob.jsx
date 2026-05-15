@@ -5,38 +5,68 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getMyApplications } from "../../api/Endpoints/Jobs.jsx";
+import { withdrawApplication, updateApplication } from "../../api/Endpoints/Applications.jsx";
 import { useAuth } from "../context/AuthContext";
+import { getApiErrorMessage } from "@/lib/apiError";
+import StatusBadge from "@/components/StatusBadge";
 
 export default function AppliedJobList() {
   const [applications, setApplications] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const itemsPerPage = 5;
   const { token } = useAuth();
   const navigate = useNavigate();
+
+  const loadApplications = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const res = await getMyApplications();
+      setApplications(res.data.data || []);
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Unable to load your applications."));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!token) {
       navigate("/login");
       return;
     }
-
-    const loadApplications = async () => {
-      setLoading(true);
-      setError("");
-      try {
-        const res = await getMyApplications();
-        setApplications(res.data.data || []);
-      } catch (err) {
-        setError(err?.response?.data?.message || "Unable to load your applications.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadApplications();
   }, [token]);
+
+  const handleUpdateResume = async (applicationId) => {
+    const resume = window.prompt("Enter updated resume text or file path:");
+    if (!resume) return;
+    setError("");
+    setSuccess("");
+    try {
+      await updateApplication(applicationId, { resume });
+      setSuccess("Application updated.");
+      loadApplications();
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Unable to update application."));
+    }
+  };
+
+  const handleWithdraw = async (applicationId) => {
+    if (!window.confirm("Withdraw this application?")) return;
+    setError("");
+    setSuccess("");
+    try {
+      await withdrawApplication(applicationId);
+      setSuccess("Application withdrawn.");
+      loadApplications();
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Unable to withdraw."));
+    }
+  };
 
   const paginatedData = applications.slice(
     (currentPage - 1) * itemsPerPage,
@@ -51,12 +81,13 @@ export default function AppliedJobList() {
         <CardHeader>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <CardTitle className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Applied Jobs</CardTitle>
-            <p className="text-sm text-slate-500 dark:text-slate-400">Track the status of your job applications in one place.</p>
+            <p className="text-sm text-slate-500 dark:text-slate-400">Track status and withdraw applications when allowed.</p>
           </div>
         </CardHeader>
 
         <CardContent className="p-0">
           {error && <div className="px-4 py-3 text-sm text-rose-600">{error}</div>}
+          {success && <div className="px-4 py-3 text-sm text-emerald-600">{success}</div>}
           <div className="overflow-x-auto">
             <Table>
               <TableHeader className="bg-slate-100 dark:bg-slate-800">
@@ -64,17 +95,19 @@ export default function AppliedJobList() {
                   <TableHead>Job</TableHead>
                   <TableHead>Company</TableHead>
                   <TableHead>Location</TableHead>
+                  <TableHead>Status</TableHead>
                   <TableHead>Applied On</TableHead>
+                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {loading ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="py-8 text-center text-slate-500 dark:text-slate-400">Loading applications...</TableCell>
+                    <TableCell colSpan={6} className="py-8 text-center text-slate-500 dark:text-slate-400">Loading applications...</TableCell>
                   </TableRow>
                 ) : paginatedData.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={4} className="py-8 text-center text-slate-500 dark:text-slate-400">No applications found.</TableCell>
+                    <TableCell colSpan={6} className="py-8 text-center text-slate-500 dark:text-slate-400">No applications found.</TableCell>
                   </TableRow>
                 ) : (
                   paginatedData.map((item) => (
@@ -82,7 +115,25 @@ export default function AppliedJobList() {
                       <TableCell>{item.job?.title || "-"}</TableCell>
                       <TableCell>{item.job?.company || "-"}</TableCell>
                       <TableCell>{item.job?.location || "-"}</TableCell>
-                      <TableCell>{new Date(item.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell><StatusBadge status={item.status} /></TableCell>
+                      <TableCell>{new Date(item.appliedAt || item.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell className="flex flex-wrap gap-2">
+                        {item.status === "Applied" && (
+                          <Button variant="outline" size="sm" onClick={() => handleUpdateResume(item.id)}>
+                            Update
+                          </Button>
+                        )}
+                        {item.status !== "Accepted" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleWithdraw(item.id)}
+                            className="text-rose-600"
+                          >
+                            Withdraw
+                          </Button>
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))
                 )}
@@ -104,3 +155,5 @@ export default function AppliedJobList() {
     </div>
   );
 }
+
+

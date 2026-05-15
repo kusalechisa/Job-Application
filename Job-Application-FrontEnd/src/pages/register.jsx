@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as LoginAPI, register as RegisterAPI } from "../../api/Endpoints/Auth.jsx";
+import { getDashboardPath } from "@/lib/constants";
 import { createApplicantProfile } from "../../api/Endpoints/Jobs.jsx";
 import { useAuth } from "../context/AuthContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -64,7 +65,7 @@ export default function Register() {
       if (form.cv) profileData.append("resume", form.cv);
 
       await createApplicantProfile(profileData);
-      navigate("/app-dashboard");
+      navigate(getDashboardPath("Applicant"));
     } catch (err) {
       setError(err?.response?.data?.message || "Registration failed. Please try again.");
     } finally {
@@ -161,3 +162,7 @@ export default function Register() {
     </div>
   );
 }
+
+
+
+

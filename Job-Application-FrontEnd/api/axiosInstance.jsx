@@ -16,4 +16,26 @@ export const setAuthToken = (token) => {
   }
 };
 
+api.interceptors.request.use((config) => {
+  if (config.data instanceof FormData) {
+    delete config.headers["Content-Type"];
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setAuthToken(null);
+      if (!window.location.pathname.match(/^\/(login|register|forgot-password|reset-password)?$/)) {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
 export default api;
