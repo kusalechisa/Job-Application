@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import ApplicantDashboard from "./pages/ApplicantDashboard";
 import AppliedJobList from "./pages/appliedJob";
 import ApplicantProfile from "./pages/applicantProfile";
+import SavedJobs from "./pages/savedJobs";
 import AccountSettings from "./pages/accountSettings";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminJobs from "./pages/admin/AdminJobs";
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/joblist" element={<JobList />} />
             <Route path="/jobs/:jobId" element={<JobDetail />} />
             <Route path="/appliedjobs" element={<AppliedJobList />} />
+            <Route path="/saved-jobs" element={<SavedJobs />} />
           </Route>
 
           <Route
