@@ -33,7 +33,6 @@ import {
   Clock,
   Zap
 } from "lucide-react";
-import AdminNavbar from "@/components/AdminNavbar";
 
 const emptyJob = {
   title: "",
@@ -258,7 +257,6 @@ export default function AdminJobs() {
 
       {/* Main Content */}
       <div>
-        <AdminNavbar onMenuClick={() => setMobileMenuOpen(true)} />
         
         <main className="p-4 md:p-6 lg:p-8">
           {/* Header Section */}

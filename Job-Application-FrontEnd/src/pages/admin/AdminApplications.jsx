@@ -43,7 +43,6 @@ import {
   LogOut,
   Menu
 } from "lucide-react";
-import AdminNavbar from "@/components/AdminNavbar";
 
 export default function AdminApplications() {
   const [applications, setApplications] = useState([]);
@@ -276,7 +275,6 @@ export default function AdminApplications() {
 
       {/* Main Content */}
       <div>
-        <AdminNavbar onMenuClick={() => setMobileMenuOpen(true)} />
         
         <main className="p-4 md:p-6 lg:p-8">
           {/* Header Section */}

@@ -45,7 +45,6 @@ import {
   FileSpreadsheet,
   Trash2
 } from "lucide-react";
-import AdminNavbar from "@/components/AdminNavbar";
 
 const emptyUser = { name: "", email: "", password: "", role: "Applicant", status: "active" };
 
@@ -406,7 +405,6 @@ export default function AdminUsers() {
 
       {/* Main Content */}
       <div>
-        <AdminNavbar onMenuClick={() => setMobileMenuOpen(true)} />
         
         <main className="p-4 md:p-6 lg:p-8">
           {/* Header Section */}

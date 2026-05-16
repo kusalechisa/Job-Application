@@ -54,7 +54,6 @@ import {
   AreaChart,
   Area
 } from "recharts";
-import AdminNavbar from "@/components/AdminNavbar";
 
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#10b981', '#06b6d4', '#a855f7'];
 
@@ -193,7 +192,6 @@ export default function AdminStats() {
 
       {/* Main Content */}
       <div>
-        <AdminNavbar onMenuClick={() => setMobileMenuOpen(true)} />
         
         <main className="p-4 md:p-6 lg:p-8">
           {/* Header Section */}

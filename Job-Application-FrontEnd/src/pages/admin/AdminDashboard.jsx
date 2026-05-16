@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import StatCard from "@/components/StatCard";
-import AdminNavbar from "@/components/AdminNavbar";
 import StatusBadge from "@/components/StatusBadge";
 import {
   Briefcase,
@@ -146,7 +145,6 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <div>
-        <AdminNavbar onMenuClick={() => setMobileMenuOpen(true)} />
         
         <main className="p-4 md:p-6 lg:p-8">
           {error && (
