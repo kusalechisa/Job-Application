@@ -183,7 +183,7 @@ export default function AdminApplications() {
     switch(status) {
       case 'accepted': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
       case 'rejected': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-      case 'interview': return 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400';
+      case 'interview': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
       case 'reviewed': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
       default: return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400';
     }
@@ -256,7 +256,7 @@ export default function AdminApplications() {
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center">
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -318,7 +318,7 @@ export default function AdminApplications() {
             <StatCard label="Total" value={stats.total} icon={FileText} color="indigo" />
             <StatCard label="Pending" value={stats.pending} icon={Clock} color="amber" />
             <StatCard label="Reviewed" value={stats.reviewed} icon={Eye} color="blue" />
-            <StatCard label="Interview" value={stats.interview} icon={Users} color="purple" />
+            <StatCard label="Interview" value={stats.interview} icon={Users} color="blue" />
             <StatCard label="Accepted" value={stats.accepted} icon={CheckCircle} color="emerald" />
             <StatCard label="Rejected" value={stats.rejected} icon={XCircle} color="red" />
           </div>
@@ -653,7 +653,7 @@ export default function AdminApplications() {
                   {/* Applicant Info */}
                   <div className="grid gap-6 md:grid-cols-2">
                     <div className="space-y-4">
-                      <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                      <div className="p-4 rounded-xl bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                         <h3 className="text-lg font-semibold mb-3">Personal Information</h3>
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
@@ -788,7 +788,7 @@ export default function AdminApplications() {
                     <Button 
                       onClick={handleSaveNotes} 
                       disabled={savingNotes}
-                      className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white"
+                      className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white"
                     >
                       {savingNotes ? "Saving..." : "Save Notes & Rating"}
                     </Button>
@@ -810,7 +810,7 @@ function NavItem({ icon: Icon, label, to, active = false }) {
       to={to}
       className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
         active
-          ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+          ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
           : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
       }`}
     >
@@ -826,7 +826,7 @@ function StatCard({ label, value, icon: Icon, color }) {
     indigo: "from-indigo-500 to-indigo-600",
     amber: "from-amber-500 to-amber-600",
     blue: "from-blue-500 to-blue-600",
-    purple: "from-purple-500 to-purple-600",
+    blue: "from-blue-500 to-blue-600",
     emerald: "from-emerald-500 to-emerald-600",
     red: "from-red-500 to-red-600"
   };

@@ -58,22 +58,43 @@ function parseOptionalDate(value) {
 }
 
 function pickDefined(entries) {
-  return Object.fromEntries(
-    entries.filter(([, value]) => value !== undefined)
-  );
+  return Object.fromEntries(entries.filter(([, value]) => value !== undefined));
 }
 
 export function buildApplicantProfileData(body, files = {}) {
   const data = {};
 
+  // Handle education array from frontend
+  if (
+    body.education &&
+    Array.isArray(body.education) &&
+    body.education.length > 0
+  ) {
+    const edu = body.education[0]; // Use first education entry for now
+    if (edu.highestEducation !== undefined)
+      data.highestEducation =
+        edu.highestEducation === "" ? null : edu.highestEducation;
+    if (edu.university !== undefined)
+      data.university = edu.university === "" ? null : edu.university;
+    if (edu.college !== undefined)
+      data.college = edu.college === "" ? null : edu.college;
+    if (edu.fieldOfStudy !== undefined)
+      data.fieldOfStudy = edu.fieldOfStudy === "" ? null : edu.fieldOfStudy;
+    if (edu.graduationYear !== undefined)
+      data.graduationYear =
+        edu.graduationYear === "" ? null : parseOptionalInt(edu.graduationYear);
+  }
+
   for (const field of TEXT_FIELDS) {
-    if (body[field] !== undefined) {
+    if (body[field] !== undefined && !data[field]) {
+      // Skip if already set from education array
       data[field] = body[field] === "" ? null : body[field];
     }
   }
 
   if (body.dateOfBirth !== undefined) {
-    data.dateOfBirth = body.dateOfBirth === "" ? null : parseOptionalDate(body.dateOfBirth);
+    data.dateOfBirth =
+      body.dateOfBirth === "" ? null : parseOptionalDate(body.dateOfBirth);
   }
 
   for (const field of INT_FIELDS) {

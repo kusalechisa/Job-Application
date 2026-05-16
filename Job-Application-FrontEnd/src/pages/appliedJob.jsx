@@ -240,7 +240,7 @@ export default function AppliedJobList() {
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center">
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -262,7 +262,7 @@ export default function AppliedJobList() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
                     link.active
-                      ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+                      ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
                       : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
                   }`}
                 >
@@ -275,7 +275,7 @@ export default function AppliedJobList() {
           <div className="p-6 border-t border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
               <Avatar className="h-10 w-10">
-                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                   {getInitials(user?.name)}
                 </AvatarFallback>
               </Avatar>
@@ -337,7 +337,7 @@ export default function AppliedJobList() {
               label="Interview" 
               value={stats.interview} 
               icon={Video}
-              color="purple"
+              color="blue"
             />
             <StatCard 
               label="Accepted" 
@@ -435,7 +435,7 @@ export default function AppliedJobList() {
                 <Briefcase className="h-16 w-16 mx-auto text-slate-300 dark:text-slate-600 mb-4" />
                 <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-2">No applications found</h3>
                 <p className="text-slate-600 dark:text-slate-400 mb-6">You haven't applied for any jobs yet.</p>
-                <Button asChild className="bg-gradient-to-r from-indigo-500 to-purple-600">
+                <Button asChild className="bg-gradient-to-r from-indigo-500 to-blue-600">
                   <Link to="/applicant/jobs">Browse Jobs</Link>
                 </Button>
               </CardContent>
@@ -645,7 +645,7 @@ export default function AppliedJobList() {
           )}
 
           {/* Tips Card */}
-          <Card className="mt-6 overflow-hidden border-0 bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-xl">
+          <Card className="mt-6 overflow-hidden border-0 bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-xl">
             <CardContent className="p-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-3">
@@ -688,7 +688,7 @@ export default function AppliedJobList() {
     {selectedApplication && (
       <div className="space-y-6 p-4 sm:p-6">
         {/* Job Info Card - Responsive */}
-        <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 border-0">
+        <Card className="bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30 border-0">
           <CardContent className="p-4 sm:p-6">
             <h3 className="font-bold text-lg sm:text-xl text-slate-900 dark:text-slate-100 line-clamp-2">
               {selectedApplication.job?.title}
@@ -728,7 +728,7 @@ export default function AppliedJobList() {
                     <div 
                       className={`absolute left-5 top-10 w-0.5 h-full ${
                         step.completed 
-                          ? 'bg-gradient-to-b from-indigo-500 to-purple-600' 
+                          ? 'bg-gradient-to-b from-indigo-500 to-blue-600' 
                           : 'bg-slate-200 dark:bg-slate-700'
                       }`}
                       style={{ height: 'calc(100% - 20px)' }}
@@ -740,7 +740,7 @@ export default function AppliedJobList() {
                     <div className="flex-shrink-0">
                       <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center z-10 ${
                         step.completed 
-                          ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' 
+                          ? 'bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-lg' 
                           : 'bg-slate-200 dark:bg-slate-700 text-slate-400'
                       }`}>
                         <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -778,15 +778,15 @@ export default function AppliedJobList() {
         {selectedApplication.status === "interview" && (
           <div className="space-y-4">
             <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm sm:text-base">
-              <Video className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+              <Video className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
               Interview Details
             </h4>
-            <Card className="border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/30">
+            <Card className="border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-950/30">
               <CardContent className="p-4 sm:p-6 space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 text-sm">
                   <div className="flex items-center gap-3 flex-1">
-                    <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
-                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="font-medium text-slate-700 dark:text-slate-300 text-xs sm:text-sm">Scheduled Date</p>
@@ -796,8 +796,8 @@ export default function AppliedJobList() {
                     </div>
                   </div>
                   <div className="flex items-center gap-3 flex-1">
-                    <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
-                      <Video className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                    <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                      <Video className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
                     </div>
                     <div>
                       <p className="font-medium text-slate-700 dark:text-slate-300 text-xs sm:text-sm">Meeting Link</p>
@@ -894,7 +894,7 @@ export default function AppliedJobList() {
           {selectedApplication.status === "applied" && (
             <Button 
               onClick={() => handleUpdateResume(selectedApplication.id)}
-              className="w-full sm:w-auto order-1 sm:order-2 bg-gradient-to-r from-indigo-500 to-purple-600"
+              className="w-full sm:w-auto order-1 sm:order-2 bg-gradient-to-r from-indigo-500 to-blue-600"
             >
               <Download className="h-4 w-4 mr-2" />
               Update Resume
@@ -924,7 +924,7 @@ function StatCard({ label, value, icon: Icon, color }) {
   const colors = {
     indigo: "from-indigo-500 to-indigo-600",
     amber: "from-amber-500 to-amber-600",
-    purple: "from-purple-500 to-purple-600",
+    blue: "from-blue-500 to-blue-600",
     emerald: "from-emerald-500 to-emerald-600",
     blue: "from-blue-500 to-blue-600"
   };

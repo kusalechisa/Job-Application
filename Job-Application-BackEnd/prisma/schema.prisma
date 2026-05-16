@@ -60,6 +60,11 @@ model Applicant {
   portfolioUrl String?
   linkedinUrl String?
   githubUrl String?
+  highestEducation String?
+  university String?
+  college String?
+  fieldOfStudy String?
+  graduationYear Int?
 
   skills String[] @default([])
   languages String[] @default([])

@@ -302,7 +302,7 @@ export default function JobList() {
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center">
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -324,7 +324,7 @@ export default function JobList() {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
                     link.active
-                      ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+                      ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
                       : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
                   }`}
                 >
@@ -337,7 +337,7 @@ export default function JobList() {
           <div className="p-6 border-t border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
               <Avatar className="h-10 w-10">
-                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                   {getInitials(user?.name)}
                 </AvatarFallback>
               </Avatar>
@@ -400,7 +400,7 @@ export default function JobList() {
                 <div className="flex items-center gap-4">
                   <Progress value={profileCompletion} className="w-32 h-2" />
                   <Button size="sm" asChild className="bg-amber-600 hover:bg-amber-700">
-                    <Link to="/applicant/profile">Complete Profile</Link>
+                    <Link to="/profile">Complete Profile</Link>
                   </Button>
                 </div>
               </div>
@@ -598,7 +598,7 @@ export default function JobList() {
                       <div className="space-y-4">
                         {/* Match Percentage & Save Button */}
                         <div className="flex items-center justify-between">
-                          <Badge className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white gap-1">
+                          <Badge className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white gap-1">
                             <Zap className="h-3 w-3" />
                             {matchPercentage}% Match
                           </Badge>
@@ -649,7 +649,7 @@ export default function JobList() {
                         {/* Action Buttons */}
                         <div className="flex gap-2 pt-2">
                           <Button 
-                            className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg transition-all"
+                            className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:shadow-lg transition-all"
                             onClick={() => handleApply(job.id)}
                             disabled={profileCompletion < 70}
                           >
@@ -688,7 +688,7 @@ export default function JobList() {
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <Badge className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white gap-1">
+                            <Badge className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white gap-1">
                               <Zap className="h-3 w-3" />
                               {matchPercentage}% Match
                             </Badge>
@@ -725,7 +725,7 @@ export default function JobList() {
                           <Button 
                             onClick={() => handleApply(job.id)}
                             disabled={profileCompletion < 70}
-                            className="bg-gradient-to-r from-indigo-500 to-purple-600"
+                            className="bg-gradient-to-r from-indigo-500 to-blue-600"
                           >
                             {profileCompletion >= 70 ? 'Apply' : 'Complete Profile'}
                           </Button>

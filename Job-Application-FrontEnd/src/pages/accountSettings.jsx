@@ -232,7 +232,7 @@ export default function AccountSettings() {
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center">
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -253,7 +253,7 @@ export default function AccountSettings() {
                   to={link.href}
                   className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
                     link.active
-                      ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+                      ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
                       : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
                   }`}
                 >
@@ -266,7 +266,7 @@ export default function AccountSettings() {
           <div className="p-6 border-t border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
               <Avatar className="h-10 w-10">
-                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                   {getInitials(user?.name || "Admin")}
                 </AvatarFallback>
               </Avatar>
@@ -314,7 +314,7 @@ export default function AccountSettings() {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-3 px-5 py-3 rounded-xl transition-all ${
                       isActive
-                        ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg"
+                        ? "bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-lg"
                         : "bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:shadow-md border border-slate-200 dark:border-slate-700"
                     }`}
                   >
@@ -332,7 +332,7 @@ export default function AccountSettings() {
             {/* Profile Settings Tab */}
             {activeTab === "profile" && (
               <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl">
-                <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                   <CardTitle className="flex items-center gap-2">
                     <User className="h-5 w-5 text-indigo-500" />
                     Profile Settings
@@ -349,7 +349,7 @@ export default function AccountSettings() {
                         {profilePicture ? (
                           <AvatarImage src={profilePicture} alt="Profile" />
                         ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-3xl">
+                          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white text-3xl">
                             {getInitials(user?.name || "U")}
                           </AvatarFallback>
                         )}
@@ -421,7 +421,7 @@ export default function AccountSettings() {
                       <Button 
                         type="submit" 
                         disabled={savingProfile} 
-                        className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg transition-all rounded-xl px-6"
+                        className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg transition-all rounded-xl px-6"
                       >
                         {savingProfile ? (
                           <>
@@ -442,7 +442,7 @@ export default function AccountSettings() {
             {activeTab === "security" && (
               <div className="space-y-6">
                 <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl">
-                  <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                  <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                     <CardTitle className="flex items-center gap-2">
                       <Lock className="h-5 w-5 text-indigo-500" />
                       Change Password
@@ -522,7 +522,7 @@ export default function AccountSettings() {
                         <Button 
                           type="submit" 
                           disabled={savingPassword} 
-                          className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg transition-all rounded-xl px-6"
+                          className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg transition-all rounded-xl px-6"
                         >
                           {savingPassword ? (
                             <>
@@ -570,7 +570,7 @@ export default function AccountSettings() {
             {/* Notifications Tab */}
             {activeTab === "notifications" && (
               <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl">
-                <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                   <CardTitle className="flex items-center gap-2">
                     <Bell className="h-5 w-5 text-indigo-500" />
                     Notification Preferences
@@ -634,7 +634,7 @@ export default function AccountSettings() {
             {/* Appearance Tab */}
             {activeTab === "appearance" && (
               <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl">
-                <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                   <CardTitle className="flex items-center gap-2">
                     <Palette className="h-5 w-5 text-indigo-500" />
                     Appearance
@@ -716,7 +716,7 @@ export default function AccountSettings() {
             {/* Sessions Tab */}
             {activeTab === "sessions" && (
               <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl">
-                <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                       <CardTitle className="flex items-center gap-2">

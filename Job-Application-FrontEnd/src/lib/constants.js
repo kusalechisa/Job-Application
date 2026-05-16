@@ -3,7 +3,7 @@ export const APPLICATION_STATUSES = ["Applied", "Reviewed", "Interview", "Accept
 export const STATUS_STYLES = {
   Applied: "bg-sky-500/15 text-sky-700 dark:text-sky-300",
   Reviewed: "bg-amber-500/15 text-amber-700 dark:text-amber-300",
-  Interview: "bg-purple-500/15 text-purple-700 dark:text-purple-300",
+  Interview: "bg-blue-500/15 text-blue-700 dark:text-blue-300",
   Accepted: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
   Rejected: "bg-rose-500/15 text-rose-700 dark:text-rose-300",
 };

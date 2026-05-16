@@ -230,7 +230,7 @@ export default function AdminJobs() {
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center">
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -272,7 +272,7 @@ export default function AdminJobs() {
               </div>
               <Button 
                 onClick={openCreate} 
-                className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg transition-all"
+                className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg transition-all"
               >
                 <Plus className="mr-2 h-4 w-4" /> Post New Job
               </Button>
@@ -318,8 +318,8 @@ export default function AdminJobs() {
             
             <div className="rounded-2xl bg-white dark:bg-slate-900 p-6 shadow-lg border border-slate-200 dark:border-slate-700">
               <div className="flex items-center justify-between mb-4">
-                <div className="rounded-xl bg-purple-100 dark:bg-purple-900/30 p-3">
-                  <Users className="h-6 w-6 text-purple-600 dark:text-purple-400" />
+                <div className="rounded-xl bg-blue-100 dark:bg-blue-900/30 p-3">
+                  <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                 </div>
               </div>
               <p className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -801,7 +801,7 @@ export default function AdminJobs() {
                       <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>
                         Cancel
                       </Button>
-                      <Button type="submit" disabled={saving} className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                      <Button type="submit" disabled={saving} className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                         {saving ? "Saving..." : editingId ? "Update Job" : "Create Job"}
                       </Button>
                     </div>
@@ -823,7 +823,7 @@ function NavItem({ icon: Icon, label, to, active = false }) {
       to={to}
       className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
         active
-          ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+          ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
           : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
       }`}
     >

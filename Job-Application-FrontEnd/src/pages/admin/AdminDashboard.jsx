@@ -84,7 +84,7 @@ export default function AdminDashboard() {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
         <div className="text-center">
-          <div className="mb-4 h-16 w-16 animate-spin rounded-full border-4 border-purple-500 border-t-transparent mx-auto"></div>
+          <div className="mb-4 h-16 w-16 animate-spin rounded-full border-4 border-blue-500 border-t-transparent mx-auto"></div>
           <p className="text-slate-600 dark:text-slate-300 font-medium">Loading dashboard...</p>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default function AdminDashboard() {
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center">
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -154,7 +154,7 @@ export default function AdminDashboard() {
           )}
 
           {/* Welcome Section */}
-          <div className="mb-8 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 md:p-8 text-white">
+          <div className="mb-8 rounded-2xl bg-gradient-to-r from-indigo-500 via-blue-500 to-blue-500 p-6 md:p-8 text-white">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">
               <div>
                 <h1 className="text-2xl md:text-3xl font-bold mb-2">Welcome back, Admin! 👋</h1>
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
                   <Download className="h-4 w-4" />
                   Export Report
                 </button>
-                <button className="px-4 py-2 bg-white rounded-xl text-purple-600 hover:shadow-lg transition-all flex items-center gap-2">
+                <button className="px-4 py-2 bg-white rounded-xl text-blue-600 hover:shadow-lg transition-all flex items-center gap-2">
                   <Settings className="h-4 w-4" />
                   Settings
                 </button>
@@ -187,7 +187,7 @@ export default function AdminDashboard() {
               value={dashboardData?.totalApplicants ?? 0}
               icon={Users}
               trend="+23%"
-              color="purple"
+              color="blue"
             />
             <StatCard
               title="Applications Today"
@@ -261,7 +261,7 @@ export default function AdminDashboard() {
             <Card className="group overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl hover:shadow-2xl transition-all duration-300">
               <CardHeader className="border-b border-slate-200 dark:border-slate-700">
                 <CardTitle className="flex items-center gap-2">
-                  <Briefcase className="h-5 w-5 text-purple-500" />
+                  <Briefcase className="h-5 w-5 text-blue-500" />
                   Job Postings by Month
                 </CardTitle>
               </CardHeader>
@@ -326,7 +326,7 @@ export default function AdminDashboard() {
             </Card>
 
             {/* Hiring Rate Card */}
-            <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-xl">
+            <Card className="overflow-hidden border-0 bg-gradient-to-br from-indigo-500 to-blue-600 text-white shadow-xl">
               <CardContent className="pt-8 pb-8">
                 <div className="text-center">
                   <div className="inline-flex rounded-full bg-white/20 p-4 mb-4">
@@ -425,14 +425,14 @@ export default function AdminDashboard() {
                   <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-blue-500" />
                 </Link>
                 
-                <Link to="/admin/applications" className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 p-4 hover:shadow-md transition-all group">
+                <Link to="/admin/applications" className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-blue-950/30 p-4 hover:shadow-md transition-all group">
                   <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-purple-500 p-2 text-white group-hover:scale-110 transition-transform">
+                    <div className="rounded-lg bg-blue-500 p-2 text-white group-hover:scale-110 transition-transform">
                       <Users className="h-4 w-4" />
                     </div>
                     <span className="font-medium text-slate-900 dark:text-slate-100">Review Applications</span>
                   </div>
-                  <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-purple-500" />
+                  <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-blue-500" />
                 </Link>
                 
                 <Link to="/admin/stats" className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 p-4 hover:shadow-md transition-all group">
@@ -473,7 +473,7 @@ export default function AdminDashboard() {
                   {[
                     { icon: FileText, color: "blue", title: "New application received", desc: "John Doe applied for Senior Developer", time: "5 minutes ago" },
                     { icon: CheckCircle, color: "green", title: "Candidate accepted", desc: "Jane Smith was accepted for Frontend Developer", time: "1 hour ago" },
-                    { icon: Briefcase, color: "purple", title: "New job posted", desc: "Product Manager position was posted", time: "2 hours ago" },
+                    { icon: Briefcase, color: "blue", title: "New job posted", desc: "Product Manager position was posted", time: "2 hours ago" },
                     { icon: Calendar, color: "amber", title: "Interview scheduled", desc: "Interview with Mike Johnson scheduled", time: "3 hours ago" },
                   ].map((activity, idx) => (
                     <div key={idx} className="flex items-start gap-4 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-all group">
@@ -506,8 +506,8 @@ export default function AdminDashboard() {
                     <p className="text-2xl font-bold text-blue-600">85%</p>
                     <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Response Rate</p>
                   </div>
-                  <div className="text-center p-4 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30">
-                    <p className="text-2xl font-bold text-purple-600">24h</p>
+                  <div className="text-center p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-50 dark:from-blue-950/30 dark:to-blue-950/30">
+                    <p className="text-2xl font-bold text-blue-600">24h</p>
                     <p className="text-xs text-slate-600 dark:text-slate-400 mt-1">Avg. Response Time</p>
                   </div>
                   <div className="text-center p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30">
@@ -535,7 +535,7 @@ function NavItem({ icon: Icon, label, active = false }) {
       to="#"
       className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
         active
-          ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+          ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
           : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
       }`}
     >

@@ -260,7 +260,7 @@ export default function ApplicantProfile() {
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center">
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -285,7 +285,7 @@ export default function ApplicantProfile() {
           <div className="p-6 border-t border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
               <Avatar className="h-10 w-10">
-                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                   {getInitials()}
                 </AvatarFallback>
               </Avatar>
@@ -356,7 +356,7 @@ export default function ApplicantProfile() {
                         {currentProfilePicture ? (
                           <AvatarImage src={currentProfilePicture} alt="Profile" />
                         ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white text-3xl">
+                          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white text-3xl">
                             {getInitials()}
                           </AvatarFallback>
                         )}
@@ -390,7 +390,7 @@ export default function ApplicantProfile() {
                           onClick={() => setActiveSection(link.id)}
                           className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
                             activeSection === link.id
-                              ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+                              ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
                               : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
                           }`}
                         >
@@ -410,7 +410,7 @@ export default function ApplicantProfile() {
                 {/* Personal Information Section */}
                 {activeSection === "personal" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                       <SectionTitle icon={User}>Personal Information</SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
@@ -511,7 +511,7 @@ export default function ApplicantProfile() {
                 {/* Contact Information Section */}
                 {activeSection === "contact" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                       <SectionTitle icon={Phone}>Contact Information</SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
@@ -604,7 +604,7 @@ export default function ApplicantProfile() {
                 {/* Professional Information Section */}
                 {activeSection === "professional" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                       <SectionTitle icon={Briefcase}>Professional Information</SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
@@ -705,7 +705,7 @@ export default function ApplicantProfile() {
                 {/* Education Information Section */}
                 {activeSection === "education" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                       <SectionTitle icon={GraduationCap}>Education Information</SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
@@ -806,7 +806,7 @@ export default function ApplicantProfile() {
                 {/* Skills Information Section */}
                 {activeSection === "skills" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                       <SectionTitle icon={Code}>Skills Information</SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
@@ -890,7 +890,7 @@ export default function ApplicantProfile() {
                 {/* Documents Section */}
                 {activeSection === "documents" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30">
+                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
                       <SectionTitle icon={FileText}>Application Documents</SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
@@ -929,7 +929,7 @@ export default function ApplicantProfile() {
                   <Button 
                     type="submit" 
                     disabled={saving} 
-                    className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white hover:shadow-lg transition-all rounded-xl px-8 py-2 text-lg"
+                    className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg transition-all rounded-xl px-8 py-2 text-lg"
                   >
                     {saving ? (
                       <>
@@ -960,7 +960,7 @@ function NavItem({ icon: Icon, label, to, active = false }) {
       to={to}
       className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
         active
-          ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+          ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
           : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
       }`}
     >

@@ -23,7 +23,10 @@ const maskDatabaseUrl = (connectionString) => {
     if (url.password) url.password = "*****";
     return url.toString();
   } catch {
-    return connectionString.replace(/(postgres:\/\/[^:]+:)([^@]+)(@.+)/, "$1*****$3");
+    return connectionString.replace(
+      /(postgres:\/\/[^:]+:)([^@]+)(@.+)/,
+      "$1*****$3",
+    );
   }
 };
 

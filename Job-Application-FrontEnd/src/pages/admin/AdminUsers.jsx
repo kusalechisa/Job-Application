@@ -324,7 +324,7 @@ export default function AdminUsers() {
 
   const getRoleColor = (role) => {
     return role === "Admin" 
-      ? "bg-gradient-to-r from-purple-500 to-pink-500" 
+      ? "bg-gradient-to-r from-blue-500 to-blue-500" 
       : "bg-gradient-to-r from-blue-500 to-cyan-500";
   };
 
@@ -371,7 +371,7 @@ export default function AdminUsers() {
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 flex items-center justify-center">
+                <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-indigo-500 to-blue-600 flex items-center justify-center">
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -431,7 +431,7 @@ export default function AdminUsers() {
           {/* Stats Overview */}
           <div className="mb-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             <StatCard label="Total Users" value={stats.total} icon={Users} color="indigo" />
-            <StatCard label="Admins" value={stats.admins} icon={Shield} color="purple" />
+            <StatCard label="Admins" value={stats.admins} icon={Shield} color="blue" />
             <StatCard label="Applicants" value={stats.applicants} icon={User} color="blue" />
             <StatCard label="Active" value={stats.active} icon={CheckCircle} color="emerald" />
             <StatCard label="Suspended" value={stats.suspended} icon={Ban} color="amber" />
@@ -471,7 +471,7 @@ export default function AdminUsers() {
                     <Upload className="h-4 w-4" />
                     Import
                   </Button>
-                  <Button onClick={openCreate} className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white gap-2">
+                  <Button onClick={openCreate} className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white gap-2">
                     <Plus className="h-4 w-4" />
                     Add User
                   </Button>
@@ -607,7 +607,7 @@ export default function AdminUsers() {
                               <div className="flex items-center gap-3">
                                 <Avatar className="h-10 w-10 ring-2 ring-slate-200 dark:ring-slate-700">
                                   <AvatarImage src={user.avatar} alt={user.name} />
-                                  <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                                  <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                                     {getInitials(user.name)}
                                   </AvatarFallback>
                                 </Avatar>
@@ -684,7 +684,7 @@ export default function AdminUsers() {
                     <div key={user.id} className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4 hover:shadow-lg transition-all">
                       <div className="flex items-center gap-3 mb-3">
                         <Avatar className="h-12 w-12 ring-2 ring-slate-200 dark:ring-slate-700">
-                          <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-lg">
+                          <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-lg">
                             {getInitials(user.name)}
                           </AvatarFallback>
                         </Avatar>
@@ -758,7 +758,7 @@ export default function AdminUsers() {
           {modalOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto">
               <Card className="w-full max-w-md">
-                <CardHeader className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                <CardHeader className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                   <CardTitle className="text-white">{editingId ? "Edit User" : "Create New User"}</CardTitle>
                 </CardHeader>
                 <CardContent className="p-6">
@@ -820,7 +820,7 @@ export default function AdminUsers() {
                       <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>
                         Cancel
                       </Button>
-                      <Button type="submit" disabled={saving} className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
+                      <Button type="submit" disabled={saving} className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
                         {saving ? "Saving..." : editingId ? "Update User" : "Create User"}
                       </Button>
                     </div>
@@ -1053,7 +1053,7 @@ function NavItem({ icon: Icon, label, to, active = false }) {
       to={to}
       className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
         active
-          ? "bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-600 dark:from-indigo-950/50 dark:to-purple-950/50 dark:text-indigo-400"
+          ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
           : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
       }`}
     >
@@ -1067,7 +1067,7 @@ function NavItem({ icon: Icon, label, to, active = false }) {
 function StatCard({ label, value, icon: Icon, color }) {
   const colors = {
     indigo: "from-indigo-500 to-indigo-600",
-    purple: "from-purple-500 to-purple-600",
+    blue: "from-blue-500 to-blue-600",
     blue: "from-blue-500 to-blue-600",
     emerald: "from-emerald-500 to-emerald-600",
     amber: "from-amber-500 to-amber-600",

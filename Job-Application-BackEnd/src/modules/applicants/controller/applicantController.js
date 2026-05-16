@@ -26,24 +26,37 @@ const upload = multer({
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-      cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
+      cb(
+        null,
+        file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname),
+      );
     },
   }),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     if (file.fieldname === "profilePicture") {
       const allowedTypes = /jpeg|jpg|png|gif|webp/;
-      const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+      const extname = allowedTypes.test(
+        path.extname(file.originalname).toLowerCase(),
+      );
       const mimetype = allowedTypes.test(file.mimetype);
       if (mimetype && extname) return cb(null, true);
-      return cb(new Error("Only JPEG, PNG, GIF, and WEBP images are allowed for profile pictures"));
+      return cb(
+        new Error(
+          "Only JPEG, PNG, GIF, and WEBP images are allowed for profile pictures",
+        ),
+      );
     }
 
     const allowedTypes = /pdf|doc|docx|txt/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const extname = allowedTypes.test(
+      path.extname(file.originalname).toLowerCase(),
+    );
     const mimetype = allowedTypes.test(file.mimetype);
     if (mimetype && extname) return cb(null, true);
-    return cb(new Error("Only PDF, DOC, DOCX, and TXT files are allowed for resumes"));
+    return cb(
+      new Error("Only PDF, DOC, DOCX, and TXT files are allowed for resumes"),
+    );
   },
 });
 
@@ -132,13 +145,15 @@ export const getApplicantProfile = async (req, res) => {
         account: {
           select: { name: true, email: true },
         },
+        education: true,
       },
     });
 
     if (!profile) {
       return res.status(404).json({
         status: "error",
-        message: "Applicant profile not found. Please create your profile first.",
+        message:
+          "Applicant profile not found. Please create your profile first.",
         code: 404,
         errors: ["Profile not found"],
       });
@@ -186,7 +201,8 @@ export const updateApplicantProfile = [
       if (!profile) {
         return res.status(404).json({
           status: "error",
-          message: "Applicant profile not found. Please create your profile first.",
+          message:
+            "Applicant profile not found. Please create your profile first.",
           code: 404,
           errors: ["Profile not found"],
         });
@@ -241,7 +257,8 @@ export const applyForJob = async (req, res) => {
     if (!applicant) {
       return res.status(404).json({
         status: "error",
-        message: "Applicant profile not found. Please create your profile first.",
+        message:
+          "Applicant profile not found. Please create your profile first.",
         code: 404,
         errors: ["Applicant profile not found"],
       });
@@ -250,7 +267,8 @@ export const applyForJob = async (req, res) => {
     if (!applicant.resume) {
       return res.status(400).json({
         status: "error",
-        message: "Resume not found in profile. Please update your profile with a resume.",
+        message:
+          "Resume not found in profile. Please update your profile with a resume.",
         code: 400,
         errors: ["Resume required"],
       });
