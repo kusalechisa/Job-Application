@@ -136,58 +136,58 @@ export default function AppliedJobList() {
   };
 
   const getApplicationTimeline = (application) => {
-    const timeline = [
-      {
-        status: "Application Submitted",
-        date: application.appliedAt || application.createdAt,
-        completed: true,
-        description: "Your application has been successfully submitted",
-        icon: FileText
-      }
-    ];
-
-    if (application.status === "reviewed" || application.status === "interview" || application.status === "accepted" || application.status === "rejected") {
-      timeline.push({
-        status: "Application Reviewed",
-        date: application.updatedAt,
-        completed: true,
-        description: "Hiring team has reviewed your application",
-        icon: Eye
-      });
+  const timeline = [
+    {
+      status: "Application Submitted",
+      date: application.appliedAt || application.createdAt,
+      completed: true,
+      description: "Your application has been successfully submitted",
+      icon: FileText
     }
+  ];
 
-    if (application.status === "interview") {
-      timeline.push({
-        status: "Interview Scheduled",
-        date: application.updatedAt,
-        completed: true,
-        description: "Interview has been scheduled with the hiring team",
-        icon: Video
-      });
-    }
+  if (application.status === "reviewed" || application.status === "interview" || application.status === "accepted" || application.status === "rejected") {
+    timeline.push({
+      status: "Application Reviewed",
+      date: application.updatedAt,
+      completed: true,
+      description: "Hiring team has reviewed your application",
+      icon: Eye
+    });
+  }
 
-    if (application.status === "accepted") {
-      timeline.push({
-        status: "Offer Extended",
-        date: application.updatedAt,
-        completed: true,
-        description: "Congratulations! You've received a job offer",
-        icon: Award
-      });
-    }
+  if (application.status === "interview") {
+    timeline.push({
+      status: "Interview Scheduled",
+      date: application.updatedAt,
+      completed: true,
+      description: "Interview has been scheduled with the hiring team",
+      icon: Video
+    });
+  }
 
-    if (application.status === "rejected") {
-      timeline.push({
-        status: "Application Not Selected",
-        date: application.updatedAt,
-        completed: true,
-        description: "Application was not selected for this position",
-        icon: ThumbsDown
-      });
-    }
+  if (application.status === "accepted") {
+    timeline.push({
+      status: "Offer Extended",
+      date: application.updatedAt,
+      completed: true,
+      description: "Congratulations! You've received a job offer",
+      icon: Award
+    });
+  }
 
-    return timeline;
-  };
+  if (application.status === "rejected") {
+    timeline.push({
+      status: "Application Not Selected",
+      date: application.updatedAt,
+      completed: true,
+      description: "Application was not selected for this position",
+      icon: ThumbsDown
+    });
+  }
+
+  return timeline;
+};
 
   const filteredApplications = statusFilter === "all" 
     ? applications 
@@ -667,140 +667,254 @@ export default function AppliedJobList() {
         </div>
       </div>
 
-      {/* Timeline Sheet */}
-      <Sheet open={timelineOpen} onOpenChange={setTimelineOpen}>
-        <SheetContent className="w-full sm:max-w-2xl max-h-screen overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle className="text-2xl font-bold">Application Timeline</SheetTitle>
-          </SheetHeader>
-          {selectedApplication && (
-            <div className="space-y-6 mt-6">
-              {/* Job Info Card */}
-              <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 border-0">
-                <CardContent className="p-6">
-                  <h3 className="font-bold text-xl text-slate-900 dark:text-slate-100">{selectedApplication.job?.title}</h3>
-                  <div className="flex flex-wrap items-center gap-3 mt-2 text-sm text-slate-600 dark:text-slate-400">
-                    <div className="flex items-center gap-1">
-                      <Building2 className="h-4 w-4" />
-                      <span>{selectedApplication.job?.company}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      <span>{selectedApplication.job?.location}</span>
-                    </div>
-                  </div>
-                  <div className="mt-4">
-                    <StatusBadge status={selectedApplication.status} />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Progress Timeline */}
-              <div className="space-y-4">
-                <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                  <Clock className="h-5 w-5 text-indigo-500" />
-                  Application Progress
-                </h4>
-                <div className="space-y-0">
-                  {getApplicationTimeline(selectedApplication).map((step, index) => {
-                    const IconComponent = step.icon;
-                    const isLast = index === getApplicationTimeline(selectedApplication).length - 1;
-                    return (
-                      <div key={index} className="relative">
-                        <div className="flex gap-4 pb-8">
-                          <div className="flex flex-col items-center">
-                            <div className={`h-10 w-10 rounded-full flex items-center justify-center z-10 ${
-                              step.completed 
-                                ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white' 
-                                : 'bg-slate-200 dark:bg-slate-700 text-slate-400'
-                            }`}>
-                              <IconComponent className="h-5 w-5" />
-                            </div>
-                            {!isLast && (
-                              <div className={`w-0.5 h-full mt-2 ${
-                                step.completed ? 'bg-indigo-500' : 'bg-slate-200 dark:bg-slate-700'
-                              }`} />
-                            )}
-                          </div>
-                          <div className="flex-1 pt-1">
-                            <div className="font-semibold text-slate-900 dark:text-slate-100">{step.status}</div>
-                            <div className="text-sm text-slate-600 dark:text-slate-400 mt-1">{step.description}</div>
-                            <div className="text-xs text-slate-500 dark:text-slate-500 mt-2 flex items-center gap-1">
-                              <Calendar className="h-3 w-3" />
-                              {step.date && new Date(step.date).toLocaleString()}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+      {/* Timeline Sheet - Fully Responsive */}
+<Sheet open={timelineOpen} onOpenChange={setTimelineOpen}>
+  <SheetContent className="w-full sm:max-w-2xl max-h-screen overflow-y-auto p-0">
+    <SheetHeader className="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700 p-4">
+      <SheetTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+        <Clock className="h-5 w-5 text-indigo-500" />
+        Application Timeline
+      </SheetTitle>
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        onClick={() => setTimelineOpen(false)}
+        className="absolute right-4 top-4"
+      >
+        <X className="h-4 w-4" />
+      </Button>
+    </SheetHeader>
+    
+    {selectedApplication && (
+      <div className="space-y-6 p-4 sm:p-6">
+        {/* Job Info Card - Responsive */}
+        <Card className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 border-0">
+          <CardContent className="p-4 sm:p-6">
+            <h3 className="font-bold text-lg sm:text-xl text-slate-900 dark:text-slate-100 line-clamp-2">
+              {selectedApplication.job?.title}
+            </h3>
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 text-sm text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-1">
+                <Building2 className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm">{selectedApplication.job?.company}</span>
               </div>
-
-              {/* Interview Details (if applicable) */}
-              {selectedApplication.status === "interview" && (
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <Video className="h-5 w-5 text-purple-500" />
-                    Interview Details
-                  </h4>
-                  <Card className="border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/30">
-                    <CardContent className="p-6 space-y-4">
-                      <div className="flex items-center gap-3 text-sm">
-                        <Calendar className="h-5 w-5 text-slate-500" />
-                        <div>
-                          <p className="font-medium text-slate-700 dark:text-slate-300">Scheduled Date</p>
-                          <p className="text-slate-600 dark:text-slate-400">
-                            {selectedApplication.updatedAt ? new Date(selectedApplication.updatedAt).toLocaleString() : "To be scheduled"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-3 text-sm">
-                        <Video className="h-5 w-5 text-slate-500" />
-                        <div>
-                          <p className="font-medium text-slate-700 dark:text-slate-300">Meeting Link</p>
-                          <p className="text-slate-600 dark:text-slate-400">Will be shared via email</p>
-                        </div>
-                      </div>
-                      <div className="mt-4 p-4 bg-white dark:bg-slate-800 rounded-lg">
-                        <p className="font-medium text-slate-900 dark:text-slate-100 mb-2">Preparation Tips:</p>
-                        <ul className="text-sm text-slate-600 dark:text-slate-400 space-y-1 list-disc list-inside">
-                          <li>Research the company and role thoroughly</li>
-                          <li>Prepare examples of your past work and achievements</li>
-                          <li>Have your resume and portfolio ready for reference</li>
-                          <li>Test your camera and microphone beforehand</li>
-                          <li>Join the meeting 5 minutes early</li>
-                        </ul>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
-
-              {/* Offer Details (if applicable) */}
-              {selectedApplication.status === "accepted" && (
-                <div className="space-y-4">
-                  <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-                    <Award className="h-5 w-5 text-emerald-500" />
-                    Offer Details
-                  </h4>
-                  <Card className="border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30">
-                    <CardContent className="p-6">
-                      <div className="text-center">
-                        <CheckCircle className="h-16 w-16 text-emerald-500 mx-auto mb-4" />
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Congratulations!</h3>
-                        <p className="text-slate-600 dark:text-slate-400">
-                          You've received a job offer! The hiring team will contact you shortly with the next steps.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              )}
+              <span className="hidden sm:inline">•</span>
+              <div className="flex items-center gap-1">
+                <MapPin className="h-3 w-3 sm:h-4 sm:w-4" />
+                <span className="text-xs sm:text-sm">{selectedApplication.job?.location || "Remote"}</span>
+              </div>
             </div>
+            <div className="mt-3 sm:mt-4">
+              <StatusBadge status={selectedApplication.status} />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Progress Timeline - Responsive Vertical Timeline */}
+        <div className="space-y-4">
+          <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm sm:text-base">
+            <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500" />
+            Application Progress
+          </h4>
+          
+          <div className="relative">
+            {getApplicationTimeline(selectedApplication).map((step, index) => {
+              const IconComponent = step.icon;
+              const isLast = index === getApplicationTimeline(selectedApplication).length - 1;
+              return (
+                <div key={index} className="relative mb-6 sm:mb-8">
+                  {/* Timeline Line */}
+                  {!isLast && (
+                    <div 
+                      className={`absolute left-5 top-10 w-0.5 h-full ${
+                        step.completed 
+                          ? 'bg-gradient-to-b from-indigo-500 to-purple-600' 
+                          : 'bg-slate-200 dark:bg-slate-700'
+                      }`}
+                      style={{ height: 'calc(100% - 20px)' }}
+                    />
+                  )}
+                  
+                  {/* Timeline Node */}
+                  <div className="flex gap-3 sm:gap-4">
+                    <div className="flex-shrink-0">
+                      <div className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full flex items-center justify-center z-10 ${
+                        step.completed 
+                          ? 'bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg' 
+                          : 'bg-slate-200 dark:bg-slate-700 text-slate-400'
+                      }`}>
+                        <IconComponent className="h-4 w-4 sm:h-5 sm:w-5" />
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 pt-1 pb-4 sm:pb-6">
+                      <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm sm:text-base">
+                        {step.status}
+                      </div>
+                      <div className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1">
+                        {step.description}
+                      </div>
+                      <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs text-slate-500 dark:text-slate-500 mt-2">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-3 w-3" />
+                          <span>{step.date && new Date(step.date).toLocaleDateString()}</span>
+                        </div>
+                        {step.date && (
+                          <div className="flex items-center gap-1">
+                            <Clock className="h-3 w-3" />
+                            <span>{new Date(step.date).toLocaleTimeString()}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Interview Details (if applicable) - Responsive */}
+        {selectedApplication.status === "interview" && (
+          <div className="space-y-4">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm sm:text-base">
+              <Video className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+              Interview Details
+            </h4>
+            <Card className="border-purple-200 dark:border-purple-800 bg-purple-50/50 dark:bg-purple-950/30">
+              <CardContent className="p-4 sm:p-6 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 text-sm">
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+                      <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-700 dark:text-slate-300 text-xs sm:text-sm">Scheduled Date</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm">
+                        {selectedApplication.updatedAt ? new Date(selectedApplication.updatedAt).toLocaleString() : "To be scheduled"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 flex-1">
+                    <div className="p-2 bg-purple-100 dark:bg-purple-900/50 rounded-lg">
+                      <Video className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-slate-700 dark:text-slate-300 text-xs sm:text-sm">Meeting Link</p>
+                      <p className="text-slate-600 dark:text-slate-400 text-xs sm:text-sm">Will be shared via email</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-4 p-3 sm:p-4 bg-white dark:bg-slate-800 rounded-lg">
+                  <p className="font-medium text-slate-900 dark:text-slate-100 mb-2 text-sm sm:text-base">Preparation Tips:</p>
+                  <ul className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 space-y-1 sm:space-y-2 list-disc list-inside">
+                    <li>Research the company and role thoroughly</li>
+                    <li>Prepare examples of your past work and achievements</li>
+                    <li>Have your resume and portfolio ready for reference</li>
+                    <li>Test your camera and microphone beforehand</li>
+                    <li>Join the meeting 5 minutes early</li>
+                  </ul>
+                </div>
+                
+                <div className="p-3 sm:p-4 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 dark:border-amber-800">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-400">
+                      Make sure to check your email regularly for the meeting link and any additional instructions from the recruiter.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Offer Details (if applicable) - Responsive */}
+        {selectedApplication.status === "accepted" && (
+          <div className="space-y-4">
+            <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm sm:text-base">
+              <Award className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
+              Offer Details
+            </h4>
+            <Card className="border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/30">
+              <CardContent className="p-6 sm:p-8">
+                <div className="text-center">
+                  <div className="inline-flex p-3 bg-emerald-100 dark:bg-emerald-900/50 rounded-full mb-4">
+                    <CheckCircle className="h-10 w-10 sm:h-12 sm:w-12 text-emerald-500" />
+                  </div>
+                  <h3 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
+                    Congratulations! 🎉
+                  </h3>
+                  <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                    You've received a job offer! The hiring team will contact you shortly with the next steps.
+                  </p>
+                  <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-white dark:bg-slate-800 rounded-lg">
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                      <strong className="text-slate-900 dark:text-white">Next Steps:</strong> Review the offer details, complete any required paperwork, and prepare for onboarding.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Rejection Details (if applicable) - Responsive */}
+        {selectedApplication.status === "rejected" && (
+          <div className="space-y-4">
+            <Card className="border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/30">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex items-start gap-3">
+                  <ThumbsDown className="h-5 w-5 text-red-500 flex-shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-semibold text-slate-900 dark:text-slate-100 mb-1">Application Update</h4>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">
+                      While this application wasn't selected, don't get discouraged! Keep applying to other opportunities that match your skills.
+                    </p>
+                    <Button asChild variant="outline" size="sm" className="mt-3">
+                      <Link to="/applicant/jobs">Browse More Jobs</Link>
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Action Buttons - Responsive */}
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-200 dark:border-slate-700">
+          <Button 
+            variant="outline" 
+            onClick={() => setTimelineOpen(false)}
+            className="w-full sm:w-auto order-2 sm:order-1"
+          >
+            Close
+          </Button>
+          {selectedApplication.status === "applied" && (
+            <Button 
+              onClick={() => handleUpdateResume(selectedApplication.id)}
+              className="w-full sm:w-auto order-1 sm:order-2 bg-gradient-to-r from-indigo-500 to-purple-600"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Update Resume
+            </Button>
           )}
-        </SheetContent>
-      </Sheet>
+          {selectedApplication.status !== "accepted" && selectedApplication.status !== "rejected" && (
+            <Button 
+              variant="destructive"
+              onClick={() => handleWithdraw(selectedApplication.id)}
+              className="w-full sm:w-auto order-3"
+            >
+              <X className="h-4 w-4 mr-2" />
+              Withdraw Application
+            </Button>
+          )}
+        </div>
+      </div>
+    )}
+  </SheetContent>
+</Sheet>
     </div>
   );
 }
