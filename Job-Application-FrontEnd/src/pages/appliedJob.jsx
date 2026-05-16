@@ -17,7 +17,7 @@ export default function AppliedJobList() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const itemsPerPage = 5;
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const navigate = useNavigate();
 
   const loadApplications = async () => {
@@ -38,8 +38,12 @@ export default function AppliedJobList() {
       navigate("/login");
       return;
     }
+    if (user?.role === "Admin") {
+      navigate("/admin/applications");
+      return;
+    }
     loadApplications();
-  }, [token]);
+  }, [token, user]);
 
   const handleUpdateResume = async (applicationId) => {
     const resume = window.prompt("Enter updated resume text or file path:");
