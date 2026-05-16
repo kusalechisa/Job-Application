@@ -13,3 +13,5 @@ export const updateApplication = (applicationId, data) =>
   api.put(`/jobs/applications/${applicationId}`, data);
 export const downloadApplicantsExcel = (jobId) =>
   api.get(`/jobs/${jobId}/applications/download`, { responseType: "blob" });
+export const getAdvancedAnalytics = () => api.get("/jobs/analytics");
+export const getDashboardData = () => api.get("/jobs/dashboard");

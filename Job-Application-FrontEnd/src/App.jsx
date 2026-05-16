@@ -18,6 +18,7 @@ import AdminApplications from "./pages/admin/AdminApplications";
 import AdminApplicationDetail from "./pages/admin/AdminApplicationDetail";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminStats from "./pages/admin/AdminStats";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import { AuthProvider } from "./context/AuthContext";
 
 export default function App() {
@@ -59,6 +60,7 @@ export default function App() {
             <Route path="/admin/applications/:applicationId" element={<AdminApplicationDetail />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/stats" element={<AdminStats />} />
+            <Route path="/admin/analytics" element={<AdminAnalytics />} />
           </Route>
 
           <Route
