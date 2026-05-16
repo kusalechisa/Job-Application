@@ -318,6 +318,83 @@ export const getAdvancedAnalytics = async (req, res) => {
       count,
     }));
 
+    // 6. Hires per month (accepted applications per month)
+    const hiresPerMonth = {};
+    for (let i = 11; i >= 0; i--) {
+      const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+      hiresPerMonth[key] = 0;
+    }
+
+    applications.forEach((app) => {
+      if (app.status === "Accepted") {
+        const date = new Date(app.appliedAt);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+        if (hiresPerMonth.hasOwnProperty(key)) {
+          hiresPerMonth[key]++;
+        }
+      }
+    });
+
+    const hiresPerMonthData = Object.entries(hiresPerMonth).map(([month, count]) => ({
+      month,
+      count,
+    }));
+
+    // 7. Active jobs (jobs posted in last 30 days)
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+    const activeJobs = jobs.filter((job) => new Date(job.createdAt) >= thirtyDaysAgo).length;
+
+    // 8. Education levels distribution
+    const educationLevels = {};
+    applicants.forEach((applicant) => {
+      const education = applicant.highestEducation || "Not Specified";
+      if (!educationLevels[education]) {
+        educationLevels[education] = 0;
+      }
+      educationLevels[education]++;
+    });
+
+    const educationLevelsData = Object.entries(educationLevels).map(([education, count]) => ({
+      education,
+      count,
+    })).sort((a, b) => b.count - a.count);
+
+    // 9. Top skills
+    const skillCounts = {};
+    applicants.forEach((applicant) => {
+      const skills = applicant.skills || [];
+      skills.forEach((skill) => {
+        const normalizedSkill = skill.trim();
+        if (normalizedSkill) {
+          if (!skillCounts[normalizedSkill]) {
+            skillCounts[normalizedSkill] = 0;
+          }
+          skillCounts[normalizedSkill]++;
+        }
+      });
+    });
+
+    const topSkills = Object.entries(skillCounts)
+      .map(([skill, count]) => ({ skill, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 15);
+
+    // 10. Applicant locations
+    const applicantLocations = {};
+    applicants.forEach((applicant) => {
+      const location = applicant.city || applicant.region || "Not Specified";
+      if (!applicantLocations[location]) {
+        applicantLocations[location] = 0;
+      }
+      applicantLocations[location]++;
+    });
+
+    const applicantLocationsData = Object.entries(applicantLocations)
+      .map(([location, count]) => ({ location, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+
     return res.status(200).json({
       status: "success",
       message: "Analytics fetched successfully",
@@ -333,6 +410,11 @@ export const getAdvancedAnalytics = async (req, res) => {
         totalApplications,
         totalJobs: jobs.length,
         totalApplicants: applicants.length,
+        hiresPerMonth: hiresPerMonthData,
+        activeJobs,
+        educationLevels: educationLevelsData,
+        topSkills,
+        applicantLocations: applicantLocationsData,
       },
     });
   } catch (error) {

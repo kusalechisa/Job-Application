@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Briefcase, Users, FileText, BarChart3, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Briefcase, Users, FileText, BarChart3, Settings, LogOut, TrendingUp } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const menuItems = [
@@ -8,6 +8,7 @@ const menuItems = [
   { icon: FileText, label: "Applications", path: "/admin/applications" },
   { icon: Users, label: "Users", path: "/admin/users" },
   { icon: BarChart3, label: "Analytics", path: "/admin/analytics" },
+  { icon: TrendingUp, label: "Statistics", path: "/admin/statistics" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
