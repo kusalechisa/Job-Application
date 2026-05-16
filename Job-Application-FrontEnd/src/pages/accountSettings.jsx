@@ -298,13 +298,7 @@ export default function AccountSettings() {
                   Manage your account settings and preferences
                 </p>
               </div>
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
-                <User className="h-8 w-8" />
-                <div>
-                  <p className="text-sm opacity-90">Logged in as</p>
-                  <p className="font-semibold">{user?.name}</p>
-                </div>
-              </div>
+               
             </div>
           </div>
 
