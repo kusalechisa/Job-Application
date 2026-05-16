@@ -437,7 +437,7 @@ export default function AdminDashboard() {
                   <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-purple-500" />
                 </Link>
                 
-                <Link to="/admin/analytics" className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 p-4 hover:shadow-md transition-all group">
+                <Link to="/admin/stats" className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-700 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 p-4 hover:shadow-md transition-all group">
                   <div className="flex items-center gap-3">
                     <div className="rounded-lg bg-emerald-500 p-2 text-white group-hover:scale-110 transition-transform">
                       <BarChart3 className="h-4 w-4" />
