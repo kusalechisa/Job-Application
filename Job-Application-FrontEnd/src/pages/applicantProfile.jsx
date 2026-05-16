@@ -156,6 +156,40 @@ export default function ApplicantProfile() {
     }));
   };
 
+  const handleEducationChange = (index, field, value) => {
+    setForm((prev) => {
+      const newEducation = [...prev.education];
+      newEducation[index] = {
+        ...newEducation[index],
+        [field]: value,
+      };
+      return { ...prev, education: newEducation };
+    });
+  };
+
+  const addEducation = () => {
+    setForm((prev) => ({
+      ...prev,
+      education: [
+        ...prev.education,
+        {
+          highestEducation: "",
+          university: "",
+          college: "",
+          fieldOfStudy: "",
+          graduationYear: "",
+        },
+      ],
+    }));
+  };
+
+  const removeEducation = (index) => {
+    setForm((prev) => {
+      const newEducation = prev.education.filter((_, i) => i !== index);
+      return { ...prev, education: newEducation };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -675,69 +709,96 @@ export default function ApplicantProfile() {
                       <SectionTitle icon={GraduationCap}>Education Information</SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">Highest Education</Label>
-                          <select
-                            name="highestEducation"
-                            value={form.highestEducation}
-                            onChange={handleChange}
-                            className={selectClass}
-                          >
-                            <option value="">Select level</option>
-                            <option value="High School">High School</option>
-                            <option value="Associate">Associate</option>
-                            <option value="Bachelor">Bachelor</option>
-                            <option value="Master">Master</option>
-                            <option value="PhD">PhD</option>
-                            <option value="Other">Other</option>
-                          </select>
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">Graduation Year</Label>
-                          <Input 
-                            type="number" 
-                            name="graduationYear" 
-                            value={form.graduationYear} 
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="2024"
-                          />
-                        </div>
-                      </div>
+                      {form.education && form.education.length > 0 ? (
+                        form.education.map((edu, index) => (
+                          <div key={index} className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-4">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-medium text-slate-900 dark:text-white">Education {index + 1}</h4>
+                              {form.education.length > 1 && (
+                                <Button
+                                  type="button"
+                                  onClick={() => removeEducation(index)}
+                                  variant="ghost"
+                                  size="sm"
+                                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                            <div className="grid gap-4 md:grid-cols-2">
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Highest Education</Label>
+                                <select
+                                  value={edu.highestEducation}
+                                  onChange={(e) => handleEducationChange(index, "highestEducation", e.target.value)}
+                                  className={selectClass}
+                                >
+                                  <option value="">Select level</option>
+                                  <option value="High School">High School</option>
+                                  <option value="Associate">Associate</option>
+                                  <option value="Bachelor">Bachelor</option>
+                                  <option value="Master">Master</option>
+                                  <option value="PhD">PhD</option>
+                                  <option value="Other">Other</option>
+                                </select>
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Graduation Year</Label>
+                                <Input 
+                                  type="number" 
+                                  value={edu.graduationYear}
+                                  onChange={(e) => handleEducationChange(index, "graduationYear", e.target.value)}
+                                  className="rounded-xl"
+                                  placeholder="2024"
+                                />
+                              </div>
+                            </div>
+                            
+                            <div className="grid gap-4 md:grid-cols-3">
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">University</Label>
+                                <Input 
+                                  value={edu.university}
+                                  onChange={(e) => handleEducationChange(index, "university", e.target.value)}
+                                  className="rounded-xl"
+                                  placeholder="University name"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">College</Label>
+                                <Input 
+                                  value={edu.college}
+                                  onChange={(e) => handleEducationChange(index, "college", e.target.value)}
+                                  className="rounded-xl"
+                                  placeholder="College name"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label className="text-sm font-medium">Field of Study</Label>
+                                <Input 
+                                  value={edu.fieldOfStudy}
+                                  onChange={(e) => handleEducationChange(index, "fieldOfStudy", e.target.value)}
+                                  className="rounded-xl"
+                                  placeholder="Computer Science"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">No education entries added yet</p>
+                      )}
                       
-                      <div className="grid gap-4 md:grid-cols-3">
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">University</Label>
-                          <Input 
-                            name="university" 
-                            value={form.university} 
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="University name"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">College</Label>
-                          <Input 
-                            name="college" 
-                            value={form.college} 
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="College name"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">Field of Study</Label>
-                          <Input 
-                            name="fieldOfStudy" 
-                            value={form.fieldOfStudy} 
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="Computer Science"
-                          />
-                        </div>
-                      </div>
+                      <Button
+                        type="button"
+                        onClick={addEducation}
+                        variant="outline"
+                        className="w-full border-dashed border-2 border-slate-300 dark:border-slate-600 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all"
+                      >
+                        <GraduationCap className="h-4 w-4 mr-2" />
+                        Add Education
+                      </Button>
                     </CardContent>
                   </Card>
                 )}

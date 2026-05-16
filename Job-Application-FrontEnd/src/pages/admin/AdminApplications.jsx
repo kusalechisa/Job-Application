@@ -89,6 +89,21 @@ export default function AdminApplications() {
         filtered = filtered.filter(app => app.status === filters.status);
       }
       
+      // Client-side filtering for education
+      if (filters.education) {
+        filtered = filtered.filter(app => app.applicant?.education === filters.education);
+      }
+      
+      // Client-side filtering for experience
+      if (filters.experience) {
+        filtered = filtered.filter(app => app.applicant?.experience === filters.experience);
+      }
+      
+      // Client-side filtering for location
+      if (filters.location) {
+        filtered = filtered.filter(app => app.applicant?.location === filters.location);
+      }
+      
       setApplications(filtered);
     } catch (err) {
       setError(getApiErrorMessage(err));
@@ -389,7 +404,6 @@ export default function AdminApplications() {
                           <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All statuses</SelectItem>
                           <SelectItem value="applied">Applied</SelectItem>
                           <SelectItem value="reviewed">Reviewed</SelectItem>
                           <SelectItem value="interview">Interview</SelectItem>
@@ -405,7 +419,6 @@ export default function AdminApplications() {
                           <SelectValue placeholder="All levels" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All levels</SelectItem>
                           <SelectItem value="bachelor">Bachelor's</SelectItem>
                           <SelectItem value="master">Master's</SelectItem>
                           <SelectItem value="phd">PhD</SelectItem>
@@ -420,7 +433,6 @@ export default function AdminApplications() {
                           <SelectValue placeholder="All levels" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All levels</SelectItem>
                           <SelectItem value="entry">Entry (0-2 years)</SelectItem>
                           <SelectItem value="mid">Mid (2-5 years)</SelectItem>
                           <SelectItem value="senior">Senior (5-10 years)</SelectItem>
@@ -435,7 +447,6 @@ export default function AdminApplications() {
                           <SelectValue placeholder="All locations" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All locations</SelectItem>
                           <SelectItem value="remote">Remote</SelectItem>
                           <SelectItem value="on-site">On-site</SelectItem>
                           <SelectItem value="hybrid">Hybrid</SelectItem>

@@ -21,11 +21,7 @@ export const EMPTY_APPLICANT_PROFILE = {
   portfolioUrl: "",
   linkedinUrl: "",
   githubUrl: "",
-  highestEducation: "",
-  university: "",
-  college: "",
-  fieldOfStudy: "",
-  graduationYear: "",
+  education: [],
   skills: "",
   languages: "",
   technicalSkills: "",
@@ -87,14 +83,27 @@ export function profileToForm(profile, accountEmail = "") {
     portfolioUrl: profile.portfolioUrl || "",
     linkedinUrl: profile.linkedinUrl || "",
     githubUrl: profile.githubUrl || "",
-    highestEducation: profile.highestEducation || "",
-    university: profile.university || "",
-    college: profile.college || "",
-    fieldOfStudy: profile.fieldOfStudy || "",
-    graduationYear:
-      profile.graduationYear !== null && profile.graduationYear !== undefined
-        ? String(profile.graduationYear)
-        : "",
+    education: Array.isArray(profile.education) 
+      ? profile.education.map(edu => ({
+          highestEducation: edu.highestEducation || "",
+          university: edu.university || "",
+          college: edu.college || "",
+          fieldOfStudy: edu.fieldOfStudy || "",
+          graduationYear: edu.graduationYear !== null && edu.graduationYear !== undefined
+            ? String(edu.graduationYear)
+            : "",
+        }))
+      : (profile.highestEducation || profile.university || profile.college || profile.fieldOfStudy || profile.graduationYear
+          ? [{
+              highestEducation: profile.highestEducation || "",
+              university: profile.university || "",
+              college: profile.college || "",
+              fieldOfStudy: profile.fieldOfStudy || "",
+              graduationYear: profile.graduationYear !== null && profile.graduationYear !== undefined
+                ? String(profile.graduationYear)
+                : "",
+            }]
+          : []),
     skills: joinList(profile.skills),
     languages: joinList(profile.languages),
     technicalSkills: joinList(profile.technicalSkills),
@@ -104,7 +113,7 @@ export function profileToForm(profile, accountEmail = "") {
 }
 
 const FORM_FIELDS = Object.keys(EMPTY_APPLICANT_PROFILE).filter(
-  (key) => !["profilePicture", "resume"].includes(key)
+  (key) => !["profilePicture", "resume", "education"].includes(key)
 );
 
 export function formToFormData(form) {
@@ -116,5 +125,17 @@ export function formToFormData(form) {
   }
   if (form.profilePicture) data.append("profilePicture", form.profilePicture);
   if (form.resume) data.append("resume", form.resume);
+  
+  // Handle education array
+  if (Array.isArray(form.education)) {
+    form.education.forEach((edu, index) => {
+      if (edu.highestEducation) data.append(`education[${index}][highestEducation]`, edu.highestEducation);
+      if (edu.university) data.append(`education[${index}][university]`, edu.university);
+      if (edu.college) data.append(`education[${index}][college]`, edu.college);
+      if (edu.fieldOfStudy) data.append(`education[${index}][fieldOfStudy]`, edu.fieldOfStudy);
+      if (edu.graduationYear) data.append(`education[${index}][graduationYear]`, edu.graduationYear);
+    });
+  }
+  
   return data;
 }

@@ -61,12 +61,6 @@ model Applicant {
   linkedinUrl String?
   githubUrl String?
 
-  highestEducation String?
-  university String?
-  college String?
-  fieldOfStudy String?
-  graduationYear Int?
-
   skills String[] @default([])
   languages String[] @default([])
   technicalSkills String[] @default([])
@@ -75,6 +69,22 @@ model Applicant {
   resume String?
 
   applications Application[]
+  education Education[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Education {
+  id String @id @default(uuid())
+  applicantId String
+  applicant Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  highestEducation String?
+  university String?
+  college String?
+  fieldOfStudy String?
+  graduationYear Int?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
