@@ -59,6 +59,10 @@ import {
 } from "../../api/Endpoints/Jobs.jsx";
 import { useAuth } from "../context/AuthContext";
 import JobDetailDrawer from "../components/JobDetailDrawer";
+import {
+  isJobDeadlinePassed,
+  JOB_DEADLINE_PASSED_MESSAGE,
+} from "@/lib/jobDeadline";
 
 export default function JobList() {
   const [jobs, setJobs] = useState([]);
@@ -259,9 +263,21 @@ export default function JobList() {
     return Math.min(Math.round(match), 95);
   };
 
+  const findJobById = (jobId) =>
+    jobs.find((j) => j.id === jobId) ||
+    filteredJobs.find((j) => j.id === jobId) ||
+    (selectedJob?.id === jobId ? selectedJob : null);
+
   const handleApply = async (jobId) => {
     if (!token) {
       navigate("/login");
+      return;
+    }
+
+    const job = findJobById(jobId);
+    if (job && isJobDeadlinePassed(job.deadline)) {
+      setError(JOB_DEADLINE_PASSED_MESSAGE);
+      setTimeout(() => setError(""), 5000);
       return;
     }
 
@@ -728,6 +744,7 @@ export default function JobList() {
               {displayJobs.map((job) => {
                 const matchPercentage = calculateMatchPercentage(job);
                 const isSaved = savedJobs.includes(job.id);
+                const deadlinePassed = isJobDeadlinePassed(job.deadline);
 
                 return (
                   <Card
@@ -798,13 +815,15 @@ export default function JobList() {
                         {/* Action Buttons */}
                         <div className="flex gap-2 pt-2">
                           <Button
-                            className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:shadow-lg transition-all"
+                            className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:shadow-lg transition-all disabled:opacity-60"
                             onClick={() => handleApply(job.id)}
-                            disabled={profileCompletion < 70}
+                            disabled={profileCompletion < 70 || deadlinePassed}
                           >
-                            {profileCompletion >= 70
-                              ? "Quick Apply"
-                              : "Complete Profile"}
+                            {deadlinePassed
+                              ? "Deadline Reached"
+                              : profileCompletion >= 70
+                                ? "Quick Apply"
+                                : "Complete Profile"}
                           </Button>
                           <Button
                             variant="outline"
@@ -835,6 +854,7 @@ export default function JobList() {
               {displayJobs.map((job) => {
                 const matchPercentage = calculateMatchPercentage(job);
                 const isSaved = savedJobs.includes(job.id);
+                const deadlinePassed = isJobDeadlinePassed(job.deadline);
 
                 return (
                   <Card
@@ -889,12 +909,14 @@ export default function JobList() {
                         <div className="flex gap-2">
                           <Button
                             onClick={() => handleApply(job.id)}
-                            disabled={profileCompletion < 70}
-                            className="bg-gradient-to-r from-indigo-500 to-blue-600"
+                            disabled={profileCompletion < 70 || deadlinePassed}
+                            className="bg-gradient-to-r from-indigo-500 to-blue-600 disabled:opacity-60"
                           >
-                            {profileCompletion >= 70
-                              ? "Apply"
-                              : "Complete Profile"}
+                            {deadlinePassed
+                              ? "Deadline Reached"
+                              : profileCompletion >= 70
+                                ? "Apply"
+                                : "Complete Profile"}
                           </Button>
                           <Button
                             variant="outline"

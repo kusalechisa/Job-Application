@@ -7,6 +7,10 @@ import {
   buildApplicantUpdateData,
   parseEducationArray,
 } from "#src/modules/applicants/utils/applicantProfileUtils.js";
+import {
+  isJobDeadlinePassed,
+  JOB_DEADLINE_PASSED_MESSAGE,
+} from "#src/utils/jobDeadline.js";
 
 const ensureDir = (dir) => {
   fs.mkdirSync(dir, { recursive: true });
@@ -313,6 +317,15 @@ export const applyForJob = async (req, res) => {
         message: "Job not found",
         code: 404,
         errors: ["Job not found"],
+      });
+    }
+
+    if (isJobDeadlinePassed(job.deadline)) {
+      return res.status(400).json({
+        status: "error",
+        message: JOB_DEADLINE_PASSED_MESSAGE,
+        code: 400,
+        errors: ["Application deadline passed"],
       });
     }
 

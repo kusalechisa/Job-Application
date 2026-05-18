@@ -31,6 +31,10 @@ import {
   FileText,
   Eye,
 } from "lucide-react";
+import {
+  isJobDeadlinePassed,
+  formatJobDeadline,
+} from "@/lib/jobDeadline";
 
 export default function JobDetailDrawer({
   job,
@@ -42,6 +46,8 @@ export default function JobDetailDrawer({
   profileCompletion,
 }) {
   if (!job) return null;
+
+  const deadlinePassed = isJobDeadlinePassed(job.deadline);
 
   const getMatchPercentage = () => {
     // Simulate match percentage based on profile completion
@@ -268,15 +274,43 @@ export default function JobDetailDrawer({
             {job.deadline && (
               <div className="flex items-center gap-2">
                 <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                <span>
-                  Deadline: {new Date(job.deadline).toLocaleDateString()}
+                <span
+                  className={
+                    deadlinePassed
+                      ? "font-medium text-red-600 dark:text-red-400"
+                      : ""
+                  }
+                >
+                  Deadline:{" "}
+                  {formatJobDeadline(job.deadline) ||
+                    new Date(job.deadline).toLocaleDateString()}
+                  {deadlinePassed ? " (Reached)" : ""}
                 </span>
               </div>
             )}
           </div>
 
+          {deadlinePassed && (
+            <div
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 p-3 sm:p-4 dark:border-red-800 dark:bg-red-950/30"
+            >
+              <div className="flex items-start gap-2 sm:gap-3">
+                <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-red-800 dark:text-red-400 mb-1">
+                    Application deadline reached
+                  </p>
+                  <p className="text-xs sm:text-sm text-red-700 dark:text-red-500">
+                    This job is no longer accepting applications.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Profile Completion Warning - Mobile Friendly */}
-          {profileCompletion < 70 && (
+          {profileCompletion < 70 && !deadlinePassed && (
             <div className="p-3 sm:p-4 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800">
               <div className="flex items-start gap-2 sm:gap-3">
                 <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -325,12 +359,14 @@ export default function JobDetailDrawer({
           {/* Sticky Apply Button - Mobile Optimized */}
           <div className="sticky bottom-0 bg-white dark:bg-slate-900 pt-4 pb-2 border-t border-slate-200 dark:border-slate-800 -mx-4 sm:mx-0 px-4 sm:px-0">
             <Button
-              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg transition-all gap-2"
+              className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg transition-all gap-2 disabled:opacity-60"
               onClick={() => onApply(job.id)}
-              disabled={profileCompletion < 70}
+              disabled={profileCompletion < 70 || deadlinePassed}
               size="lg"
             >
-              {profileCompletion >= 70 ? (
+              {deadlinePassed ? (
+                <>Deadline Reached</>
+              ) : profileCompletion >= 70 ? (
                 <>
                   Apply Now
                   <ArrowRight className="h-4 w-4" />
@@ -342,7 +378,13 @@ export default function JobDetailDrawer({
                 </>
               )}
             </Button>
-            {profileCompletion < 70 && (
+            {deadlinePassed && (
+              <p className="text-xs text-center text-red-600 dark:text-red-400 mt-2 flex items-center justify-center gap-1">
+                <AlertCircle className="h-3 w-3" />
+                Applications closed for this position
+              </p>
+            )}
+            {!deadlinePassed && profileCompletion < 70 && (
               <div className="flex items-center justify-center gap-1 mt-2">
                 <AlertCircle className="h-3 w-3 text-amber-500" />
                 <p className="text-xs text-center text-slate-500 dark:text-slate-400">
@@ -351,7 +393,7 @@ export default function JobDetailDrawer({
                 </p>
               </div>
             )}
-            {profileCompletion >= 70 && (
+            {!deadlinePassed && profileCompletion >= 70 && (
               <p className="text-xs text-center text-emerald-600 dark:text-emerald-400 mt-2 flex items-center justify-center gap-1">
                 <CheckCircle className="h-3 w-3" />
                 You're ready to apply!

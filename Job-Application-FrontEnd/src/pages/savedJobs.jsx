@@ -17,6 +17,10 @@ import {
 import { getJobs, applyForJob, getApplicantProfile } from "../../api/Endpoints/Jobs.jsx";
 import { useAuth } from "../context/AuthContext";
 import JobDetailDrawer from "../components/JobDetailDrawer";
+import {
+  isJobDeadlinePassed,
+  JOB_DEADLINE_PASSED_MESSAGE,
+} from "@/lib/jobDeadline";
 
 export default function SavedJobs() {
   const [savedJobs, setSavedJobs] = useState(() => {
@@ -93,6 +97,14 @@ export default function SavedJobs() {
   const handleApply = async (jobId) => {
     if (!token) {
       setError("Please login to apply for jobs.");
+      return;
+    }
+
+    const job =
+      savedJobDetails.find((j) => j.id === jobId) ||
+      (selectedJob?.id === jobId ? selectedJob : null);
+    if (job && isJobDeadlinePassed(job.deadline)) {
+      setError(JOB_DEADLINE_PASSED_MESSAGE);
       return;
     }
 
@@ -215,7 +227,8 @@ export default function SavedJobs() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {savedJobDetails.map((job) => {
               const matchPercentage = calculateMatchPercentage(job);
-              
+              const deadlinePassed = isJobDeadlinePassed(job.deadline);
+
               return (
                 <Card key={job.id} className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-all duration-300 group">
                   <CardContent className="p-6">
@@ -271,11 +284,15 @@ export default function SavedJobs() {
                       {/* Action Buttons */}
                       <div className="flex gap-2 pt-2">
                         <Button 
-                          className="flex-1 bg-sky-600 hover:bg-sky-700"
+                          className="flex-1 bg-sky-600 hover:bg-sky-700 disabled:opacity-60"
                           onClick={() => handleApply(job.id)}
-                          disabled={profileCompletion < 70}
+                          disabled={profileCompletion < 70 || deadlinePassed}
                         >
-                          {profileCompletion >= 70 ? 'Apply' : 'Complete Profile'}
+                          {deadlinePassed
+                            ? "Deadline Reached"
+                            : profileCompletion >= 70
+                              ? "Apply"
+                              : "Complete Profile"}
                         </Button>
                         <Button 
                           variant="outline" 

@@ -3,6 +3,11 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getJobById, applyForJob } from "../../api/Endpoints/Jobs.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "@/lib/apiError";
+import {
+  isJobDeadlinePassed,
+  JOB_DEADLINE_PASSED_MESSAGE,
+  formatJobDeadline,
+} from "@/lib/jobDeadline";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -35,6 +40,11 @@ export default function JobDetail() {
       navigate("/login");
       return;
     }
+    if (isJobDeadlinePassed(job?.deadline)) {
+      setError(JOB_DEADLINE_PASSED_MESSAGE);
+      setSuccess("");
+      return;
+    }
     setError("");
     setSuccess("");
     try {
@@ -48,6 +58,8 @@ export default function JobDetail() {
   if (loading) return <p className="p-6 text-slate-500">Loading job...</p>;
   if (!job) return <p className="p-6 text-rose-600">{error || "Job not found."}</p>;
 
+  const deadlinePassed = isJobDeadlinePassed(job.deadline);
+
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-6">
       <Link to="/joblist" className="mb-4 inline-block text-sm text-sky-600 hover:underline">
@@ -57,7 +69,15 @@ export default function JobDetail() {
         <CardHeader className="space-y-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <CardTitle className="text-2xl text-slate-900 dark:text-slate-100">{job.title}</CardTitle>
-            <Badge className="bg-emerald-500 text-white">Open</Badge>
+            <Badge
+              className={
+                deadlinePassed
+                  ? "bg-red-500 text-white"
+                  : "bg-emerald-500 text-white"
+              }
+            >
+              {deadlinePassed ? "Deadline reached" : "Open"}
+            </Badge>
           </div>
           <p className="text-slate-600 dark:text-slate-400">
             {job.company} · {job.location}
@@ -65,6 +85,18 @@ export default function JobDetail() {
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
+          {deadlinePassed && (
+            <div
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400"
+            >
+              Application deadline reached
+              {formatJobDeadline(job.deadline)
+                ? ` (${formatJobDeadline(job.deadline)}).`
+                : "."}{" "}
+              This job is no longer accepting applications.
+            </div>
+          )}
           {error && <p className="text-sm text-rose-600">{error}</p>}
           {success && <p className="text-sm text-emerald-600">{success}</p>}
           <section>
@@ -77,8 +109,12 @@ export default function JobDetail() {
             </p>
           )}
           {user?.role === "Applicant" && (
-            <Button onClick={handleApply} className="bg-sky-600 text-white hover:bg-sky-700">
-              Apply for this job
+            <Button
+              onClick={handleApply}
+              disabled={deadlinePassed}
+              className="bg-sky-600 text-white hover:bg-sky-700 disabled:opacity-60"
+            >
+              {deadlinePassed ? "Deadline reached" : "Apply for this job"}
             </Button>
           )}
         </CardContent>

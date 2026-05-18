@@ -1,11 +1,64 @@
 import { prisma } from "#src/prisma.js";
 
+const parseOptionalDate = (value) => {
+  if (value === undefined) return undefined;
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+};
+
+const buildJobData = (body, { partial = false } = {}) => {
+  const {
+    title,
+    description,
+    company,
+    location,
+    salary,
+    type,
+    workType,
+    employmentType,
+    responsibilities,
+    requirements,
+    deadline,
+    status,
+    featured,
+    expiryDate,
+  } = body;
+
+  const data = {};
+
+  if (partial) {
+    if (title !== undefined) data.title = title;
+    if (description !== undefined) data.description = description;
+    if (company !== undefined) data.company = company;
+    if (location !== undefined) data.location = location;
+  } else {
+    data.title = title;
+    data.description = description;
+    data.company = company;
+    data.location = location;
+  }
+
+  if (salary !== undefined) data.salary = salary ? String(salary) : null;
+  if (type !== undefined) data.type = type || null;
+  if (workType !== undefined) data.workType = workType || null;
+  if (employmentType !== undefined) data.employmentType = employmentType || null;
+  if (responsibilities !== undefined) data.responsibilities = responsibilities || null;
+  if (requirements !== undefined) data.requirements = requirements || null;
+  if (deadline !== undefined) data.deadline = parseOptionalDate(deadline);
+  if (status !== undefined) data.status = status;
+  if (featured !== undefined) data.featured = Boolean(featured);
+  if (expiryDate !== undefined) data.expiryDate = parseOptionalDate(expiryDate);
+
+  return data;
+};
+
 /**
  * CREATE JOB (Admin only)
  */
 export const createJob = async (req, res) => {
   try {
-    const { title, description, company, location, salary } = req.body;
+    const { title, description, company, location } = req.body;
     const postedById = req.user.id; // from auth middleware
 
     if (!title || !description || !company || !location) {
@@ -29,11 +82,7 @@ export const createJob = async (req, res) => {
 
     const job = await prisma.job.create({
       data: {
-        title,
-        description,
-        company,
-        location,
-        salary: salary ? salary.toString() : null,
+        ...buildJobData(req.body),
         postedById,
       },
     });
@@ -60,13 +109,24 @@ export const createJob = async (req, res) => {
  */
 export const getJobs = async (req, res) => {
   try {
-    const { search, location, company, page = 1, limit = 10 } = req.query;
+    const {
+      search,
+      location,
+      company,
+      status,
+      workType,
+      employmentType,
+      page = 1,
+      limit = 10,
+    } = req.query;
 
     const where = {};
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
+        { company: { contains: search, mode: 'insensitive' } },
+        { location: { contains: search, mode: 'insensitive' } },
       ];
     }
     if (location) {
@@ -74,6 +134,15 @@ export const getJobs = async (req, res) => {
     }
     if (company) {
       where.company = { contains: company, mode: 'insensitive' };
+    }
+    if (status) {
+      where.status = status;
+    }
+    if (workType) {
+      where.workType = workType;
+    }
+    if (employmentType) {
+      where.employmentType = employmentType;
     }
 
     const skip = (page - 1) * limit;
@@ -169,7 +238,6 @@ export const getJobById = async (req, res) => {
 export const updateJob = async (req, res) => {
   try {
     const { jobId } = req.params;
-    const { title, description, company, location, salary } = req.body;
 
     if (req.user.role !== "Admin") {
       return res.status(403).json({
@@ -190,15 +258,19 @@ export const updateJob = async (req, res) => {
       });
     }
 
+    const data = buildJobData(req.body, { partial: true });
+    if (Object.keys(data).length === 0) {
+      return res.status(400).json({
+        status: "error",
+        message: "No valid fields to update",
+        code: 400,
+        errors: ["Empty update payload"],
+      });
+    }
+
     const updatedJob = await prisma.job.update({
       where: { id: jobId },
-      data: {
-        ...(title && { title }),
-        ...(description && { description }),
-        ...(company && { company }),
-        ...(location && { location }),
-        ...(salary !== undefined && { salary: salary.toString() }),
-      },
+      data,
     });
 
     return res.status(200).json({
