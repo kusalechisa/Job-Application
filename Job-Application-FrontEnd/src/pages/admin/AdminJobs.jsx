@@ -66,7 +66,6 @@ const emptyJob = {
   deadline: "",
   status: "draft",
   featured: false,
-  expiryDate: "",
 };
 
 const formatDateForInput = (value) => {
@@ -90,7 +89,6 @@ const buildJobPayload = (form) => ({
   deadline: form.deadline || null,
   status: form.status || "draft",
   featured: Boolean(form.featured),
-  expiryDate: form.expiryDate || null,
 });
 
 const formatJobFieldLabel = (value) =>
@@ -171,7 +169,6 @@ export default function AdminJobs() {
       deadline: formatDateForInput(job.deadline),
       status: job.status || "draft",
       featured: Boolean(job.featured),
-      expiryDate: formatDateForInput(job.expiryDate),
     });
     setModalOpen(true);
   };
@@ -217,7 +214,6 @@ export default function AdminJobs() {
         title: `${job.title} (Copy)`,
         status: "draft",
         deadline: formatDateForInput(job.deadline),
-        expiryDate: formatDateForInput(job.expiryDate),
       });
       await createJob(duplicatedJob);
       fetchJobs();
@@ -1043,7 +1039,7 @@ export default function AdminJobs() {
                             </SelectContent>
                           </Select>
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-2 md:col-span-2">
                           <Label>Application Deadline</Label>
                           <Input
                             type="date"
@@ -1052,16 +1048,10 @@ export default function AdminJobs() {
                               setForm({ ...form, deadline: e.target.value })
                             }
                           />
-                        </div>
-                        <div className="space-y-2">
-                          <Label>Expiry Date</Label>
-                          <Input
-                            type="date"
-                            value={form.expiryDate}
-                            onChange={(e) =>
-                              setForm({ ...form, expiryDate: e.target.value })
-                            }
-                          />
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
+                            Jobs auto-close when this date passes. Set status to
+                            Active to publish on the job board.
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center space-x-2">

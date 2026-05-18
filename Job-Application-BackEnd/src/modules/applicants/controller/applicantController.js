@@ -10,6 +10,7 @@ import {
 import {
   isJobDeadlinePassed,
   JOB_DEADLINE_PASSED_MESSAGE,
+  closeExpiredJobs,
 } from "#src/utils/jobDeadline.js";
 
 const ensureDir = (dir) => {
@@ -310,6 +311,8 @@ export const applyForJob = async (req, res) => {
       });
     }
 
+    await closeExpiredJobs(prisma);
+
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) {
       return res.status(404).json({
@@ -320,7 +323,16 @@ export const applyForJob = async (req, res) => {
       });
     }
 
-    if (isJobDeadlinePassed(job.deadline)) {
+    if (job.status === "draft") {
+      return res.status(404).json({
+        status: "error",
+        message: "Job not found",
+        code: 404,
+        errors: ["Job not found"],
+      });
+    }
+
+    if (job.status === "closed" || isJobDeadlinePassed(job.deadline)) {
       return res.status(400).json({
         status: "error",
         message: JOB_DEADLINE_PASSED_MESSAGE,

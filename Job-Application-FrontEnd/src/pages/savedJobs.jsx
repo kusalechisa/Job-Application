@@ -18,7 +18,7 @@ import { getJobs, applyForJob, getApplicantProfile } from "../../api/Endpoints/J
 import { useAuth } from "../context/AuthContext";
 import JobDetailDrawer from "../components/JobDetailDrawer";
 import {
-  isJobDeadlinePassed,
+  isJobClosedForApplications,
   JOB_DEADLINE_PASSED_MESSAGE,
 } from "@/lib/jobDeadline";
 
@@ -103,7 +103,7 @@ export default function SavedJobs() {
     const job =
       savedJobDetails.find((j) => j.id === jobId) ||
       (selectedJob?.id === jobId ? selectedJob : null);
-    if (job && isJobDeadlinePassed(job.deadline)) {
+    if (job && isJobClosedForApplications(job)) {
       setError(JOB_DEADLINE_PASSED_MESSAGE);
       return;
     }
@@ -227,7 +227,7 @@ export default function SavedJobs() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {savedJobDetails.map((job) => {
               const matchPercentage = calculateMatchPercentage(job);
-              const deadlinePassed = isJobDeadlinePassed(job.deadline);
+              const deadlinePassed = isJobClosedForApplications(job);
 
               return (
                 <Card key={job.id} className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-all duration-300 group">

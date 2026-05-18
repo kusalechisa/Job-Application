@@ -1,12 +1,12 @@
 import express from "express";
-import { verifyToken } from "#src/middleware/auth.js";
+import { verifyToken, optionalVerifyToken } from "#src/middleware/auth.js";
 import { createJob, getJobs, getJobById, updateJob, deleteJob } from "../controller/jobController.js";
 
 const router = express.Router();
 
-// Public job routes
-router.get("/", getJobs);
-router.get("/:jobId", getJobById);
+// Public job routes (optional auth for role-based visibility)
+router.get("/", optionalVerifyToken, getJobs);
+router.get("/:jobId", optionalVerifyToken, getJobById);
 
 // Protected job routes
 router.use(verifyToken);

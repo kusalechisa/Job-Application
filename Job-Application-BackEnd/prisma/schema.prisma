@@ -104,7 +104,6 @@ model Job {
   deadline        DateTime?
   status          String   @default("draft")
   featured        Boolean  @default(false)
-  expiryDate      DateTime?
   postedById      String
   postedBy        Account  @relation("PostedJobs", fields: [postedById], references: [id])
   applications    Application[]

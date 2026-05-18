@@ -2,6 +2,26 @@ import { prisma } from "#src/prisma.js";
 import ExcelJS from "exceljs";
 import { sendStatusNotification } from "#src/utils/email.js";
 
+const VALID_APPLICATION_STATUSES = ["Applied", "Reviewed", "Accepted", "Rejected"];
+
+const normalizeApplicationStatus = (input) => {
+  if (input == null) return null;
+  const raw = String(input).trim();
+  const map = {
+    applied: "Applied",
+    reviewed: "Reviewed",
+    accepted: "Accepted",
+    rejected: "Rejected",
+    interview: "Reviewed",
+    Applied: "Applied",
+    Reviewed: "Reviewed",
+    Accepted: "Accepted",
+    Rejected: "Rejected",
+    Interview: "Reviewed",
+  };
+  return map[raw] ?? map[raw.toLowerCase()] ?? null;
+};
+
 /**
  * GET APPLICATIONS FOR A JOB (Admin)
  */
@@ -164,7 +184,7 @@ export const getApplicationDetails = async (req, res) => {
 export const updateApplicationStatus = async (req, res) => {
   try {
     const { applicationId } = req.params;
-    const { status } = req.body;
+    const status = normalizeApplicationStatus(req.body?.status);
 
     if (req.user.role !== "Admin") {
       return res.status(403).json({
@@ -175,13 +195,14 @@ export const updateApplicationStatus = async (req, res) => {
       });
     }
 
-    const validStatuses = ["Applied", "Reviewed", "Accepted", "Rejected"];
-    if (!validStatuses.includes(status)) {
+    if (!status || !VALID_APPLICATION_STATUSES.includes(status)) {
       return res.status(400).json({
         status: "error",
         message: "Invalid status",
         code: 400,
-        errors: ["Status must be one of: Applied, Reviewed, Accepted, Rejected"],
+        errors: [
+          "Status must be one of: Applied, Reviewed, Accepted, Rejected",
+        ],
       });
     }
 

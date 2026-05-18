@@ -4,7 +4,7 @@ import { getJobById, applyForJob } from "../../api/Endpoints/Jobs.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "@/lib/apiError";
 import {
-  isJobDeadlinePassed,
+  isJobClosedForApplications,
   JOB_DEADLINE_PASSED_MESSAGE,
   formatJobDeadline,
 } from "@/lib/jobDeadline";
@@ -40,7 +40,7 @@ export default function JobDetail() {
       navigate("/login");
       return;
     }
-    if (isJobDeadlinePassed(job?.deadline)) {
+    if (isJobClosedForApplications(job)) {
       setError(JOB_DEADLINE_PASSED_MESSAGE);
       setSuccess("");
       return;
@@ -58,7 +58,7 @@ export default function JobDetail() {
   if (loading) return <p className="p-6 text-slate-500">Loading job...</p>;
   if (!job) return <p className="p-6 text-rose-600">{error || "Job not found."}</p>;
 
-  const deadlinePassed = isJobDeadlinePassed(job.deadline);
+  const deadlinePassed = isJobClosedForApplications(job);
 
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-6">

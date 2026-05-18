@@ -60,7 +60,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import JobDetailDrawer from "../components/JobDetailDrawer";
 import {
-  isJobDeadlinePassed,
+  isJobClosedForApplications,
   JOB_DEADLINE_PASSED_MESSAGE,
 } from "@/lib/jobDeadline";
 
@@ -275,7 +275,7 @@ export default function JobList() {
     }
 
     const job = findJobById(jobId);
-    if (job && isJobDeadlinePassed(job.deadline)) {
+    if (job && isJobClosedForApplications(job)) {
       setError(JOB_DEADLINE_PASSED_MESSAGE);
       setTimeout(() => setError(""), 5000);
       return;
@@ -744,7 +744,7 @@ export default function JobList() {
               {displayJobs.map((job) => {
                 const matchPercentage = calculateMatchPercentage(job);
                 const isSaved = savedJobs.includes(job.id);
-                const deadlinePassed = isJobDeadlinePassed(job.deadline);
+                const deadlinePassed = isJobClosedForApplications(job);
 
                 return (
                   <Card
@@ -854,7 +854,7 @@ export default function JobList() {
               {displayJobs.map((job) => {
                 const matchPercentage = calculateMatchPercentage(job);
                 const isSaved = savedJobs.includes(job.id);
-                const deadlinePassed = isJobDeadlinePassed(job.deadline);
+                const deadlinePassed = isJobClosedForApplications(job);
 
                 return (
                   <Card

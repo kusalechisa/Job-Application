@@ -31,7 +31,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import StatusBadge from "../components/StatusBadge";
 import {
-  isJobDeadlinePassed,
+  isJobClosedForApplications,
   JOB_DEADLINE_PASSED_MESSAGE,
 } from "@/lib/jobDeadline";
 
@@ -132,7 +132,7 @@ export default function ApplicantDashboard() {
 
   const handleApply = async (jobId) => {
     const job = recommendedJobs.find((j) => j.id === jobId);
-    if (job && isJobDeadlinePassed(job.deadline)) {
+    if (job && isJobClosedForApplications(job)) {
       setApplyError(JOB_DEADLINE_PASSED_MESSAGE);
       setTimeout(() => setApplyError(""), 5000);
       return;
@@ -349,7 +349,7 @@ export default function ApplicantDashboard() {
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {recommendedJobs.map((job) => {
-                    const deadlinePassed = isJobDeadlinePassed(job.deadline);
+                    const deadlinePassed = isJobClosedForApplications(job);
                     return (
                     <Card
                       key={job.id}

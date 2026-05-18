@@ -13,6 +13,14 @@ export const isJobDeadlinePassed = (deadline) => {
 export const JOB_DEADLINE_PASSED_MESSAGE =
   "The application deadline for this job has passed. Applications are no longer accepted.";
 
+export const isJobClosedForApplications = (job) =>
+  Boolean(
+    job &&
+      (job.status === "closed" ||
+        job.status === "draft" ||
+        isJobDeadlinePassed(job.deadline)),
+  );
+
 export const formatJobDeadline = (deadline) => {
   if (!deadline) return null;
   const date = new Date(deadline);

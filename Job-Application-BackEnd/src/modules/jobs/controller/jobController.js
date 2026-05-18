@@ -1,4 +1,7 @@
 import { prisma } from "#src/prisma.js";
+import { closeExpiredJobs } from "#src/utils/jobDeadline.js";
+
+const isAdminUser = (req) => req.user?.role === "Admin";
 
 const parseOptionalDate = (value) => {
   if (value === undefined) return undefined;
@@ -22,7 +25,6 @@ const buildJobData = (body, { partial = false } = {}) => {
     deadline,
     status,
     featured,
-    expiryDate,
   } = body;
 
   const data = {};
@@ -48,7 +50,6 @@ const buildJobData = (body, { partial = false } = {}) => {
   if (deadline !== undefined) data.deadline = parseOptionalDate(deadline);
   if (status !== undefined) data.status = status;
   if (featured !== undefined) data.featured = Boolean(featured);
-  if (expiryDate !== undefined) data.expiryDate = parseOptionalDate(expiryDate);
 
   return data;
 };
@@ -109,6 +110,8 @@ export const createJob = async (req, res) => {
  */
 export const getJobs = async (req, res) => {
   try {
+    await closeExpiredJobs(prisma);
+
     const {
       search,
       location,
@@ -120,6 +123,7 @@ export const getJobs = async (req, res) => {
       limit = 10,
     } = req.query;
 
+    const isAdmin = isAdminUser(req);
     const where = {};
     if (search) {
       where.OR = [
@@ -135,8 +139,11 @@ export const getJobs = async (req, res) => {
     if (company) {
       where.company = { contains: company, mode: 'insensitive' };
     }
-    if (status) {
-      where.status = status;
+    if (isAdmin) {
+      if (status) where.status = status;
+    } else {
+      // Applicants and public users only see published (active) jobs
+      where.status = "active";
     }
     if (workType) {
       where.workType = workType;
@@ -194,6 +201,8 @@ export const getJobById = async (req, res) => {
   try {
     const { jobId } = req.params;
 
+    await closeExpiredJobs(prisma);
+
     const job = await prisma.job.findUnique({
       where: { id: jobId },
       include: {
@@ -207,6 +216,15 @@ export const getJobById = async (req, res) => {
     });
 
     if (!job) {
+      return res.status(404).json({
+        status: "error",
+        message: "Job not found",
+        code: 404,
+        errors: ["Job not found"],
+      });
+    }
+
+    if (!isAdminUser(req) && job.status === "draft") {
       return res.status(404).json({
         status: "error",
         message: "Job not found",

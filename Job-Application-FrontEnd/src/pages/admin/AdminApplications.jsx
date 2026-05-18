@@ -144,20 +144,8 @@ export default function AdminApplications() {
     setReviewModalOpen(true);
   };
 
-  const handleSaveNotes = async () => {
-    setSavingNotes(true);
-    try {
-      await updateApplicationStatus(selectedApplication.id, {
-        recruiterNotes,
-        rating: candidateRating
-      });
-      setReviewModalOpen(false);
-      fetchApplications();
-    } catch (err) {
-      setError(getApiErrorMessage(err));
-    } finally {
-      setSavingNotes(false);
-    }
+  const handleSaveNotes = () => {
+    setReviewModalOpen(false);
   };
 
   const handleBulkStatusUpdate = async (status) => {
@@ -166,7 +154,7 @@ export default function AdminApplications() {
     
     try {
       await Promise.all(
-        selectedApplications.map(id => updateApplicationStatus(id, { status }))
+        selectedApplications.map((id) => updateApplicationStatus(id, status))
       );
       setSelectedApplications([]);
       fetchApplications();
@@ -180,22 +168,31 @@ export default function AdminApplications() {
   };
 
   const getStatusColor = (status) => {
-    switch(status) {
-      case 'accepted': return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
-      case 'rejected': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-      case 'interview': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
-      case 'reviewed': return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
-      default: return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400';
+    switch (status) {
+      case "Accepted":
+        return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+      case "Rejected":
+        return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+      case "Reviewed":
+        return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+      case "Applied":
+        return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400";
+      default:
+        return "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400";
     }
   };
 
   const getStatusIcon = (status) => {
-    switch(status) {
-      case 'accepted': return <CheckCircle className="h-3 w-3" />;
-      case 'rejected': return <XCircle className="h-3 w-3" />;
-      case 'interview': return <Users className="h-3 w-3" />;
-      case 'reviewed': return <Eye className="h-3 w-3" />;
-      default: return <Clock className="h-3 w-3" />;
+    switch (status) {
+      case "Accepted":
+        return <CheckCircle className="h-3 w-3" />;
+      case "Rejected":
+        return <XCircle className="h-3 w-3" />;
+      case "Reviewed":
+        return <Eye className="h-3 w-3" />;
+      case "Applied":
+      default:
+        return <Clock className="h-3 w-3" />;
     }
   };
 
@@ -229,11 +226,10 @@ export default function AdminApplications() {
   // Stats
   const stats = {
     total: applications.length,
-    pending: applications.filter(a => a.status === 'applied').length,
-    reviewed: applications.filter(a => a.status === 'reviewed').length,
-    interview: applications.filter(a => a.status === 'interview').length,
-    accepted: applications.filter(a => a.status === 'accepted').length,
-    rejected: applications.filter(a => a.status === 'rejected').length,
+    pending: applications.filter((a) => a.status === "Applied").length,
+    reviewed: applications.filter((a) => a.status === "Reviewed").length,
+    accepted: applications.filter((a) => a.status === "Accepted").length,
+    rejected: applications.filter((a) => a.status === "Rejected").length,
     avgRating: Math.round(applications.reduce((sum, a) => sum + (a.rating || 0), 0) / applications.length || 0)
   };
 
@@ -318,7 +314,6 @@ export default function AdminApplications() {
             <StatCard label="Total" value={stats.total} icon={FileText} color="indigo" />
             <StatCard label="Pending" value={stats.pending} icon={Clock} color="amber" />
             <StatCard label="Reviewed" value={stats.reviewed} icon={Eye} color="blue" />
-            <StatCard label="Interview" value={stats.interview} icon={Users} color="blue" />
             <StatCard label="Accepted" value={stats.accepted} icon={CheckCircle} color="emerald" />
             <StatCard label="Rejected" value={stats.rejected} icon={XCircle} color="red" />
           </div>
@@ -352,14 +347,14 @@ export default function AdminApplications() {
                     <>
                       <Button 
                         variant="outline" 
-                        onClick={() => handleBulkStatusUpdate("reviewed")}
+                        onClick={() => handleBulkStatusUpdate("Reviewed")}
                         className="gap-2"
                       >
                         <Check className="h-4 w-4" /> Shortlist
                       </Button>
                       <Button 
                         variant="outline" 
-                        onClick={() => handleBulkStatusUpdate("rejected")}
+                        onClick={() => handleBulkStatusUpdate("Rejected")}
                         className="gap-2 text-red-600 hover:text-red-700"
                       >
                         <XCircle className="h-4 w-4" /> Reject
@@ -404,11 +399,10 @@ export default function AdminApplications() {
                           <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="applied">Applied</SelectItem>
-                          <SelectItem value="reviewed">Reviewed</SelectItem>
-                          <SelectItem value="interview">Interview</SelectItem>
-                          <SelectItem value="accepted">Accepted</SelectItem>
-                          <SelectItem value="rejected">Rejected</SelectItem>
+                          <SelectItem value="Applied">Applied</SelectItem>
+                          <SelectItem value="Reviewed">Reviewed</SelectItem>
+                          <SelectItem value="Accepted">Accepted</SelectItem>
+                          <SelectItem value="Rejected">Rejected</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>

@@ -12,3 +12,29 @@ export const isJobDeadlinePassed = (deadline) => {
 
 export const JOB_DEADLINE_PASSED_MESSAGE =
   "The application deadline for this job has passed. Applications are no longer accepted.";
+
+/**
+ * Marks jobs with a passed deadline as closed (unless already closed).
+ */
+export const closeExpiredJobs = async (prisma) => {
+  const candidates = await prisma.job.findMany({
+    where: {
+      deadline: { not: null },
+      status: { not: "closed" },
+    },
+    select: { id: true, deadline: true },
+  });
+
+  const idsToClose = candidates
+    .filter((job) => isJobDeadlinePassed(job.deadline))
+    .map((job) => job.id);
+
+  if (idsToClose.length === 0) return 0;
+
+  const result = await prisma.job.updateMany({
+    where: { id: { in: idsToClose } },
+    data: { status: "closed" },
+  });
+
+  return result.count;
+};

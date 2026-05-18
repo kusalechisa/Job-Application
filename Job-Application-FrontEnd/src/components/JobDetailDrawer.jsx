@@ -32,7 +32,7 @@ import {
   Eye,
 } from "lucide-react";
 import {
-  isJobDeadlinePassed,
+  isJobClosedForApplications,
   formatJobDeadline,
 } from "@/lib/jobDeadline";
 
@@ -47,7 +47,7 @@ export default function JobDetailDrawer({
 }) {
   if (!job) return null;
 
-  const deadlinePassed = isJobDeadlinePassed(job.deadline);
+  const deadlinePassed = isJobClosedForApplications(job);
 
   const getMatchPercentage = () => {
     // Simulate match percentage based on profile completion
