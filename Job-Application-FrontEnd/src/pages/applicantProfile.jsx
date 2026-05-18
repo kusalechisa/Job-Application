@@ -147,18 +147,21 @@ export default function ApplicantProfile() {
   // Calculate profile completion
   useEffect(() => {
     const requiredFields = [
-      "firstName",
-      "lastName",
-      "phone",
-      "address",
-      "profession",
-      "yearsOfExperience",
+      form.firstName,
+      form.lastName,
+      form.email,
+      form.phone,
+      form.address,
+      form.profession,
+      form.yearsOfExperience,
+      form.skills,
+      form.education && form.education.length > 0,
     ];
     const filledCount = requiredFields.filter(
-      (field) => form[field] && form[field].toString().trim(),
+      (field) => field && (typeof field !== "object" || field.length > 0),
     ).length;
-    const completion = (filledCount / requiredFields.length) * 100;
-    setProfileCompletion(Math.round(completion));
+    const completion = Math.round((filledCount / requiredFields.length) * 100);
+    setProfileCompletion(completion);
   }, [form]);
 
   const handleChange = (e) => {
