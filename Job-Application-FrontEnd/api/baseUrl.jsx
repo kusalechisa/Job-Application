@@ -1,2 +1,3 @@
 export const baseUrl =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5002/api";
+  import.meta.env.VITE_API_BASE_URL ||
+  "https://job-application-kjvf.onrender.com/api";
