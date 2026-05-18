@@ -806,7 +806,7 @@ export default function AppliedJobList() {
                   variant="secondary"
                   className="bg-white text-indigo-600 hover:bg-slate-100"
                 >
-                  <Link to="/applicant/profile">Update Profile</Link>
+                  <Link to="/profile">Update Profile</Link>
                 </Button>
               </div>
             </CardContent>

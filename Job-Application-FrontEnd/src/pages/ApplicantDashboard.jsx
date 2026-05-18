@@ -55,6 +55,13 @@ export default function ApplicantDashboard() {
   useEffect(() => {
     const loadDashboard = async () => {
       try {
+        // Fetch saved jobs from localStorage
+        const savedJobsFromStorage = localStorage.getItem("savedJobs");
+        const savedJobsCount = savedJobsFromStorage
+          ? JSON.parse(savedJobsFromStorage).length
+          : 0;
+        setStats((prev) => ({ ...prev, savedJobs: savedJobsCount }));
+
         // Fetch user's applications
         if (token) {
           try {
