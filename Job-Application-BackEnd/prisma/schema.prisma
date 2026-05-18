@@ -1,15 +1,15 @@
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
- Admin
- Applicant
+  Admin
+  Applicant
 }
 
 enum ApplicationStatus {
@@ -20,105 +20,124 @@ enum ApplicationStatus {
 }
 
 model Account {
- id String @id @default(uuid())
- name String
- email String @unique
- password String
- role Role @default(Applicant)
- applicant Applicant?
- jobsPosted Job[] @relation("PostedJobs")
- createdAt DateTime @default(now())
- updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  password    String
+  role        Role     @default(Applicant)
+
+  applicant   Applicant?
+  jobsPosted  Job[]    @relation("PostedJobs")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Applicant {
-  id String @id @default(uuid())
-  accountId String @unique
-  account Account @relation(fields: [accountId], references: [id])
+  id          String   @id @default(uuid())
+  accountId   String   @unique
 
-  firstName String?
-  lastName String?
-  middleName String?
-  dateOfBirth DateTime?
-  nationality String?
-  gender String?
-  maritalStatus String?
-  profilePicture String?
+  account     Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
 
-  phone String?
+  firstName        String?
+  lastName         String?
+  middleName       String?
+  dateOfBirth      DateTime?
+  nationality      String?
+  gender           String?
+  maritalStatus    String?
+  profilePicture   String?
+
+  phone            String?
   alternativePhone String?
-  email String?
-  address String?
-  city String?
-  subCity String?
-  region String?
+  address          String?
+  city             String?
+  subCity          String?
+  region           String?
 
-  profession String?
-  currentJobTitle String?
-  yearsOfExperience Int?
-  employmentStatus String?
-  portfolioUrl String?
-  linkedinUrl String?
-  githubUrl String?
+  profession          String?
+  currentJobTitle     String?
+  yearsOfExperience   Int?
+  employmentStatus    String?
+  portfolioUrl        String?
+  linkedinUrl         String?
+  githubUrl           String?
 
-  skills String[] @default([])
-  languages String[] @default([])
+  skills          String[] @default([])
+  languages       String[] @default([])
   technicalSkills String[] @default([])
-  softSkills String[] @default([])
+  softSkills      String[] @default([])
 
-  resume String?
+  resume          String?
 
-  applications Application[]
-  education Education[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  applications    Application[]
+  education       Education[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Education {
-  id String @id @default(uuid())
-  applicantId String
-  applicant Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  id            String   @id @default(uuid())
+
+  applicantId   String
+  applicant     Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
 
   highestEducation String?
-  university String?
-  college String?
-  fieldOfStudy String?
-  graduationYear Int?
+  university       String?
+  college          String?
+  fieldOfStudy     String?
+  graduationYear   Int?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Job {
   id              String   @id @default(uuid())
+
   title           String
   description     String
   company         String
   location        String
+
   salary          String?
   type            String?
   workType        String?
   employmentType  String?
+
   responsibilities String?
   requirements    String?
   deadline        DateTime?
+
   status          String   @default("draft")
   featured        Boolean  @default(false)
+
   postedById      String
-  postedBy        Account  @relation("PostedJobs", fields: [postedById], references: [id])
+  postedBy        Account  @relation("PostedJobs", fields: [postedById], references: [id], onDelete: Cascade)
+
   applications    Application[]
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
 
 model Application {
   id           String   @id @default(uuid())
+
   jobId        String
   job          Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
   applicantId  String
-  applicant    Applicant @relation(fields: [applicantId], references: [id])
+  applicant    Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
   status       ApplicationStatus @default(Applied)
+
   resume       String?
+
   appliedAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  @@index([jobId])
+  @@index([applicantId])
 }
