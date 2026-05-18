@@ -1,6 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getApplicantProfile, createApplicantProfile, updateApplicantProfile } from "../../api/Endpoints/Jobs.jsx";
+import {
+  getApplicantProfile,
+  createApplicantProfile,
+  updateApplicantProfile,
+} from "../../api/Endpoints/Jobs.jsx";
 import { getApiErrorMessage } from "@/lib/apiError";
 import {
   EMPTY_APPLICANT_PROFILE,
@@ -15,14 +19,14 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Briefcase, 
-  GraduationCap, 
-  Code, 
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Briefcase,
+  GraduationCap,
+  Code,
   Languages,
   FileText,
   Upload,
@@ -43,7 +47,7 @@ import {
   Home,
   Settings,
   TrendingUp,
-  FileText as FileIcon
+  FileText as FileIcon,
 } from "lucide-react";
 
 const selectClass =
@@ -67,7 +71,9 @@ function InfoCard({ label, value, icon: Icon }) {
       <Icon className="h-5 w-5 text-indigo-500" />
       <div>
         <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-        <p className="text-sm font-medium text-slate-900 dark:text-white">{value}</p>
+        <p className="text-sm font-medium text-slate-900 dark:text-white">
+          {value}
+        </p>
       </div>
     </div>
   );
@@ -141,9 +147,16 @@ export default function ApplicantProfile() {
   // Calculate profile completion
   useEffect(() => {
     const requiredFields = [
-      'firstName', 'lastName', 'phone', 'address', 'profession', 'yearsOfExperience'
+      "firstName",
+      "lastName",
+      "phone",
+      "address",
+      "profession",
+      "yearsOfExperience",
     ];
-    const filledCount = requiredFields.filter(field => form[field] && form[field].toString().trim()).length;
+    const filledCount = requiredFields.filter(
+      (field) => form[field] && form[field].toString().trim(),
+    ).length;
     const completion = (filledCount / requiredFields.length) * 100;
     setProfileCompletion(Math.round(completion));
   }, [form]);
@@ -216,8 +229,8 @@ export default function ApplicantProfile() {
   };
 
   const getInitials = () => {
-    const first = form.firstName || user?.name?.split(' ')[0] || '';
-    const last = form.lastName || user?.name?.split(' ')[1] || '';
+    const first = form.firstName || user?.name?.split(" ")[0] || "";
+    const last = form.lastName || user?.name?.split(" ")[1] || "";
     return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
   };
 
@@ -235,7 +248,9 @@ export default function ApplicantProfile() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
         <div className="text-center">
           <div className="mb-4 h-16 w-16 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent mx-auto"></div>
-          <p className="text-slate-600 dark:text-slate-300 font-medium">Loading profile...</p>
+          <p className="text-slate-600 dark:text-slate-300 font-medium">
+            Loading profile...
+          </p>
         </div>
       </div>
     );
@@ -245,17 +260,19 @@ export default function ApplicantProfile() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
-      
+
       {/* Mobile Navigation Drawer */}
-      <div className={`
+      <div
+        className={`
         fixed left-0 top-0 z-50 h-full w-72 transform transition-transform duration-300 ease-in-out bg-white dark:bg-slate-900 shadow-2xl
-        ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+        ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+      `}
+      >
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
@@ -264,11 +281,18 @@ export default function ApplicantProfile() {
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-900 dark:text-white">JobPortal</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Applicant Panel</p>
+                  <h2 className="font-bold text-slate-900 dark:text-white">
+                    JobPortal
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Applicant Panel
+                  </p>
                 </div>
               </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -276,10 +300,27 @@ export default function ApplicantProfile() {
           <div className="flex-1 py-6">
             <nav className="space-y-1 px-4">
               <NavItem icon={Home} label="Dashboard" to="/applicant" />
-              <NavItem icon={User} label="Profile" to="/applicant/profile" active />
-              <NavItem icon={Briefcase} label="My Applications" to="/applicant/applications" />
-              <NavItem icon={BookOpen} label="Saved Jobs" to="/applicant/saved-jobs" />
-              <NavItem icon={Settings} label="Settings" to="/applicant/settings" />
+              <NavItem
+                icon={User}
+                label="Profile"
+                to="/applicant/profile"
+                active
+              />
+              <NavItem
+                icon={Briefcase}
+                label="My Applications"
+                to="/applicant/applications"
+              />
+              <NavItem
+                icon={BookOpen}
+                label="Saved Jobs"
+                to="/applicant/saved-jobs"
+              />
+              <NavItem
+                icon={Settings}
+                label="Settings"
+                to="/applicant/settings"
+              />
             </nav>
           </div>
           <div className="p-6 border-t border-slate-200 dark:border-slate-700">
@@ -293,7 +334,9 @@ export default function ApplicantProfile() {
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
                   {form.firstName} {form.lastName}
                 </p>
-                <p className="text-xs text-slate-500">{accountEmail || user?.email}</p>
+                <p className="text-xs text-slate-500">
+                  {accountEmail || user?.email}
+                </p>
               </div>
             </div>
             <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-950/50 dark:hover:text-red-400 transition-all">
@@ -306,7 +349,6 @@ export default function ApplicantProfile() {
 
       {/* Main Content */}
       <div>
-      
         <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
           {/* Header */}
           <div className="mb-8">
@@ -316,15 +358,19 @@ export default function ApplicantProfile() {
                   {hasProfile ? "My Profile" : "Complete Your Profile"}
                 </h1>
                 <p className="text-slate-600 dark:text-slate-400">
-                  {hasProfile 
-                    ? "Manage your personal information and professional details" 
+                  {hasProfile
+                    ? "Manage your personal information and professional details"
                     : "Create your profile to start applying for jobs"}
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
-                  <p className="text-sm text-slate-600 dark:text-slate-400">Profile Completion</p>
-                  <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{profileCompletion}%</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                    Profile Completion
+                  </p>
+                  <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
+                    {profileCompletion}%
+                  </p>
                 </div>
                 <Progress value={profileCompletion} className="w-32 h-2" />
               </div>
@@ -341,7 +387,9 @@ export default function ApplicantProfile() {
           {success && (
             <div className="mb-6 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4 flex items-center gap-3">
               <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-              <p className="text-emerald-600 dark:text-emerald-400">{success}</p>
+              <p className="text-emerald-600 dark:text-emerald-400">
+                {success}
+              </p>
             </div>
           )}
 
@@ -354,14 +402,20 @@ export default function ApplicantProfile() {
                     <div className="relative mb-4">
                       <Avatar className="h-24 w-24 ring-4 ring-white dark:ring-slate-800">
                         {currentProfilePicture ? (
-                          <AvatarImage src={currentProfilePicture} alt="Profile" />
+                          <AvatarImage
+                            src={currentProfilePicture}
+                            alt="Profile"
+                          />
                         ) : (
                           <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white text-3xl">
                             {getInitials()}
                           </AvatarFallback>
                         )}
                       </Avatar>
-                      <label htmlFor="profile-picture" className="absolute bottom-0 right-0 cursor-pointer">
+                      <label
+                        htmlFor="profile-picture"
+                        className="absolute bottom-0 right-0 cursor-pointer"
+                      >
                         <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 border-2 border-indigo-500 flex items-center justify-center shadow-lg">
                           <Camera className="h-4 w-4 text-indigo-500" />
                         </div>
@@ -378,7 +432,9 @@ export default function ApplicantProfile() {
                     <h3 className="font-semibold text-slate-900 dark:text-white">
                       {form.firstName} {form.lastName}
                     </h3>
-                    <p className="text-sm text-slate-500">{form.profession || "Professional"}</p>
+                    <p className="text-sm text-slate-500">
+                      {form.profession || "Professional"}
+                    </p>
                   </div>
 
                   <nav className="space-y-1">
@@ -411,58 +467,70 @@ export default function ApplicantProfile() {
                 {activeSection === "personal" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
                     <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={User}>Personal Information</SectionTitle>
+                      <SectionTitle icon={User}>
+                        Personal Information
+                      </SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                       <div className="grid gap-4 md:grid-cols-3">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">First Name</Label>
-                          <Input 
-                            name="firstName" 
-                            value={form.firstName} 
+                          <Label className="text-sm font-medium">
+                            First Name
+                          </Label>
+                          <Input
+                            name="firstName"
+                            value={form.firstName}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="Enter first name"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Middle Name</Label>
-                          <Input 
-                            name="middleName" 
-                            value={form.middleName} 
+                          <Label className="text-sm font-medium">
+                            Middle Name
+                          </Label>
+                          <Input
+                            name="middleName"
+                            value={form.middleName}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="Enter middle name"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Last Name</Label>
-                          <Input 
-                            name="lastName" 
-                            value={form.lastName} 
+                          <Label className="text-sm font-medium">
+                            Last Name
+                          </Label>
+                          <Input
+                            name="lastName"
+                            value={form.lastName}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="Enter last name"
                           />
                         </div>
                       </div>
-                      
+
                       <div className="grid gap-4 md:grid-cols-3">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Date of Birth</Label>
-                          <Input 
-                            type="date" 
-                            name="dateOfBirth" 
-                            value={form.dateOfBirth} 
+                          <Label className="text-sm font-medium">
+                            Date of Birth
+                          </Label>
+                          <Input
+                            type="date"
+                            name="dateOfBirth"
+                            value={form.dateOfBirth}
                             onChange={handleChange}
                             className="rounded-xl"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Nationality</Label>
-                          <Input 
-                            name="nationality" 
-                            value={form.nationality} 
+                          <Label className="text-sm font-medium">
+                            Nationality
+                          </Label>
+                          <Input
+                            name="nationality"
+                            value={form.nationality}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="Enter nationality"
@@ -470,29 +538,33 @@ export default function ApplicantProfile() {
                         </div>
                         <div className="space-y-2">
                           <Label className="text-sm font-medium">Gender</Label>
-                          <select 
-                            name="gender" 
-                            value={form.gender} 
-                            onChange={handleChange} 
+                          <select
+                            name="gender"
+                            value={form.gender}
+                            onChange={handleChange}
                             className={selectClass}
                           >
                             <option value="">Select gender</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
                             <option value="Non-binary">Non-binary</option>
-                            <option value="Prefer not to say">Prefer not to say</option>
+                            <option value="Prefer not to say">
+                              Prefer not to say
+                            </option>
                             <option value="Other">Other</option>
                           </select>
                         </div>
                       </div>
-                      
+
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Marital Status</Label>
-                          <select 
-                            name="maritalStatus" 
-                            value={form.maritalStatus} 
-                            onChange={handleChange} 
+                          <Label className="text-sm font-medium">
+                            Marital Status
+                          </Label>
+                          <select
+                            name="maritalStatus"
+                            value={form.maritalStatus}
+                            onChange={handleChange}
                             className={selectClass}
                           >
                             <option value="">Select status</option>
@@ -512,35 +584,43 @@ export default function ApplicantProfile() {
                 {activeSection === "contact" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
                     <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={Phone}>Contact Information</SectionTitle>
+                      <SectionTitle icon={Phone}>
+                        Contact Information
+                      </SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Phone Number *</Label>
-                          <Input 
-                            name="phone" 
-                            value={form.phone} 
-                            onChange={handleChange} 
+                          <Label className="text-sm font-medium">
+                            Phone Number *
+                          </Label>
+                          <Input
+                            name="phone"
+                            value={form.phone}
+                            onChange={handleChange}
                             required
                             className="rounded-xl"
                             placeholder="+1 234 567 8900"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Alternative Phone</Label>
-                          <Input 
-                            name="alternativePhone" 
-                            value={form.alternativePhone} 
+                          <Label className="text-sm font-medium">
+                            Alternative Phone
+                          </Label>
+                          <Input
+                            name="alternativePhone"
+                            value={form.alternativePhone}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="+1 234 567 8900"
                           />
                         </div>
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Email Address</Label>
+                        <Label className="text-sm font-medium">
+                          Email Address
+                        </Label>
                         <Input
                           type="email"
                           name="email"
@@ -550,37 +630,42 @@ export default function ApplicantProfile() {
                           className="rounded-xl bg-slate-50 dark:bg-slate-800"
                           disabled
                         />
-                        <p className="text-xs text-slate-500">Email is linked to your account and cannot be changed here</p>
+                        <p className="text-xs text-slate-500">
+                          Email is linked to your account and cannot be changed
+                          here
+                        </p>
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label className="text-sm font-medium">Address *</Label>
-                        <Input 
-                          name="address" 
-                          value={form.address} 
-                          onChange={handleChange} 
+                        <Input
+                          name="address"
+                          value={form.address}
+                          onChange={handleChange}
                           required
                           className="rounded-xl"
                           placeholder="Street address"
                         />
                       </div>
-                      
+
                       <div className="grid gap-4 md:grid-cols-3">
                         <div className="space-y-2">
                           <Label className="text-sm font-medium">City</Label>
-                          <Input 
-                            name="city" 
-                            value={form.city} 
+                          <Input
+                            name="city"
+                            value={form.city}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="City"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Sub City</Label>
-                          <Input 
-                            name="subCity" 
-                            value={form.subCity} 
+                          <Label className="text-sm font-medium">
+                            Sub City
+                          </Label>
+                          <Input
+                            name="subCity"
+                            value={form.subCity}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="Sub city"
@@ -588,9 +673,9 @@ export default function ApplicantProfile() {
                         </div>
                         <div className="space-y-2">
                           <Label className="text-sm font-medium">Region</Label>
-                          <Input 
-                            name="region" 
-                            value={form.region} 
+                          <Input
+                            name="region"
+                            value={form.region}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="Region"
@@ -605,35 +690,43 @@ export default function ApplicantProfile() {
                 {activeSection === "professional" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
                     <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={Briefcase}>Professional Information</SectionTitle>
+                      <SectionTitle icon={Briefcase}>
+                        Professional Information
+                      </SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Profession</Label>
-                          <Input 
-                            name="profession" 
-                            value={form.profession} 
+                          <Label className="text-sm font-medium">
+                            Profession
+                          </Label>
+                          <Input
+                            name="profession"
+                            value={form.profession}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="e.g. Software Engineer"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Current Job Title</Label>
-                          <Input 
-                            name="currentJobTitle" 
-                            value={form.currentJobTitle} 
+                          <Label className="text-sm font-medium">
+                            Current Job Title
+                          </Label>
+                          <Input
+                            name="currentJobTitle"
+                            value={form.currentJobTitle}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="e.g. Senior Developer"
                           />
                         </div>
                       </div>
-                      
+
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Years of Experience</Label>
+                          <Label className="text-sm font-medium">
+                            Years of Experience
+                          </Label>
                           <Input
                             type="number"
                             min="0"
@@ -645,7 +738,9 @@ export default function ApplicantProfile() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Employment Status</Label>
+                          <Label className="text-sm font-medium">
+                            Employment Status
+                          </Label>
                           <select
                             name="employmentStatus"
                             value={form.employmentStatus}
@@ -662,36 +757,42 @@ export default function ApplicantProfile() {
                           </select>
                         </div>
                       </div>
-                      
+
                       <div className="grid gap-4 md:grid-cols-3">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Portfolio URL</Label>
-                          <Input 
-                            type="url" 
-                            name="portfolioUrl" 
-                            value={form.portfolioUrl} 
+                          <Label className="text-sm font-medium">
+                            Portfolio URL
+                          </Label>
+                          <Input
+                            type="url"
+                            name="portfolioUrl"
+                            value={form.portfolioUrl}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="https://yourportfolio.com"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">LinkedIn URL</Label>
-                          <Input 
-                            type="url" 
-                            name="linkedinUrl" 
-                            value={form.linkedinUrl} 
+                          <Label className="text-sm font-medium">
+                            LinkedIn URL
+                          </Label>
+                          <Input
+                            type="url"
+                            name="linkedinUrl"
+                            value={form.linkedinUrl}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="https://linkedin.com/in/username"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">GitHub URL</Label>
-                          <Input 
-                            type="url" 
-                            name="githubUrl" 
-                            value={form.githubUrl} 
+                          <Label className="text-sm font-medium">
+                            GitHub URL
+                          </Label>
+                          <Input
+                            type="url"
+                            name="githubUrl"
+                            value={form.githubUrl}
                             onChange={handleChange}
                             className="rounded-xl"
                             placeholder="https://github.com/username"
@@ -706,14 +807,21 @@ export default function ApplicantProfile() {
                 {activeSection === "education" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
                     <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={GraduationCap}>Education Information</SectionTitle>
+                      <SectionTitle icon={GraduationCap}>
+                        Education Information
+                      </SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                       {form.education && form.education.length > 0 ? (
                         form.education.map((edu, index) => (
-                          <div key={index} className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-4">
+                          <div
+                            key={index}
+                            className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-4"
+                          >
                             <div className="flex items-center justify-between">
-                              <h4 className="font-medium text-slate-900 dark:text-white">Education {index + 1}</h4>
+                              <h4 className="font-medium text-slate-900 dark:text-white">
+                                Education {index + 1}
+                              </h4>
                               {form.education.length > 1 && (
                                 <Button
                                   type="button"
@@ -728,14 +836,24 @@ export default function ApplicantProfile() {
                             </div>
                             <div className="grid gap-4 md:grid-cols-2">
                               <div className="space-y-2">
-                                <Label className="text-sm font-medium">Highest Education</Label>
+                                <Label className="text-sm font-medium">
+                                  Highest Education
+                                </Label>
                                 <select
                                   value={edu.highestEducation}
-                                  onChange={(e) => handleEducationChange(index, "highestEducation", e.target.value)}
+                                  onChange={(e) =>
+                                    handleEducationChange(
+                                      index,
+                                      "highestEducation",
+                                      e.target.value,
+                                    )
+                                  }
                                   className={selectClass}
                                 >
                                   <option value="">Select level</option>
-                                  <option value="High School">High School</option>
+                                  <option value="High School">
+                                    High School
+                                  </option>
                                   <option value="Associate">Associate</option>
                                   <option value="Bachelor">Bachelor</option>
                                   <option value="Master">Master</option>
@@ -744,41 +862,73 @@ export default function ApplicantProfile() {
                                 </select>
                               </div>
                               <div className="space-y-2">
-                                <Label className="text-sm font-medium">Graduation Year</Label>
-                                <Input 
-                                  type="number" 
+                                <Label className="text-sm font-medium">
+                                  Graduation Year
+                                </Label>
+                                <Input
+                                  type="number"
                                   value={edu.graduationYear}
-                                  onChange={(e) => handleEducationChange(index, "graduationYear", e.target.value)}
+                                  onChange={(e) =>
+                                    handleEducationChange(
+                                      index,
+                                      "graduationYear",
+                                      e.target.value,
+                                    )
+                                  }
                                   className="rounded-xl"
                                   placeholder="2024"
                                 />
                               </div>
                             </div>
-                            
+
                             <div className="grid gap-4 md:grid-cols-3">
                               <div className="space-y-2">
-                                <Label className="text-sm font-medium">University</Label>
-                                <Input 
+                                <Label className="text-sm font-medium">
+                                  University
+                                </Label>
+                                <Input
                                   value={edu.university}
-                                  onChange={(e) => handleEducationChange(index, "university", e.target.value)}
+                                  onChange={(e) =>
+                                    handleEducationChange(
+                                      index,
+                                      "university",
+                                      e.target.value,
+                                    )
+                                  }
                                   className="rounded-xl"
                                   placeholder="University name"
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label className="text-sm font-medium">College</Label>
-                                <Input 
+                                <Label className="text-sm font-medium">
+                                  College
+                                </Label>
+                                <Input
                                   value={edu.college}
-                                  onChange={(e) => handleEducationChange(index, "college", e.target.value)}
+                                  onChange={(e) =>
+                                    handleEducationChange(
+                                      index,
+                                      "college",
+                                      e.target.value,
+                                    )
+                                  }
                                   className="rounded-xl"
                                   placeholder="College name"
                                 />
                               </div>
                               <div className="space-y-2">
-                                <Label className="text-sm font-medium">Field of Study</Label>
-                                <Input 
+                                <Label className="text-sm font-medium">
+                                  Field of Study
+                                </Label>
+                                <Input
                                   value={edu.fieldOfStudy}
-                                  onChange={(e) => handleEducationChange(index, "fieldOfStudy", e.target.value)}
+                                  onChange={(e) =>
+                                    handleEducationChange(
+                                      index,
+                                      "fieldOfStudy",
+                                      e.target.value,
+                                    )
+                                  }
                                   className="rounded-xl"
                                   placeholder="Computer Science"
                                 />
@@ -787,9 +937,11 @@ export default function ApplicantProfile() {
                           </div>
                         ))
                       ) : (
-                        <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">No education entries added yet</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
+                          No education entries added yet
+                        </p>
                       )}
-                      
+
                       <Button
                         type="button"
                         onClick={addEducation}
@@ -807,37 +959,43 @@ export default function ApplicantProfile() {
                 {activeSection === "skills" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
                     <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={Code}>Skills Information</SectionTitle>
+                      <SectionTitle icon={Code}>
+                        Skills Information
+                      </SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                       <p className="text-sm text-slate-500 flex items-center gap-2">
                         <AlertCircle className="h-4 w-4" />
                         Enter comma-separated values for each list
                       </p>
-                      
+
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
                           <Label className="text-sm font-medium">Skills</Label>
-                          <Input 
-                            name="skills" 
-                            value={form.skills} 
-                            onChange={handleChange} 
+                          <Input
+                            name="skills"
+                            value={form.skills}
+                            onChange={handleChange}
                             className="rounded-xl"
                             placeholder="e.g. Project Management, Agile, Scrum"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Languages</Label>
-                          <Input 
-                            name="languages" 
-                            value={form.languages} 
-                            onChange={handleChange} 
+                          <Label className="text-sm font-medium">
+                            Languages
+                          </Label>
+                          <Input
+                            name="languages"
+                            value={form.languages}
+                            onChange={handleChange}
                             className="rounded-xl"
                             placeholder="e.g. English, Spanish, French"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Technical Skills</Label>
+                          <Label className="text-sm font-medium">
+                            Technical Skills
+                          </Label>
                           <Input
                             name="technicalSkills"
                             value={form.technicalSkills}
@@ -847,7 +1005,9 @@ export default function ApplicantProfile() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Soft Skills</Label>
+                          <Label className="text-sm font-medium">
+                            Soft Skills
+                          </Label>
                           <Input
                             name="softSkills"
                             value={form.softSkills}
@@ -859,13 +1019,18 @@ export default function ApplicantProfile() {
                       </div>
 
                       {/* Preview Skills */}
-                      {(form.skills || form.technicalSkills || form.softSkills || form.languages) && (
+                      {(form.skills ||
+                        form.technicalSkills ||
+                        form.softSkills ||
+                        form.languages) && (
                         <div className="space-y-4 pt-4">
                           {form.skills && (
                             <div>
-                              <Label className="text-sm font-medium mb-2 block">Skills Preview</Label>
+                              <Label className="text-sm font-medium mb-2 block">
+                                Skills Preview
+                              </Label>
                               <div className="flex flex-wrap gap-2">
-                                {form.skills.split(',').map((skill, idx) => (
+                                {form.skills.split(",").map((skill, idx) => (
                                   <SkillBadge key={idx} skill={skill.trim()} />
                                 ))}
                               </div>
@@ -873,11 +1038,18 @@ export default function ApplicantProfile() {
                           )}
                           {form.technicalSkills && (
                             <div>
-                              <Label className="text-sm font-medium mb-2 block">Technical Skills Preview</Label>
+                              <Label className="text-sm font-medium mb-2 block">
+                                Technical Skills Preview
+                              </Label>
                               <div className="flex flex-wrap gap-2">
-                                {form.technicalSkills.split(',').map((skill, idx) => (
-                                  <SkillBadge key={idx} skill={skill.trim()} />
-                                ))}
+                                {form.technicalSkills
+                                  .split(",")
+                                  .map((skill, idx) => (
+                                    <SkillBadge
+                                      key={idx}
+                                      skill={skill.trim()}
+                                    />
+                                  ))}
                               </div>
                             </div>
                           )}
@@ -891,15 +1063,21 @@ export default function ApplicantProfile() {
                 {activeSection === "documents" && (
                   <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
                     <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={FileText}>Application Documents</SectionTitle>
+                      <SectionTitle icon={FileText}>
+                        Application Documents
+                      </SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Resume/CV *</Label>
+                        <Label className="text-sm font-medium">
+                          Resume/CV *
+                        </Label>
                         {currentResume && (
                           <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2 mb-2">
                             <FileIcon className="h-4 w-4 text-emerald-600" />
-                            <span className="text-sm text-emerald-700 dark:text-emerald-400">Current: {currentResume}</span>
+                            <span className="text-sm text-emerald-700 dark:text-emerald-400">
+                              Current: {currentResume}
+                            </span>
                           </div>
                         )}
                         <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center hover:border-indigo-500 transition-all">
@@ -911,12 +1089,17 @@ export default function ApplicantProfile() {
                             className="hidden"
                             id="resume-upload"
                           />
-                          <label htmlFor="resume-upload" className="cursor-pointer">
+                          <label
+                            htmlFor="resume-upload"
+                            className="cursor-pointer"
+                          >
                             <Upload className="h-10 w-10 text-slate-400 mx-auto mb-2" />
                             <p className="text-sm text-slate-600 dark:text-slate-400">
                               Click to upload or drag and drop
                             </p>
-                            <p className="text-xs text-slate-500 mt-1">PDF, DOC, DOCX, TXT (Max 5MB)</p>
+                            <p className="text-xs text-slate-500 mt-1">
+                              PDF, DOC, DOCX, TXT (Max 5MB)
+                            </p>
                           </label>
                         </div>
                       </div>
@@ -926,9 +1109,9 @@ export default function ApplicantProfile() {
 
                 {/* Submit Button */}
                 <div className="flex justify-end">
-                  <Button 
-                    type="submit" 
-                    disabled={saving} 
+                  <Button
+                    type="submit"
+                    disabled={saving}
                     className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg transition-all rounded-xl px-8 py-2 text-lg"
                   >
                     {saving ? (

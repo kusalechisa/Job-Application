@@ -131,6 +131,9 @@ export function buildApplicantProfileData(body, files = {}) {
 
   if (files.profilePicture?.[0]) {
     data.profilePicture = files.profilePicture[0].path;
+  } else if (body.profilePicture !== undefined && !files.profilePicture) {
+    data.profilePicture =
+      body.profilePicture === "" ? null : body.profilePicture;
   }
 
   return data;
