@@ -90,17 +90,26 @@ model Education {
 }
 
 model Job {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  company     String
-  location    String
-  salary      String?
-  postedById  String
-  postedBy    Account  @relation("PostedJobs", fields: [postedById], references: [id])
-  applications Application[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id              String   @id @default(uuid())
+  title           String
+  description     String
+  company         String
+  location        String
+  salary          String?
+  type            String?
+  workType        String?
+  employmentType  String?
+  responsibilities String?
+  requirements    String?
+  deadline        DateTime?
+  status          String   @default("draft")
+  featured        Boolean  @default(false)
+  expiryDate      DateTime?
+  postedById      String
+  postedBy        Account  @relation("PostedJobs", fields: [postedById], references: [id])
+  applications    Application[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model Application {
