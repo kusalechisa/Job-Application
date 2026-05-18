@@ -18,15 +18,11 @@ const TEXT_FIELDS = [
   "portfolioUrl",
   "linkedinUrl",
   "githubUrl",
-  "highestEducation",
-  "university",
-  "college",
-  "fieldOfStudy",
 ];
 
 const ARRAY_FIELDS = ["skills", "languages", "technicalSkills", "softSkills"];
 
-const INT_FIELDS = ["yearsOfExperience", "graduationYear"];
+const INT_FIELDS = ["yearsOfExperience"];
 
 export function parseStringArray(value) {
   if (value === undefined || value === null || value === "") return [];
@@ -61,33 +57,51 @@ function pickDefined(entries) {
   return Object.fromEntries(entries.filter(([, value]) => value !== undefined));
 }
 
+export function parseEducationArray(body) {
+  let educationData = [];
+
+  if (body.education) {
+    if (Array.isArray(body.education)) {
+      educationData = body.education;
+    } else if (typeof body.education === "string") {
+      try {
+        const parsed = JSON.parse(body.education);
+        if (Array.isArray(parsed)) {
+          educationData = parsed;
+        }
+      } catch {
+        // If parsing fails, return empty array
+        educationData = [];
+      }
+    }
+  }
+
+  // Filter and transform education data
+  return educationData
+    .filter(
+      (edu) =>
+        edu.highestEducation ||
+        edu.university ||
+        edu.college ||
+        edu.fieldOfStudy ||
+        edu.graduationYear,
+    )
+    .map((edu) => ({
+      highestEducation: edu.highestEducation || null,
+      university: edu.university || null,
+      college: edu.college || null,
+      fieldOfStudy: edu.fieldOfStudy || null,
+      graduationYear: edu.graduationYear
+        ? parseOptionalInt(edu.graduationYear)
+        : null,
+    }));
+}
+
 export function buildApplicantProfileData(body, files = {}) {
   const data = {};
 
-  // Handle education array from frontend
-  if (
-    body.education &&
-    Array.isArray(body.education) &&
-    body.education.length > 0
-  ) {
-    const edu = body.education[0]; // Use first education entry for now
-    if (edu.highestEducation !== undefined)
-      data.highestEducation =
-        edu.highestEducation === "" ? null : edu.highestEducation;
-    if (edu.university !== undefined)
-      data.university = edu.university === "" ? null : edu.university;
-    if (edu.college !== undefined)
-      data.college = edu.college === "" ? null : edu.college;
-    if (edu.fieldOfStudy !== undefined)
-      data.fieldOfStudy = edu.fieldOfStudy === "" ? null : edu.fieldOfStudy;
-    if (edu.graduationYear !== undefined)
-      data.graduationYear =
-        edu.graduationYear === "" ? null : parseOptionalInt(edu.graduationYear);
-  }
-
   for (const field of TEXT_FIELDS) {
-    if (body[field] !== undefined && !data[field]) {
-      // Skip if already set from education array
+    if (body[field] !== undefined) {
       data[field] = body[field] === "" ? null : body[field];
     }
   }

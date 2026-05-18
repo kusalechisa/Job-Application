@@ -31,9 +31,12 @@ export const EMPTY_APPLICANT_PROFILE = {
 
 function parseAccountName(name = "") {
   const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return { firstName: "", middleName: "", lastName: "" };
-  if (parts.length === 1) return { firstName: parts[0], middleName: "", lastName: "" };
-  if (parts.length === 2) return { firstName: parts[0], middleName: "", lastName: parts[1] };
+  if (parts.length === 0)
+    return { firstName: "", middleName: "", lastName: "" };
+  if (parts.length === 1)
+    return { firstName: parts[0], middleName: "", lastName: "" };
+  if (parts.length === 2)
+    return { firstName: parts[0], middleName: "", lastName: parts[1] };
   return {
     firstName: parts[0],
     middleName: parts.slice(1, -1).join(" "),
@@ -57,6 +60,18 @@ export function profileToForm(profile, accountEmail = "") {
   const account = profile.account || {};
   const nameFromAccount = parseAccountName(account.name || "");
 
+  // Handle education data from backend
+  let educationData = [];
+  if (Array.isArray(profile.education) && profile.education.length > 0) {
+    educationData = profile.education.map((edu) => ({
+      highestEducation: edu.highestEducation || "",
+      university: edu.university || "",
+      college: edu.college || "",
+      fieldOfStudy: edu.fieldOfStudy || "",
+      graduationYear: edu.graduationYear ? String(edu.graduationYear) : "",
+    }));
+  }
+
   return {
     firstName: profile.firstName || nameFromAccount.firstName || "",
     lastName: profile.lastName || nameFromAccount.lastName || "",
@@ -75,35 +90,14 @@ export function profileToForm(profile, accountEmail = "") {
     region: profile.region || "",
     profession: profile.profession || "",
     currentJobTitle: profile.currentJobTitle || "",
-    yearsOfExperience:
-      profile.yearsOfExperience !== null && profile.yearsOfExperience !== undefined
-        ? String(profile.yearsOfExperience)
-        : "",
+    yearsOfExperience: profile.yearsOfExperience
+      ? String(profile.yearsOfExperience)
+      : "",
     employmentStatus: profile.employmentStatus || "",
     portfolioUrl: profile.portfolioUrl || "",
     linkedinUrl: profile.linkedinUrl || "",
     githubUrl: profile.githubUrl || "",
-    education: Array.isArray(profile.education) 
-      ? profile.education.map(edu => ({
-          highestEducation: edu.highestEducation || "",
-          university: edu.university || "",
-          college: edu.college || "",
-          fieldOfStudy: edu.fieldOfStudy || "",
-          graduationYear: edu.graduationYear !== null && edu.graduationYear !== undefined
-            ? String(edu.graduationYear)
-            : "",
-        }))
-      : (profile.highestEducation || profile.university || profile.college || profile.fieldOfStudy || profile.graduationYear
-          ? [{
-              highestEducation: profile.highestEducation || "",
-              university: profile.university || "",
-              college: profile.college || "",
-              fieldOfStudy: profile.fieldOfStudy || "",
-              graduationYear: profile.graduationYear !== null && profile.graduationYear !== undefined
-                ? String(profile.graduationYear)
-                : "",
-            }]
-          : []),
+    education: educationData,
     skills: joinList(profile.skills),
     languages: joinList(profile.languages),
     technicalSkills: joinList(profile.technicalSkills),
@@ -113,29 +107,62 @@ export function profileToForm(profile, accountEmail = "") {
 }
 
 const FORM_FIELDS = Object.keys(EMPTY_APPLICANT_PROFILE).filter(
-  (key) => !["profilePicture", "resume", "education"].includes(key)
+  (key) => !["profilePicture", "resume", "education"].includes(key),
 );
 
 export function formToFormData(form) {
   const data = new FormData();
+
+  // Add all basic fields
   for (const key of FORM_FIELDS) {
-    if (form[key] !== undefined && form[key] !== null) {
+    if (form[key] !== undefined && form[key] !== null && form[key] !== "") {
       data.append(key, form[key]);
     }
   }
-  if (form.profilePicture) data.append("profilePicture", form.profilePicture);
-  if (form.resume) data.append("resume", form.resume);
-  
-  // Handle education array
-  if (Array.isArray(form.education)) {
-    form.education.forEach((edu, index) => {
-      if (edu.highestEducation) data.append(`education[${index}][highestEducation]`, edu.highestEducation);
-      if (edu.university) data.append(`education[${index}][university]`, edu.university);
-      if (edu.college) data.append(`education[${index}][college]`, edu.college);
-      if (edu.fieldOfStudy) data.append(`education[${index}][fieldOfStudy]`, edu.fieldOfStudy);
-      if (edu.graduationYear) data.append(`education[${index}][graduationYear]`, edu.graduationYear);
-    });
+
+  // Handle profile picture
+  if (form.profilePicture && form.profilePicture instanceof File) {
+    data.append("profilePicture", form.profilePicture);
   }
-  
+
+  // Handle resume
+  if (form.resume && form.resume instanceof File) {
+    data.append("resume", form.resume);
+  }
+
+  // CRITICAL FIX: Handle education array - Send as JSON string
+  if (Array.isArray(form.education) && form.education.length > 0) {
+    // Filter out completely empty education entries
+    const validEducation = form.education.filter(
+      (edu) =>
+        edu.highestEducation ||
+        edu.university ||
+        edu.college ||
+        edu.fieldOfStudy ||
+        edu.graduationYear,
+    );
+
+    if (validEducation.length > 0) {
+      // Send as JSON string - most reliable format
+      data.append("education", JSON.stringify(validEducation));
+      console.log("Sending education data:", validEducation);
+    }
+  } else if (Array.isArray(form.education) && form.education.length === 0) {
+    // Send empty array if no education
+    data.append("education", JSON.stringify([]));
+  }
+
+  // Debug logging
+  console.log("=== Final FormData contents ===");
+  for (let pair of data.entries()) {
+    if (pair[0] === "education") {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    } else if (pair[1] instanceof File) {
+      console.log(`${pair[0]}: File (${pair[1].name}, ${pair[1].size} bytes)`);
+    } else {
+      console.log(`${pair[0]}: ${pair[1]}`);
+    }
+  }
+
   return data;
 }

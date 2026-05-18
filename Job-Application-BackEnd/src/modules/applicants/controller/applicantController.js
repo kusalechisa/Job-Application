@@ -5,6 +5,7 @@ import path from "path";
 import {
   buildApplicantProfileData,
   buildApplicantUpdateData,
+  parseEducationArray,
 } from "#src/modules/applicants/utils/applicantProfileUtils.js";
 
 const ensureDir = (dir) => {
@@ -97,11 +98,18 @@ export const createApplicantProfile = [
       }
 
       const profileData = buildApplicantProfileData(req.body, req.files);
+      const educationData = parseEducationArray(req.body);
 
       const profile = await prisma.applicant.create({
         data: {
           accountId,
           ...profileData,
+          education:
+            educationData.length > 0
+              ? {
+                  create: educationData,
+                }
+              : undefined,
         },
       });
 
@@ -209,10 +217,25 @@ export const updateApplicantProfile = [
       }
 
       const updateData = buildApplicantUpdateData(req.body, req.files);
+      const educationData = parseEducationArray(req.body);
 
+      // Delete existing education records
+      await prisma.education.deleteMany({
+        where: { applicantId: profile.id },
+      });
+
+      // Create new education records
       const updatedProfile = await prisma.applicant.update({
         where: { accountId },
-        data: updateData,
+        data: {
+          ...updateData,
+          education:
+            educationData.length > 0
+              ? {
+                  create: educationData,
+                }
+              : undefined,
+        },
       });
 
       return res.status(200).json({
