@@ -314,11 +314,7 @@ export default function ApplicantProfile() {
                 label="My Applications"
                 to="/applicant/applications"
               />
-              <NavItem
-                icon={BookOpen}
-                label="Saved Jobs"
-                to="/applicant/saved-jobs"
-              />
+              <NavItem icon={BookOpen} label="Saved Jobs" to="/saved-jobs" />
               <NavItem
                 icon={Settings}
                 label="Settings"
