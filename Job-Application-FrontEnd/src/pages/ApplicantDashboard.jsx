@@ -351,46 +351,48 @@ export default function ApplicantDashboard() {
                   {recommendedJobs.map((job) => {
                     const deadlinePassed = isJobClosedForApplications(job);
                     return (
-                    <Card
-                      key={job.id}
-                      className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-md transition-shadow"
-                    >
-                      <CardContent className="p-5">
-                        <div className="space-y-3">
-                          <div>
-                            <h3 className="font-semibold text-slate-900 dark:text-slate-100">
-                              {job.title}
-                            </h3>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">
-                              {job.company}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-                            <div className="flex items-center gap-1">
-                              <MapPin className="h-4 w-4" />
-                              <span>{job.location}</span>
+                      <Card
+                        key={job.id}
+                        className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-md transition-shadow"
+                      >
+                        <CardContent className="p-5">
+                          <div className="space-y-3">
+                            <div>
+                              <h3 className="font-semibold text-slate-900 dark:text-slate-100">
+                                {job.title}
+                              </h3>
+                              <p className="text-sm text-slate-600 dark:text-slate-400">
+                                {job.company}
+                              </p>
                             </div>
-                            <div className="flex items-center gap-1">
-                              <DollarSign className="h-4 w-4" />
-                              <span>{job.salary || "Competitive"}</span>
+                            <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                              <div className="flex items-center gap-1">
+                                <MapPin className="h-4 w-4" />
+                                <span>{job.location}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <DollarSign className="h-4 w-4" />
+                                <span>{job.salary || "Competitive"}</span>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button
+                                size="sm"
+                                className="flex-1 bg-sky-600 hover:bg-sky-700 disabled:opacity-60"
+                                onClick={() => handleApply(job.id)}
+                                disabled={deadlinePassed}
+                              >
+                                {deadlinePassed
+                                  ? "Deadline Reached"
+                                  : "Apply Now"}
+                              </Button>
+                              <Button size="sm" variant="outline">
+                                <Bookmark className="h-4 w-4" />
+                              </Button>
                             </div>
                           </div>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              className="flex-1 bg-sky-600 hover:bg-sky-700 disabled:opacity-60"
-                              onClick={() => handleApply(job.id)}
-                              disabled={deadlinePassed}
-                            >
-                              {deadlinePassed ? "Deadline Reached" : "Apply Now"}
-                            </Button>
-                            <Button size="sm" variant="outline">
-                              <Bookmark className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
                     );
                   })}
                 </div>
