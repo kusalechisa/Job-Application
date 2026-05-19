@@ -106,7 +106,7 @@ export default function Register() {
       });
 
       login(loginRes.data);
-      const profileData = formToFormData({ ...form, email: form.email });
+      const profileData = formToFormData(form);
       await createApplicantProfile(profileData);
       navigate(getDashboardPath("Applicant"));
     } catch (err) {

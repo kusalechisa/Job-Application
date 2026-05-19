@@ -67,7 +67,7 @@ export default function SavedJobs() {
         
         let completion = 0;
         if (profile.fullName) completion += 20;
-        if (profile.email) completion += 15;
+        if (profile.account?.email) completion += 15;
         if (profile.phone) completion += 15;
         if (profile.skills && profile.skills.length > 0) completion += 20;
         if (profile.experience) completion += 15;

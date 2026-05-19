@@ -90,7 +90,7 @@ function SkillBadge({ skill }) {
 function applyProfileToState(profile, setters) {
   const accountEmail = profile.account?.email || "";
   setters.setAccountEmail(accountEmail);
-  setters.setForm(profileToForm(profile, accountEmail));
+  setters.setForm(profileToForm(profile));
   setters.setCurrentResume(profile.resume || "");
   setters.setCurrentProfilePicture(profile.profilePicture || "");
   setters.setHasProfile(true);
@@ -122,7 +122,6 @@ export default function ApplicantProfile() {
           setHasProfile(false);
           setForm({
             ...EMPTY_APPLICANT_PROFILE,
-            email: user?.email || "",
           });
           setCurrentResume("");
           setCurrentProfilePicture("");
@@ -138,7 +137,7 @@ export default function ApplicantProfile() {
         });
       } catch (err) {
         setHasProfile(false);
-        setForm({ ...EMPTY_APPLICANT_PROFILE, email: user?.email || "" });
+        setForm({ ...EMPTY_APPLICANT_PROFILE });
         setError(getApiErrorMessage(err, "Failed to load your profile."));
       } finally {
         if (!silent) setLoading(false);
@@ -157,7 +156,7 @@ export default function ApplicantProfile() {
     const requiredFields = [
       form.firstName,
       form.lastName,
-      form.email,
+      accountEmail || user?.email,
       form.phone,
       form.address,
       form.profession,
@@ -170,7 +169,7 @@ export default function ApplicantProfile() {
     ).length;
     const completion = Math.round((filledCount / requiredFields.length) * 100);
     setProfileCompletion(completion);
-  }, [form]);
+  }, [form, accountEmail, user?.email]);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -630,12 +629,11 @@ export default function ApplicantProfile() {
                         </Label>
                         <Input
                           type="email"
-                          name="email"
-                          value={form.email}
-                          onChange={handleChange}
-                          placeholder={accountEmail || "you@example.com"}
-                          className="rounded-xl bg-slate-50 dark:bg-slate-800"
+                          readOnly
                           disabled
+                          value={accountEmail || user?.email || ""}
+                          placeholder={accountEmail || user?.email || "you@example.com"}
+                          className="rounded-xl bg-slate-50 dark:bg-slate-800"
                         />
                         <p className="text-xs text-slate-500">
                           Email is linked to your account and cannot be changed

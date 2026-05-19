@@ -147,7 +147,7 @@ export default function JobList() {
 
         let completion = 0;
         if (profile.firstName || profile.lastName) completion += 15;
-        if (profile.email) completion += 15;
+        if (profile.account?.email) completion += 15;
         if (profile.phone) completion += 15;
         if (profile.skills && profile.skills.length > 0) completion += 25;
         if (profile.yearsOfExperience) completion += 15;

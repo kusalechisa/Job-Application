@@ -66,7 +66,7 @@ export default function AdminApplicationDetail() {
           {error && <p className="text-rose-600">{error}</p>}
           {success && <p className="text-emerald-600">{success}</p>}
           <p><strong>Job:</strong> {application.job?.title} at {application.job?.company}</p>
-          <p><strong>Applicant:</strong> {[applicant?.firstName, applicant?.middleName, applicant?.lastName].filter(Boolean).join(" ") || applicant?.account?.name} ({applicant?.email || applicant?.account?.email})</p>
+          <p><strong>Applicant:</strong> {[applicant?.firstName, applicant?.middleName, applicant?.lastName].filter(Boolean).join(" ") || applicant?.account?.name} ({applicant?.account?.email})</p>
           <p><strong>Phone:</strong> {applicant?.phone || "—"}{applicant?.alternativePhone ? ` / ${applicant.alternativePhone}` : ""}</p>
           <p><strong>Location:</strong> {[applicant?.address, applicant?.subCity, applicant?.city, applicant?.region].filter(Boolean).join(", ") || "—"}</p>
           <p><strong>Profession:</strong> {applicant?.profession || applicant?.currentJobTitle || "—"}</p>

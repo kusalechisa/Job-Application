@@ -126,6 +126,12 @@ export const createApplicantProfile = [
                 }
               : undefined,
         },
+        include: {
+          account: {
+            select: { name: true, email: true },
+          },
+          education: true,
+        },
       });
 
       return res.status(201).json({
@@ -260,6 +266,12 @@ export const updateApplicantProfile = [
                   create: educationData,
                 }
               : undefined,
+        },
+        include: {
+          account: {
+            select: { name: true, email: true },
+          },
+          education: true,
         },
       });
 

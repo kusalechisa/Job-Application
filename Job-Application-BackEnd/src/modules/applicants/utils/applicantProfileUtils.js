@@ -7,7 +7,6 @@ const TEXT_FIELDS = [
   "maritalStatus",
   "phone",
   "alternativePhone",
-  "email",
   "address",
   "city",
   "subCity",

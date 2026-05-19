@@ -9,7 +9,6 @@ export const EMPTY_APPLICANT_PROFILE = {
   profilePicture: null,
   phone: "",
   alternativePhone: "",
-  email: "",
   address: "",
   city: "",
   subCity: "",
@@ -46,7 +45,7 @@ function parseAccountName(name = "") {
   };
 }
 
-export function profileToForm(profile, accountEmail = "") {
+export function profileToForm(profile) {
   const formatDate = (value) => {
     if (!value) return "";
     const date = new Date(value);
@@ -85,7 +84,6 @@ export function profileToForm(profile, accountEmail = "") {
     profilePicture: null,
     phone: profile.phone || "",
     alternativePhone: profile.alternativePhone || "",
-    email: profile.email || account.email || accountEmail || "",
     address: profile.address || "",
     city: profile.city || "",
     subCity: profile.subCity || "",

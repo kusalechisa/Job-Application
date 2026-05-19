@@ -98,7 +98,7 @@ export default function ApplicantDashboard() {
               const requiredFields = [
                 profile.firstName || profile.fullName,
                 profile.lastName,
-                profile.email,
+                profile.account?.email || user?.email,
                 profile.phone,
                 profile.address,
                 profile.profession,
@@ -610,7 +610,7 @@ export default function ApplicantDashboard() {
                   <div className="flex items-center gap-2">
                     {profileData?.firstName &&
                     profileData?.lastName &&
-                    profileData?.email &&
+                    (profileData?.account?.email || user?.email) &&
                     profileData?.phone ? (
                       <CheckCircle2 className="h-4 w-4 text-emerald-500" />
                     ) : (
