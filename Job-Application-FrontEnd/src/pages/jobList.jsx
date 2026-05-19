@@ -138,6 +138,11 @@ export default function JobList() {
       try {
         const profileRes = await getApplicantProfile();
         const profile = profileRes.data.data;
+        if (!profile) {
+          setProfileData(null);
+          setProfileCompletion(0);
+          return;
+        }
         setProfileData(profile);
 
         let completion = 0;

@@ -70,6 +70,11 @@ model Applicant {
 
   resume          String?
 
+  /// Cumulative Grade Point Average (scale varies by institution; stored as decimal)
+  cgpa            Float?
+  /// Exit / qualifying exam score out of 100
+  exitExamScore   Float?
+
   applications    Application[]
   education       Education[]
 

@@ -61,6 +61,12 @@ export default function AdminUsers() {
     role: "",
     status: ""
   });
+  const [applicantFilters, setApplicantFilters] = useState({
+    cgpaMin: "",
+    cgpaMax: "",
+    exitExamMin: "",
+    exitExamMax: "",
+  });
   const [showFilters, setShowFilters] = useState(false);
   const [resetPasswordModalOpen, setResetPasswordModalOpen] = useState(false);
   const [selectedUserForReset, setSelectedUserForReset] = useState(null);
@@ -86,7 +92,13 @@ export default function AdminUsers() {
   const loadUsers = async () => {
     setLoading(true);
     try {
-      const res = await getUsers();
+      const params = {};
+      if (applicantFilters.cgpaMin !== "") params.cgpaMin = applicantFilters.cgpaMin;
+      if (applicantFilters.cgpaMax !== "") params.cgpaMax = applicantFilters.cgpaMax;
+      if (applicantFilters.exitExamMin !== "") params.exitExamMin = applicantFilters.exitExamMin;
+      if (applicantFilters.exitExamMax !== "") params.exitExamMax = applicantFilters.exitExamMax;
+
+      const res = await getUsers(params);
       let list = (res.data.data || []).map(({ password, ...safe }) => safe);
       
       // Client-side filtering for search
@@ -118,10 +130,16 @@ export default function AdminUsers() {
 
   useEffect(() => {
     loadUsers();
-  }, [search, filters]);
+  }, [search, filters, applicantFilters]);
 
   const clearFilters = () => {
     setFilters({ role: "", status: "" });
+    setApplicantFilters({
+      cgpaMin: "",
+      cgpaMax: "",
+      exitExamMin: "",
+      exitExamMax: "",
+    });
     setShowFilters(false);
   };
 
@@ -228,7 +246,7 @@ export default function AdminUsers() {
         Status: user.status,
         CreatedDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "N/A",
         LastLogin: user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() : "Never",
-        Applications: user._count?.applications || 0,
+        Applications: user.applicant?._count?.applications || 0,
         JobsPosted: user._count?.jobs || 0
       }));
     
@@ -348,7 +366,7 @@ export default function AdminUsers() {
     applicants: users.filter(u => u.role === 'Applicant').length,
     active: users.filter(u => u.status === 'active').length,
     suspended: users.filter(u => u.status === 'suspended').length,
-    totalApplications: users.reduce((sum, u) => sum + (u._count?.applications || 0), 0),
+    totalApplications: users.reduce((sum, u) => sum + (u.applicant?._count?.applications || 0), 0),
     totalJobs: users.reduce((sum, u) => sum + (u._count?.jobs || 0), 0)
   };
 
@@ -459,9 +477,9 @@ export default function AdminUsers() {
                   >
                     <Filter className="h-4 w-4" />
                     Filters
-                    {Object.values(filters).some(f => f) && (
+                    {Object.values(filters).some(f => f) || Object.values(applicantFilters).some(f => f) ? (
                       <Badge variant="secondary" className="ml-2">Active</Badge>
-                    )}
+                    ) : null}
                   </Button>
                   <Button 
                     variant="outline" 
@@ -534,6 +552,48 @@ export default function AdminUsers() {
                         </SelectContent>
                       </Select>
                     </div>
+                    <div className="md:col-span-2">
+                      <Label className="text-sm font-medium mb-2 block">Applicant CGPA range</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="Min"
+                          value={applicantFilters.cgpaMin}
+                          onChange={(e) => setApplicantFilters({ ...applicantFilters, cgpaMin: e.target.value })}
+                        />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="Max"
+                          value={applicantFilters.cgpaMax}
+                          onChange={(e) => setApplicantFilters({ ...applicantFilters, cgpaMax: e.target.value })}
+                        />
+                      </div>
+                    </div>
+                    <div className="md:col-span-2">
+                      <Label className="text-sm font-medium mb-2 block">Exit exam (100%) range</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          max={100}
+                          placeholder="Min"
+                          value={applicantFilters.exitExamMin}
+                          onChange={(e) => setApplicantFilters({ ...applicantFilters, exitExamMin: e.target.value })}
+                        />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          max={100}
+                          placeholder="Max"
+                          value={applicantFilters.exitExamMax}
+                          onChange={(e) => setApplicantFilters({ ...applicantFilters, exitExamMax: e.target.value })}
+                        />
+                      </div>
+                    </div>
                   </div>
                   <div className="mt-4 flex justify-end">
                     <Button variant="outline" onClick={clearFilters} size="sm">
@@ -575,6 +635,8 @@ export default function AdminUsers() {
                         </TableHead>
                         <TableHead className="font-semibold">User</TableHead>
                         <TableHead className="font-semibold hidden md:table-cell">Role</TableHead>
+                        <TableHead className="font-semibold hidden lg:table-cell">CGPA</TableHead>
+                        <TableHead className="font-semibold hidden lg:table-cell">Exit exam</TableHead>
                         <TableHead className="font-semibold hidden lg:table-cell">Status</TableHead>
                         <TableHead className="font-semibold hidden sm:table-cell">Joined</TableHead>
                         <TableHead className="font-semibold hidden xl:table-cell">Activity</TableHead>
@@ -584,7 +646,7 @@ export default function AdminUsers() {
                     <TableBody>
                       {paginatedUsers.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={7} className="text-center py-12">
+                          <TableCell colSpan={9} className="text-center py-12">
                             <div className="text-center">
                               <Users className="h-12 w-12 text-slate-400 mx-auto mb-3" />
                               <p className="text-slate-600 dark:text-slate-400">No users found</p>
@@ -623,6 +685,16 @@ export default function AdminUsers() {
                                 {user.role}
                               </Badge>
                             </TableCell>
+                            <TableCell className="hidden lg:table-cell text-sm text-slate-600 dark:text-slate-300">
+                              {user.role === "Applicant" && user.applicant?.cgpa != null
+                                ? Number(user.applicant.cgpa).toLocaleString(undefined, { maximumFractionDigits: 2 })
+                                : "—"}
+                            </TableCell>
+                            <TableCell className="hidden lg:table-cell text-sm text-slate-600 dark:text-slate-300">
+                              {user.role === "Applicant" && user.applicant?.exitExamScore != null
+                                ? Number(user.applicant.exitExamScore).toLocaleString(undefined, { maximumFractionDigits: 2 })
+                                : "—"}
+                            </TableCell>
                             <TableCell className="hidden lg:table-cell">
                               <Badge className={`${getStatusColor(user.status)} text-white gap-1`}>
                                 {user.status === "active" ? <CheckCircle className="h-3 w-3" /> : <Ban className="h-3 w-3" />}
@@ -636,7 +708,7 @@ export default function AdminUsers() {
                               <div className="space-y-1 text-xs">
                                 <div className="flex items-center gap-1 text-slate-500">
                                   <FileText className="h-3 w-3" />
-                                  <span>Apps: {user._count?.applications || 0}</span>
+                                  <span>Apps: {user.applicant?._count?.applications ?? 0}</span>
                                 </div>
                                 <div className="flex items-center gap-1 text-slate-500">
                                   <Briefcase className="h-3 w-3" />

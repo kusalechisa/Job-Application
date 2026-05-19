@@ -44,6 +44,29 @@ import {
   Menu
 } from "lucide-react";
 
+function inApplicantScoreRange(value, minStr, maxStr) {
+  if (minStr === "" && maxStr === "") return true;
+  if (value == null || value === "") return false;
+  const n = Number(value);
+  if (Number.isNaN(n)) return false;
+  if (minStr !== "" && minStr != null) {
+    const min = Number(minStr);
+    if (!Number.isNaN(min) && n < min) return false;
+  }
+  if (maxStr !== "" && maxStr != null) {
+    const max = Number(maxStr);
+    if (!Number.isNaN(max) && n > max) return false;
+  }
+  return true;
+}
+
+function formatApplicantMetric(value) {
+  if (value == null || value === "") return "—";
+  const n = Number(value);
+  if (Number.isNaN(n)) return "—";
+  return n.toLocaleString(undefined, { maximumFractionDigits: 2 });
+}
+
 export default function AdminApplications() {
   const [applications, setApplications] = useState([]);
   const [error, setError] = useState("");
@@ -53,7 +76,11 @@ export default function AdminApplications() {
     status: "",
     education: "",
     experience: "",
-    location: ""
+    location: "",
+    cgpaMin: "",
+    cgpaMax: "",
+    exitExamMin: "",
+    exitExamMax: "",
   });
   const [showFilters, setShowFilters] = useState(false);
   const [selectedApplications, setSelectedApplications] = useState([]);
@@ -103,6 +130,21 @@ export default function AdminApplications() {
       if (filters.location) {
         filtered = filtered.filter(app => app.applicant?.location === filters.location);
       }
+
+      if (filters.cgpaMin !== "" || filters.cgpaMax !== "") {
+        filtered = filtered.filter((app) =>
+          inApplicantScoreRange(app.applicant?.cgpa, filters.cgpaMin, filters.cgpaMax),
+        );
+      }
+      if (filters.exitExamMin !== "" || filters.exitExamMax !== "") {
+        filtered = filtered.filter((app) =>
+          inApplicantScoreRange(
+            app.applicant?.exitExamScore,
+            filters.exitExamMin,
+            filters.exitExamMax,
+          ),
+        );
+      }
       
       setApplications(filtered);
     } catch (err) {
@@ -117,7 +159,16 @@ export default function AdminApplications() {
   }, [search, filters]);
 
   const clearFilters = () => {
-    setFilters({ status: "", education: "", experience: "", location: "" });
+    setFilters({
+      status: "",
+      education: "",
+      experience: "",
+      location: "",
+      cgpaMin: "",
+      cgpaMax: "",
+      exitExamMin: "",
+      exitExamMax: "",
+    });
     setShowFilters(false);
   };
 
@@ -339,7 +390,7 @@ export default function AdminApplications() {
                   >
                     <Filter className="h-4 w-4" />
                     Filters
-                    {Object.values(filters).some(f => f) && (
+                    {Object.values(filters).some((f) => f !== "") && (
                       <Badge variant="secondary" className="ml-2">Active</Badge>
                     )}
                   </Button>
@@ -399,6 +450,7 @@ export default function AdminApplications() {
                           <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="">All statuses</SelectItem>
                           <SelectItem value="Applied">Applied</SelectItem>
                           <SelectItem value="Reviewed">Reviewed</SelectItem>
                           <SelectItem value="Accepted">Accepted</SelectItem>
@@ -448,6 +500,60 @@ export default function AdminApplications() {
                       </Select>
                     </div>
                   </div>
+                  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">CGPA range</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="Min"
+                          value={filters.cgpaMin}
+                          onChange={(e) =>
+                            setFilters({ ...filters, cgpaMin: e.target.value })
+                          }
+                        />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          placeholder="Max"
+                          value={filters.cgpaMax}
+                          onChange={(e) =>
+                            setFilters({ ...filters, cgpaMax: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium mb-2 block">
+                        Exit exam (100%) range
+                      </Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          max={100}
+                          placeholder="Min"
+                          value={filters.exitExamMin}
+                          onChange={(e) =>
+                            setFilters({ ...filters, exitExamMin: e.target.value })
+                          }
+                        />
+                        <Input
+                          type="number"
+                          step="0.01"
+                          min={0}
+                          max={100}
+                          placeholder="Max"
+                          value={filters.exitExamMax}
+                          onChange={(e) =>
+                            setFilters({ ...filters, exitExamMax: e.target.value })
+                          }
+                        />
+                      </div>
+                    </div>
+                  </div>
                   <div className="mt-4 flex justify-end">
                     <Button variant="outline" onClick={clearFilters} size="sm">
                       <X className="mr-2 h-3 w-3" /> Clear All Filters
@@ -487,6 +593,8 @@ export default function AdminApplications() {
                           />
                         </TableHead>
                         <TableHead className="font-semibold">Applicant</TableHead>
+                        <TableHead className="font-semibold hidden lg:table-cell">CGPA</TableHead>
+                        <TableHead className="font-semibold hidden lg:table-cell">Exit exam</TableHead>
                         <TableHead className="font-semibold hidden lg:table-cell">Job Title</TableHead>
                         <TableHead className="font-semibold hidden md:table-cell">Experience</TableHead>
                         <TableHead className="font-semibold hidden xl:table-cell">Education</TableHead>
@@ -499,7 +607,7 @@ export default function AdminApplications() {
                     <TableBody>
                       {paginatedApplications.length === 0 ? (
                         <TableRow>
-                          <TableCell colSpan={9} className="text-center py-12">
+                          <TableCell colSpan={11} className="text-center py-12">
                             <div className="text-center">
                               <Users className="h-12 w-12 text-slate-400 mx-auto mb-3" />
                               <p className="text-slate-600 dark:text-slate-400">No applications found</p>
@@ -521,6 +629,12 @@ export default function AdminApplications() {
                                 <p className="text-xs text-slate-500 truncate max-w-[200px]">{app.applicant?.account?.email}</p>
                               </div>
                             </TableCell>
+                            <TableCell className="hidden lg:table-cell text-sm text-slate-600 dark:text-slate-300">
+                              {formatApplicantMetric(app.applicant?.cgpa)}
+                            </TableCell>
+                            <TableCell className="hidden lg:table-cell text-sm text-slate-600 dark:text-slate-300">
+                              {formatApplicantMetric(app.applicant?.exitExamScore)}
+                            </TableCell>
                             <TableCell className="hidden lg:table-cell">
                               <div>
                                 <p className="text-sm">{app.job?.title}</p>
@@ -529,12 +643,19 @@ export default function AdminApplications() {
                             </TableCell>
                             <TableCell className="hidden md:table-cell">
                               <Badge variant="outline" className="text-xs">
-                                {app.applicant?.experience || "N/A"}
+                                {app.applicant?.yearsOfExperience != null
+                                  ? `${app.applicant.yearsOfExperience} yrs`
+                                  : "N/A"}
                               </Badge>
                             </TableCell>
                             <TableCell className="hidden xl:table-cell">
                               <Badge variant="outline" className="text-xs">
-                                {app.applicant?.education || "N/A"}
+                                {Array.isArray(app.applicant?.education) &&
+                                app.applicant.education.length > 0
+                                  ? app.applicant.education
+                                      .map((e) => e.highestEducation)
+                                      .filter(Boolean)[0] || "N/A"
+                                  : "N/A"}
                               </Badge>
                             </TableCell>
                             <TableCell>
@@ -578,6 +699,13 @@ export default function AdminApplications() {
                         </Badge>
                       </div>
                       <div className="space-y-2 mb-3">
+                        <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                          <Award className="h-3 w-3 text-slate-400" />
+                          <span>
+                            CGPA {formatApplicantMetric(app.applicant?.cgpa)} · Exit{" "}
+                            {formatApplicantMetric(app.applicant?.exitExamScore)}
+                          </span>
+                        </div>
                         <div className="flex items-center gap-2 text-sm">
                           <Briefcase className="h-3 w-3 text-slate-400" />
                           <span className="text-slate-600 dark:text-slate-400">{app.job?.title}</span>
@@ -658,12 +786,20 @@ export default function AdminApplications() {
                             <Mail className="h-4 w-4 text-slate-400" />
                             <span>{selectedApplication.applicant?.account?.email}</span>
                           </div>
-                          {selectedApplication.applicant?.location && (
+                          {selectedApplication.applicant?.city ||
+                          selectedApplication.applicant?.region ? (
                             <div className="flex items-center gap-2 text-sm">
                               <MapPin className="h-4 w-4 text-slate-400" />
-                              <span>{selectedApplication.applicant.location}</span>
+                              <span>
+                                {[
+                                  selectedApplication.applicant.city,
+                                  selectedApplication.applicant.region,
+                                ]
+                                  .filter(Boolean)
+                                  .join(", ")}
+                              </span>
                             </div>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                       
@@ -671,12 +807,44 @@ export default function AdminApplications() {
                         <h3 className="text-lg font-semibold mb-3">Education & Experience</h3>
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
+                            <Award className="h-4 w-4 text-slate-400" />
+                            <span>
+                              CGPA:{" "}
+                              {formatApplicantMetric(selectedApplication.applicant?.cgpa)} · Exit
+                              exam (100%):{" "}
+                              {formatApplicantMetric(
+                                selectedApplication.applicant?.exitExamScore,
+                              )}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
                             <GraduationCap className="h-4 w-4 text-slate-400" />
-                            <span>{selectedApplication.applicant?.education || "Not specified"}</span>
+                            <span>
+                              {Array.isArray(selectedApplication.applicant?.education) &&
+                              selectedApplication.applicant.education.length > 0
+                                ? selectedApplication.applicant.education
+                                    .map((e) =>
+                                      [
+                                        e.highestEducation,
+                                        e.university,
+                                        e.fieldOfStudy,
+                                        e.graduationYear,
+                                      ]
+                                        .filter(Boolean)
+                                        .join(" · "),
+                                    )
+                                    .filter(Boolean)
+                                    .join("; ")
+                                : "Not specified"}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Briefcase className="h-4 w-4 text-slate-400" />
-                            <span>{selectedApplication.applicant?.experience || "Not specified"}</span>
+                            <span>
+                              {selectedApplication.applicant?.yearsOfExperience != null
+                                ? `${selectedApplication.applicant.yearsOfExperience} years experience`
+                                : "Not specified"}
+                            </span>
                           </div>
                         </div>
                       </div>

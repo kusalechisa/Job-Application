@@ -102,7 +102,17 @@ export const createApplicantProfile = [
         });
       }
 
-      const profileData = buildApplicantProfileData(req.body, req.files);
+      let profileData;
+      try {
+        profileData = buildApplicantProfileData(req.body, req.files);
+      } catch (validationErr) {
+        return res.status(400).json({
+          status: "error",
+          message: validationErr.message || "Invalid profile data",
+          code: 400,
+          errors: [validationErr.message],
+        });
+      }
       const educationData = parseEducationArray(req.body);
 
       const profile = await prisma.applicant.create({
@@ -162,13 +172,13 @@ export const getApplicantProfile = async (req, res) => {
       },
     });
 
+    // 200 + null: no profile row yet (avoids browser/axios treating "no profile" as a failed request)
     if (!profile) {
-      return res.status(404).json({
-        status: "error",
-        message:
-          "Applicant profile not found. Please create your profile first.",
-        code: 404,
-        errors: ["Profile not found"],
+      return res.status(200).json({
+        status: "success",
+        message: "No applicant profile yet. Create one to start applying.",
+        code: 200,
+        data: null,
       });
     }
 
@@ -221,7 +231,17 @@ export const updateApplicantProfile = [
         });
       }
 
-      const updateData = buildApplicantUpdateData(req.body, req.files);
+      let updateData;
+      try {
+        updateData = buildApplicantUpdateData(req.body, req.files);
+      } catch (validationErr) {
+        return res.status(400).json({
+          status: "error",
+          message: validationErr.message || "Invalid profile data",
+          code: 400,
+          errors: [validationErr.message],
+        });
+      }
       const educationData = parseEducationArray(req.body);
 
       // Delete existing education records

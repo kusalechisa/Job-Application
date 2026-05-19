@@ -82,30 +82,70 @@ export const register = async (req, res) => {
 };
 
 /**
- * FETCH USERS ACCOUNT
+ * FETCH USERS ACCOUNT (Admin) — optional applicant filters: cgpaMin/Max, exitExamMin/Max
  */
 export const getUsers = async (req, res) => {
-  console.log("lll")
   try {
-    const users = await prisma.account.findMany();
-
-    if (!users.length) {
-      return res.status(404).json({
+    if (req.user.role !== "Admin") {
+      return res.status(403).json({
         status: "error",
-        message: "No users found",
-        code: 404,
-        data: [],
-        errors: ["Empty user list"],
+        message: "Only admins can list users",
+        code: 403,
+        errors: ["Unauthorized"],
       });
     }
+
+    const q = req.query;
+    const toFloat = (v) => {
+      if (v === undefined || v === null || v === "") return null;
+      const n = Number.parseFloat(String(v));
+      return Number.isNaN(n) ? null : n;
+    };
+
+    const cgpaMin = toFloat(q.cgpaMin);
+    const cgpaMax = toFloat(q.cgpaMax);
+    const exitExamMin = toFloat(q.exitExamMin);
+    const exitExamMax = toFloat(q.exitExamMax);
+
+    const applicantWhere = {};
+    if (cgpaMin != null || cgpaMax != null) {
+      applicantWhere.cgpa = {};
+      if (cgpaMin != null) applicantWhere.cgpa.gte = cgpaMin;
+      if (cgpaMax != null) applicantWhere.cgpa.lte = cgpaMax;
+    }
+    if (exitExamMin != null || exitExamMax != null) {
+      applicantWhere.exitExamScore = {};
+      if (exitExamMin != null) applicantWhere.exitExamScore.gte = exitExamMin;
+      if (exitExamMax != null) applicantWhere.exitExamScore.lte = exitExamMax;
+    }
+
+    const where =
+      Object.keys(applicantWhere).length > 0
+        ? { applicant: { is: applicantWhere } }
+        : {};
+
+    const users = await prisma.account.findMany({
+      where,
+      include: {
+        applicant: {
+          select: {
+            cgpa: true,
+            exitExamScore: true,
+            _count: { select: { applications: true } },
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    const safeUsers = users.map(({ password, ...u }) => u);
 
     return res.status(200).json({
       status: "success",
       message: "Users fetched successfully",
       code: 200,
-      data: users,
+      data: safeUsers,
     });
-
   } catch (error) {
     console.error("GET USERS ERROR:", error);
 

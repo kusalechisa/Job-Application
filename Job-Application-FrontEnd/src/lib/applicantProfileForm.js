@@ -17,6 +17,8 @@ export const EMPTY_APPLICANT_PROFILE = {
   profession: "",
   currentJobTitle: "",
   yearsOfExperience: "",
+  cgpa: "",
+  exitExamScore: "",
   employmentStatus: "",
   portfolioUrl: "",
   linkedinUrl: "",
@@ -93,6 +95,14 @@ export function profileToForm(profile, accountEmail = "") {
     yearsOfExperience: profile.yearsOfExperience
       ? String(profile.yearsOfExperience)
       : "",
+    cgpa:
+      profile.cgpa != null && profile.cgpa !== ""
+        ? String(profile.cgpa)
+        : "",
+    exitExamScore:
+      profile.exitExamScore != null && profile.exitExamScore !== ""
+        ? String(profile.exitExamScore)
+        : "",
     employmentStatus: profile.employmentStatus || "",
     portfolioUrl: profile.portfolioUrl || "",
     linkedinUrl: profile.linkedinUrl || "",
@@ -107,7 +117,10 @@ export function profileToForm(profile, accountEmail = "") {
 }
 
 const FORM_FIELDS = Object.keys(EMPTY_APPLICANT_PROFILE).filter(
-  (key) => !["profilePicture", "resume", "education"].includes(key),
+  (key) =>
+    !["profilePicture", "resume", "education", "cgpa", "exitExamScore"].includes(
+      key,
+    ),
 );
 
 export function formToFormData(form) {
@@ -128,6 +141,13 @@ export function formToFormData(form) {
   // Handle resume
   if (form.resume && form.resume instanceof File) {
     data.append("resume", form.resume);
+  }
+
+  // Optional numeric fields: send empty string to clear on server
+  for (const key of ["cgpa", "exitExamScore"]) {
+    if (form[key] !== undefined && form[key] !== null) {
+      data.append(key, form[key] === "" ? "" : String(form[key]).trim());
+    }
   }
 
   // CRITICAL FIX: Handle education array - Send as JSON string

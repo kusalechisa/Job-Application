@@ -1,6 +1,6 @@
 import api from "../axiosInstance.jsx";
 
-export const getUsers = () => api.get("/users");
+export const getUsers = (params) => api.get("/users", { params });
 export const createUser = (data) => api.post("/users", data);
 export const getMe = () => api.get("/users/me");
 export const updateMe = (data) => api.put("/users/me", data);

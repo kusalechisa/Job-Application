@@ -70,7 +70,18 @@ export default function AdminApplicationDetail() {
           <p><strong>Phone:</strong> {applicant?.phone || "—"}{applicant?.alternativePhone ? ` / ${applicant.alternativePhone}` : ""}</p>
           <p><strong>Location:</strong> {[applicant?.address, applicant?.subCity, applicant?.city, applicant?.region].filter(Boolean).join(", ") || "—"}</p>
           <p><strong>Profession:</strong> {applicant?.profession || applicant?.currentJobTitle || "—"}</p>
-          <p><strong>Education:</strong> {[applicant?.highestEducation, applicant?.fieldOfStudy, applicant?.university].filter(Boolean).join(" · ") || "—"}</p>
+          <p><strong>CGPA:</strong> {applicant?.cgpa != null ? String(applicant.cgpa) : "—"}</p>
+          <p><strong>Exit exam (100%):</strong> {applicant?.exitExamScore != null ? String(applicant.exitExamScore) : "—"}</p>
+          <p><strong>Education:</strong>{" "}
+            {Array.isArray(applicant?.education) && applicant.education.length > 0
+              ? applicant.education
+                  .map((e) =>
+                    [e.highestEducation, e.fieldOfStudy, e.university].filter(Boolean).join(" · "),
+                  )
+                  .filter(Boolean)
+                  .join("; ")
+              : "—"}
+          </p>
           <p><strong>Skills:</strong> {applicant?.technicalSkills?.length ? applicant.technicalSkills.join(", ") : applicant?.skills?.length ? applicant.skills.join(", ") : "—"}</p>
           <p><strong>Resume:</strong> {application.resume || applicant?.resume || "—"}</p>
           <p><strong>Applied:</strong> {new Date(application.appliedAt).toLocaleString()}</p>

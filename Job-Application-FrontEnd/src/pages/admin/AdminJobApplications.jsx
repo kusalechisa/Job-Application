@@ -64,6 +64,8 @@ export default function AdminJobApplications() {
                 <TableRow>
                   <TableHead>Applicant</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>CGPA</TableHead>
+                  <TableHead>Exit exam</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Applied</TableHead>
                   <TableHead></TableHead>
@@ -74,6 +76,14 @@ export default function AdminJobApplications() {
                   <TableRow key={app.id}>
                     <TableCell>{app.applicant?.account?.name}</TableCell>
                     <TableCell>{app.applicant?.account?.email}</TableCell>
+                    <TableCell>
+                      {app.applicant?.cgpa != null ? app.applicant.cgpa : "—"}
+                    </TableCell>
+                    <TableCell>
+                      {app.applicant?.exitExamScore != null
+                        ? app.applicant.exitExamScore
+                        : "—"}
+                    </TableCell>
                     <TableCell><StatusBadge status={app.status} /></TableCell>
                     <TableCell>{new Date(app.appliedAt).toLocaleDateString()}</TableCell>
                     <TableCell>

@@ -88,29 +88,34 @@ export default function ApplicantDashboard() {
           try {
             const profileRes = await getApplicantProfile();
             const profile = profileRes.data.data;
-            setProfileData(profile);
+            if (!profile) {
+              setProfileData(null);
+              setStats((prev) => ({ ...prev, profileCompletion: 0 }));
+            } else {
+              setProfileData(profile);
 
-            // Calculate profile completion
-            const requiredFields = [
-              profile.firstName || profile.fullName,
-              profile.lastName,
-              profile.email,
-              profile.phone,
-              profile.address,
-              profile.profession,
-              profile.yearsOfExperience,
-              profile.skills,
-              profile.education && profile.education.length > 0,
-            ];
-            const filledCount = requiredFields.filter(
-              (field) =>
-                field && (typeof field !== "object" || field.length > 0),
-            ).length;
-            const completion = Math.round(
-              (filledCount / requiredFields.length) * 100,
-            );
+              // Calculate profile completion
+              const requiredFields = [
+                profile.firstName || profile.fullName,
+                profile.lastName,
+                profile.email,
+                profile.phone,
+                profile.address,
+                profile.profession,
+                profile.yearsOfExperience,
+                profile.skills,
+                profile.education && profile.education.length > 0,
+              ];
+              const filledCount = requiredFields.filter(
+                (field) =>
+                  field && (typeof field !== "object" || field.length > 0),
+              ).length;
+              const completion = Math.round(
+                (filledCount / requiredFields.length) * 100,
+              );
 
-            setStats((prev) => ({ ...prev, profileCompletion: completion }));
+              setStats((prev) => ({ ...prev, profileCompletion: completion }));
+            }
           } catch (profileError) {
             console.log("No profile found");
           }

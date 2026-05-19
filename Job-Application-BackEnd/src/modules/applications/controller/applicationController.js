@@ -52,6 +52,7 @@ export const getApplicationsForJob = async (req, res) => {
             account: {
               select: { id: true, name: true, email: true },
             },
+            education: true,
           },
         },
         job: {
@@ -98,6 +99,7 @@ export const getAllApplications = async (req, res) => {
             account: {
               select: { id: true, name: true, email: true },
             },
+            education: true,
           },
         },
         job: {
@@ -146,6 +148,7 @@ export const getApplicationDetails = async (req, res) => {
         applicant: {
           include: {
             account: true,
+            education: true,
           },
         },
         job: true,
@@ -441,6 +444,8 @@ export const downloadApplicantsExcel = async (req, res) => {
     worksheet.columns = [
       { header: "Name", key: "name", width: 20 },
       { header: "Email", key: "email", width: 30 },
+      { header: "CGPA", key: "cgpa", width: 10 },
+      { header: "Exit exam (100%)", key: "exitExamScore", width: 16 },
       { header: "Status", key: "status", width: 15 },
       { header: "Applied At", key: "appliedAt", width: 20 },
       { header: "Resume", key: "resume", width: 50 },
@@ -450,6 +455,8 @@ export const downloadApplicantsExcel = async (req, res) => {
       worksheet.addRow({
         name: app.applicant.account.name,
         email: app.applicant.account.email,
+        cgpa: app.applicant.cgpa ?? "",
+        exitExamScore: app.applicant.exitExamScore ?? "",
         status: app.status,
         appliedAt: app.appliedAt.toISOString().split("T")[0],
         resume: app.resume || "",

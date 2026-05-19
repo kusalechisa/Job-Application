@@ -24,6 +24,9 @@ const ARRAY_FIELDS = ["skills", "languages", "technicalSkills", "softSkills"];
 
 const INT_FIELDS = ["yearsOfExperience"];
 
+/** Optional decimals (CGPA, exit exam %); empty string clears to null */
+const FLOAT_FIELDS = ["cgpa", "exitExamScore"];
+
 export function parseStringArray(value) {
   if (value === undefined || value === null || value === "") return [];
   if (Array.isArray(value)) return value.map(String).filter(Boolean);
@@ -44,6 +47,12 @@ export function parseStringArray(value) {
 function parseOptionalInt(value) {
   if (value === undefined || value === null || value === "") return undefined;
   const parsed = Number.parseInt(String(value), 10);
+  return Number.isNaN(parsed) ? undefined : parsed;
+}
+
+function parseOptionalFloat(value) {
+  if (value === undefined || value === null || value === "") return undefined;
+  const parsed = Number.parseFloat(String(value).trim());
   return Number.isNaN(parsed) ? undefined : parsed;
 }
 
@@ -114,6 +123,24 @@ export function buildApplicantProfileData(body, files = {}) {
   for (const field of INT_FIELDS) {
     if (body[field] !== undefined) {
       data[field] = body[field] === "" ? null : parseOptionalInt(body[field]);
+    }
+  }
+
+  for (const field of FLOAT_FIELDS) {
+    if (body[field] !== undefined) {
+      if (body[field] === "" || body[field] === null) {
+        data[field] = null;
+        continue;
+      }
+      const num = parseOptionalFloat(body[field]);
+      if (num === undefined) continue;
+      if (field === "exitExamScore" && (num < 0 || num > 100)) {
+        throw new Error("Exit exam score must be between 0 and 100");
+      }
+      if (field === "cgpa" && (num < 0 || num > 10)) {
+        throw new Error("CGPA must be between 0 and 10");
+      }
+      data[field] = num;
     }
   }
 

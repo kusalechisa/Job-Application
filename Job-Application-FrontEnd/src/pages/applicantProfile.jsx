@@ -111,33 +111,41 @@ export default function ApplicantProfile() {
   const [activeSection, setActiveSection] = useState("personal");
   const [profileCompletion, setProfileCompletion] = useState(0);
 
-  const loadProfile = useCallback(async ({ silent = false } = {}) => {
-    if (!silent) setLoading(true);
-    if (!silent) setError("");
-    try {
-      const res = await getApplicantProfile();
-      const profile = res.data?.data;
-      if (!profile) {
-        throw new Error("Profile data was not returned from the server.");
-      }
-      applyProfileToState(profile, {
-        setAccountEmail,
-        setForm,
-        setCurrentResume,
-        setCurrentProfilePicture,
-        setHasProfile,
-      });
-    } catch (err) {
-      setHasProfile(false);
-      setForm(EMPTY_APPLICANT_PROFILE);
-      const status = err?.response?.status;
-      if (status !== 404) {
+  const loadProfile = useCallback(
+    async ({ silent = false } = {}) => {
+      if (!silent) setLoading(true);
+      if (!silent) setError("");
+      try {
+        const res = await getApplicantProfile();
+        const profile = res.data?.data;
+        if (!profile) {
+          setHasProfile(false);
+          setForm({
+            ...EMPTY_APPLICANT_PROFILE,
+            email: user?.email || "",
+          });
+          setCurrentResume("");
+          setCurrentProfilePicture("");
+          setAccountEmail(user?.email || "");
+          return;
+        }
+        applyProfileToState(profile, {
+          setAccountEmail,
+          setForm,
+          setCurrentResume,
+          setCurrentProfilePicture,
+          setHasProfile,
+        });
+      } catch (err) {
+        setHasProfile(false);
+        setForm({ ...EMPTY_APPLICANT_PROFILE, email: user?.email || "" });
         setError(getApiErrorMessage(err, "Failed to load your profile."));
+      } finally {
+        if (!silent) setLoading(false);
       }
-    } finally {
-      if (!silent) setLoading(false);
-    }
-  }, []);
+    },
+    [user?.email],
+  );
 
   useEffect(() => {
     if (!token) return;
@@ -811,6 +819,47 @@ export default function ApplicantProfile() {
                       </SectionTitle>
                     </CardHeader>
                     <CardContent className="p-6 space-y-6">
+                      <div className="grid gap-4 md:grid-cols-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/40 p-4">
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">
+                            CGPA
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="10"
+                            name="cgpa"
+                            value={form.cgpa}
+                            onChange={handleChange}
+                            className="rounded-xl"
+                            placeholder="e.g. 3.75"
+                          />
+                          <p className="text-xs text-slate-500">
+                            Scale 0–10 (adjust to your institution&apos;s scale)
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm font-medium">
+                            Exit exam (100%)
+                          </Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            max="100"
+                            name="exitExamScore"
+                            value={form.exitExamScore}
+                            onChange={handleChange}
+                            className="rounded-xl"
+                            placeholder="e.g. 82.5"
+                          />
+                          <p className="text-xs text-slate-500">
+                            Score out of 100
+                          </p>
+                        </div>
+                      </div>
+
                       {form.education && form.education.length > 0 ? (
                         form.education.map((edu, index) => (
                           <div
