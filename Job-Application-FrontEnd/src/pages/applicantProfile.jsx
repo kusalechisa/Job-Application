@@ -148,7 +148,7 @@ function EducationCard({ education, index, onUpdate, onRemove, isRemovable }) {
             Highest Education *
           </Label>
           <select
-            value={education.highestEducation}
+            value={education.highestEducation || ""}
             onChange={(e) =>
               onUpdate(index, "highestEducation", e.target.value)
             }
@@ -172,7 +172,7 @@ function EducationCard({ education, index, onUpdate, onRemove, isRemovable }) {
             type="number"
             min="1950"
             max={new Date().getFullYear() + 5}
-            value={education.graduationYear}
+            value={education.graduationYear || ""}
             onChange={(e) => onUpdate(index, "graduationYear", e.target.value)}
             className="rounded-xl"
             placeholder="e.g., 2024"
@@ -186,7 +186,7 @@ function EducationCard({ education, index, onUpdate, onRemove, isRemovable }) {
             University / Institution
           </Label>
           <Input
-            value={education.university}
+            value={education.university || ""}
             onChange={(e) => onUpdate(index, "university", e.target.value)}
             className="rounded-xl"
             placeholder="University name"
@@ -197,7 +197,7 @@ function EducationCard({ education, index, onUpdate, onRemove, isRemovable }) {
             College / School
           </Label>
           <Input
-            value={education.college}
+            value={education.college || ""}
             onChange={(e) => onUpdate(index, "college", e.target.value)}
             className="rounded-xl"
             placeholder="College name"
@@ -208,7 +208,7 @@ function EducationCard({ education, index, onUpdate, onRemove, isRemovable }) {
             Field of Study
           </Label>
           <Input
-            value={education.fieldOfStudy}
+            value={education.fieldOfStudy || ""}
             onChange={(e) => onUpdate(index, "fieldOfStudy", e.target.value)}
             className="rounded-xl"
             placeholder="e.g., Computer Science"

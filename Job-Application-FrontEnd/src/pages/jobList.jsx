@@ -286,9 +286,9 @@ export default function JobList() {
       return;
     }
 
-    if (profileCompletion < 70) {
+    if (profileCompletion < 50) {
       setError(
-        "Complete your profile (70%+) to apply for jobs. Go to Profile page.",
+        "Complete your profile (50%+) to apply for jobs. Go to Profile page.",
       );
       setTimeout(() => setError(""), 5000);
       return;
@@ -479,7 +479,7 @@ export default function JobList() {
 
         <div className="max-w-7xl mx-auto px-4 lg:px-6 py-6">
           {/* Profile Completion Banner */}
-          {token && profileCompletion < 70 && (
+          {token && profileCompletion < 50 && (
             <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-start gap-3">
@@ -822,11 +822,11 @@ export default function JobList() {
                           <Button
                             className="flex-1 bg-gradient-to-r from-indigo-500 to-blue-600 hover:shadow-lg transition-all disabled:opacity-60"
                             onClick={() => handleApply(job.id)}
-                            disabled={profileCompletion < 70 || deadlinePassed}
+                            disabled={profileCompletion < 50 || deadlinePassed}
                           >
                             {deadlinePassed
                               ? "Deadline Reached"
-                              : profileCompletion >= 70
+                              : profileCompletion >= 50
                                 ? "Quick Apply"
                                 : "Complete Profile"}
                           </Button>
@@ -914,12 +914,12 @@ export default function JobList() {
                         <div className="flex gap-2">
                           <Button
                             onClick={() => handleApply(job.id)}
-                            disabled={profileCompletion < 70 || deadlinePassed}
+                            disabled={profileCompletion < 50 || deadlinePassed}
                             className="bg-gradient-to-r from-indigo-500 to-blue-600 disabled:opacity-60"
                           >
                             {deadlinePassed
                               ? "Deadline Reached"
-                              : profileCompletion >= 70
+                              : profileCompletion >= 50
                                 ? "Apply"
                                 : "Complete Profile"}
                           </Button>

@@ -310,7 +310,7 @@ export default function JobDetailDrawer({
           )}
 
           {/* Profile Completion Warning - Mobile Friendly */}
-          {profileCompletion < 70 && !deadlinePassed && (
+          {profileCompletion < 50 && !deadlinePassed && (
             <div className="p-3 sm:p-4 bg-amber-50 dark:bg-amber-950/30 rounded-xl border border-amber-200 dark:border-amber-800">
               <div className="flex items-start gap-2 sm:gap-3">
                 <AlertCircle className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600 flex-shrink-0 mt-0.5" />
@@ -319,7 +319,7 @@ export default function JobDetailDrawer({
                     Profile {profileCompletion}% Complete
                   </p>
                   <p className="text-xs sm:text-sm text-amber-700 dark:text-amber-500">
-                    Complete your profile to 70% to enable quick apply and
+                    Complete your profile to 50% to enable quick apply and
                     increase your chances.
                   </p>
                   <Progress value={profileCompletion} className="h-1.5 mt-2" />
@@ -361,12 +361,12 @@ export default function JobDetailDrawer({
             <Button
               className="w-full bg-gradient-to-r from-indigo-500 to-purple-600 hover:shadow-lg transition-all gap-2 disabled:opacity-60"
               onClick={() => onApply(job.id)}
-              disabled={profileCompletion < 70 || deadlinePassed}
+              disabled={profileCompletion < 50 || deadlinePassed}
               size="lg"
             >
               {deadlinePassed ? (
                 <>Deadline Reached</>
-              ) : profileCompletion >= 70 ? (
+              ) : profileCompletion >= 50 ? (
                 <>
                   Apply Now
                   <ArrowRight className="h-4 w-4" />
@@ -384,16 +384,16 @@ export default function JobDetailDrawer({
                 Applications closed for this position
               </p>
             )}
-            {!deadlinePassed && profileCompletion < 70 && (
+            {!deadlinePassed && profileCompletion < 50 && (
               <div className="flex items-center justify-center gap-1 mt-2">
                 <AlertCircle className="h-3 w-3 text-amber-500" />
                 <p className="text-xs text-center text-slate-500 dark:text-slate-400">
-                  Complete your profile to {70 - profileCompletion}% more to
+                  Complete your profile to {50 - profileCompletion}% more to
                   unlock quick apply
                 </p>
               </div>
             )}
-            {!deadlinePassed && profileCompletion >= 70 && (
+            {!deadlinePassed && profileCompletion >= 50 && (
               <p className="text-xs text-center text-emerald-600 dark:text-emerald-400 mt-2 flex items-center justify-center gap-1">
                 <CheckCircle className="h-3 w-3" />
                 You're ready to apply!

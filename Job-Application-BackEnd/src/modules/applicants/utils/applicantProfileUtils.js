@@ -68,6 +68,67 @@ function pickDefined(entries) {
 export function parseEducationArray(body) {
   let educationData = [];
 
+  // Handle education from FormData (nested fields: education[0][highestEducation], etc.)
+  if (!body) return [];
+
+  // First, check if there are nested form fields (education[0][highestEducation])
+  const keys = Object.keys(body);
+  const hasNestedEducation = keys.some((key) => key.startsWith("education["));
+
+  if (hasNestedEducation) {
+    // Parse nested form fields
+    const educationMap = new Map();
+
+    keys.forEach((key) => {
+      const match = key.match(/education\[(\d+)\]\[(.+)\]/);
+      if (match) {
+        const index = parseInt(match[1]);
+        const field = match[2];
+        const value = body[key];
+
+        if (!educationMap.has(index)) {
+          educationMap.set(index, {});
+        }
+
+        const edu = educationMap.get(index);
+        edu[field] = value;
+      }
+    });
+
+    // Convert map to array and process
+    educationData = Array.from(educationMap.values());
+
+    return educationData
+      .filter(
+        (edu) =>
+          edu.highestEducation ||
+          edu.university ||
+          edu.college ||
+          edu.fieldOfStudy ||
+          edu.graduationYear,
+      )
+      .map((edu) => ({
+        highestEducation: edu.highestEducation || null,
+        university: edu.university || null,
+        college: edu.college || null,
+        fieldOfStudy: edu.fieldOfStudy || null,
+        graduationYear: edu.graduationYear
+          ? parseOptionalInt(edu.graduationYear)
+          : null,
+        cgpa:
+          edu.cgpa !== undefined && edu.cgpa !== null && edu.cgpa !== ""
+            ? parseOptionalFloat(edu.cgpa)
+            : null,
+        exitExamScore:
+          edu.exitExamScore !== undefined &&
+          edu.exitExamScore !== null &&
+          edu.exitExamScore !== ""
+            ? parseOptionalFloat(edu.exitExamScore)
+            : null,
+      }));
+  }
+
+  // Handle JSON string or array format
   if (body.education) {
     if (Array.isArray(body.education)) {
       educationData = body.education;
@@ -102,6 +163,16 @@ export function parseEducationArray(body) {
       graduationYear: edu.graduationYear
         ? parseOptionalInt(edu.graduationYear)
         : null,
+      cgpa:
+        edu.cgpa !== undefined && edu.cgpa !== null && edu.cgpa !== ""
+          ? parseOptionalFloat(edu.cgpa)
+          : null,
+      exitExamScore:
+        edu.exitExamScore !== undefined &&
+        edu.exitExamScore !== null &&
+        edu.exitExamScore !== ""
+          ? parseOptionalFloat(edu.exitExamScore)
+          : null,
     }));
 }
 
