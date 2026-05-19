@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useCallback, useEffect, useState, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   getApplicantProfile,
   createApplicantProfile,
@@ -34,44 +34,83 @@ import {
   Save,
   CheckCircle,
   AlertCircle,
-  Building,
-  Calendar,
-  Link as LinkIcon,
-  Globe,
-  Award,
-  Users,
   BookOpen,
   X,
   Menu,
   LogOut,
   Home,
   Settings,
+  FileIcon,
+  Award,
+  School,
+  ChevronRight,
+  Sparkles,
+  Shield,
+  Clock,
   TrendingUp,
-  FileText as FileIcon,
+  Globe,
+  Link as LinkIcon,
 } from "lucide-react";
 
 const selectClass =
-  "w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all";
+  "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-900 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-400";
 
-function SectionTitle({ children, icon: Icon }) {
+// Helper function to determine education level
+const getEducationLevel = (highestEducation) => {
+  const degree = highestEducation?.toLowerCase();
+  if (degree === "bachelor" || degree === "master" || degree === "phd") {
+    return "degree";
+  }
+  if (degree === "associate") {
+    return "associate";
+  }
+  return "other";
+};
+
+function SectionTitle({ children, icon: Icon, description }) {
   return (
-    <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-700 pb-3">
-      {Icon && <Icon className="h-5 w-5 text-indigo-500" />}
-      <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
-        {children}
-      </h3>
+    <div className="mb-4 sm:mb-6">
+      <div className="flex items-center gap-2 mb-2">
+        {Icon && (
+          <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500 flex-shrink-0" />
+        )}
+        <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-slate-100">
+          {children}
+        </h3>
+      </div>
+      {description && (
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 ml-0 sm:ml-7">
+          {description}
+        </p>
+      )}
     </div>
   );
 }
 
-function InfoCard({ label, value, icon: Icon }) {
+function SkillBadge({ skill, onRemove }) {
+  return (
+    <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-950/70 transition-all px-3 py-1 rounded-xl group">
+      {skill}
+      {onRemove && (
+        <button
+          onClick={onRemove}
+          className="ml-2 hover:text-red-600 transition-colors"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      )}
+    </Badge>
+  );
+}
+
+function InfoCard({ icon: Icon, label, value }) {
   if (!value) return null;
   return (
-    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
-      <Icon className="h-5 w-5 text-indigo-500" />
-      <div>
+    <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+      <Icon className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500 mt-0.5 flex-shrink-0" />
+      <div className="flex-1 min-w-0">
         <p className="text-xs text-slate-500 dark:text-slate-400">{label}</p>
-        <p className="text-sm font-medium text-slate-900 dark:text-white">
+        <p className="text-xs sm:text-sm font-medium text-slate-900 dark:text-white break-words">
           {value}
         </p>
       </div>
@@ -79,27 +118,250 @@ function InfoCard({ label, value, icon: Icon }) {
   );
 }
 
-function SkillBadge({ skill }) {
+function EducationCard({ education, index, onUpdate, onRemove, isRemovable }) {
+  const educationLevel = getEducationLevel(education.highestEducation);
+  const isDegreeLevel = educationLevel === "degree";
+
   return (
-    <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-950/70 transition-all px-3 py-1">
-      {skill}
-    </Badge>
+    <div className="relative p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/50 hover:shadow-md transition-all duration-200">
+      {isRemovable && (
+        <button
+          onClick={onRemove}
+          className="absolute top-4 right-4 p-1 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 transition-colors"
+        >
+          <X className="h-4 w-4" />
+        </button>
+      )}
+
+      <div className="flex items-center gap-2 mb-4">
+        <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-950/50">
+          <GraduationCap className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+        </div>
+        <h4 className="text-sm sm:text-base font-semibold text-slate-900 dark:text-white">
+          Education {index + 1}
+        </h4>
+      </div>
+
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            Highest Education *
+          </Label>
+          <select
+            value={education.highestEducation}
+            onChange={(e) =>
+              onUpdate(index, "highestEducation", e.target.value)
+            }
+            className={selectClass}
+            required
+          >
+            <option value="">Select education level</option>
+            <option value="High School">High School / Secondary</option>
+            <option value="Associate">Associate Degree</option>
+            <option value="Bachelor">Bachelor's Degree</option>
+            <option value="Master">Master's Degree</option>
+            <option value="PhD">PhD / Doctorate</option>
+            <option value="Other">Other Certification</option>
+          </select>
+        </div>
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            Graduation Year
+          </Label>
+          <Input
+            type="number"
+            min="1950"
+            max={new Date().getFullYear() + 5}
+            value={education.graduationYear}
+            onChange={(e) => onUpdate(index, "graduationYear", e.target.value)}
+            className="rounded-xl"
+            placeholder="e.g., 2024"
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            University / Institution
+          </Label>
+          <Input
+            value={education.university}
+            onChange={(e) => onUpdate(index, "university", e.target.value)}
+            className="rounded-xl"
+            placeholder="University name"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            College / School
+          </Label>
+          <Input
+            value={education.college}
+            onChange={(e) => onUpdate(index, "college", e.target.value)}
+            className="rounded-xl"
+            placeholder="College name"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            Field of Study
+          </Label>
+          <Input
+            value={education.fieldOfStudy}
+            onChange={(e) => onUpdate(index, "fieldOfStudy", e.target.value)}
+            className="rounded-xl"
+            placeholder="e.g., Computer Science"
+          />
+        </div>
+      </div>
+
+      {/* CGPA - Only for University Degree */}
+      {isDegreeLevel && (
+        <div className="mt-4 p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50">
+          <div className="flex items-start gap-3">
+            <Award className="h-5 w-5 text-indigo-600 dark:text-indigo-400 mt-0.5" />
+            <div className="flex-1">
+              <Label className="text-sm font-medium text-indigo-700 dark:text-indigo-300">
+                Academic Performance
+              </Label>
+              <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 mt-2">
+                <div>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="4.0"
+                    name="cgpa"
+                    value={education.cgpa || ""}
+                    onChange={(e) => onUpdate(index, "cgpa", e.target.value)}
+                    className="rounded-xl border-indigo-200 dark:border-indigo-800 focus:border-indigo-500"
+                    placeholder="CGPA (0-4.0)"
+                  />
+                  <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
+                    On a 4.0 scale
+                  </p>
+                </div>
+
+                {/* Exit Exam - Only for Bachelor's Degree */}
+                {education.highestEducation === "Bachelor" && (
+                  <div>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      max="100"
+                      name="exitExamScore"
+                      value={education.exitExamScore || ""}
+                      onChange={(e) =>
+                        onUpdate(index, "exitExamScore", e.target.value)
+                      }
+                      className="rounded-xl border-indigo-200 dark:border-indigo-800 focus:border-indigo-500"
+                      placeholder="Exit Exam Score (%)"
+                    />
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
+                      Exit examination score (0-100%)
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
-function applyProfileToState(profile, setters) {
-  const accountEmail = profile.account?.email || "";
-  setters.setAccountEmail(accountEmail);
-  setters.setForm(profileToForm(profile));
-  setters.setCurrentResume(profile.resume || "");
-  setters.setCurrentProfilePicture(profile.profilePicture || "");
-  setters.setHasProfile(true);
+function SkillsInput({ label, value, onChange, placeholder, icon: Icon }) {
+  const [inputValue, setInputValue] = useState("");
+  const skills = value
+    ? value
+        .split(",")
+        .map((s) => s.trim())
+        .filter((s) => s)
+    : [];
+
+  const addSkill = () => {
+    if (inputValue.trim() && !skills.includes(inputValue.trim())) {
+      const newSkills = [...skills, inputValue.trim()];
+      onChange({ target: { value: newSkills.join(", ") } });
+      setInputValue("");
+    }
+  };
+
+  const removeSkill = (skillToRemove) => {
+    const newSkills = skills.filter((s) => s !== skillToRemove);
+    onChange({ target: { value: newSkills.join(", ") } });
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addSkill();
+    }
+  };
+
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium text-slate-700 dark:text-slate-300 flex items-center gap-2">
+        {Icon && <Icon className="h-4 w-4 text-indigo-500" />}
+        {label}
+      </Label>
+      <div className="flex flex-col sm:flex-row gap-2">
+        <Input
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+          onKeyPress={handleKeyPress}
+          className="rounded-xl flex-1"
+          placeholder={placeholder}
+        />
+        <Button
+          type="button"
+          onClick={addSkill}
+          variant="outline"
+          className="rounded-xl px-4 w-full sm:w-auto"
+        >
+          Add
+        </Button>
+      </div>
+      {skills.length > 0 && (
+        <div className="flex flex-wrap gap-2 mt-2">
+          {skills.map((skill, idx) => (
+            <SkillBadge
+              key={idx}
+              skill={skill}
+              onRemove={() => removeSkill(skill)}
+            />
+          ))}
+        </div>
+      )}
+      <input
+        type="hidden"
+        name={label.toLowerCase()}
+        value={value}
+        onChange={onChange}
+      />
+    </div>
+  );
 }
 
 export default function ApplicantProfile() {
-  const { token, user } = useAuth();
-  const [form, setForm] = useState(EMPTY_APPLICANT_PROFILE);
-  const [accountEmail, setAccountEmail] = useState("");
+  const { token, user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState(() => {
+    const nameParts = user?.name?.split(" ") || [];
+    return {
+      ...EMPTY_APPLICANT_PROFILE,
+      firstName: nameParts[0] || "",
+      middleName: nameParts[1] || "",
+      lastName: nameParts[2] || nameParts.slice(1).join(" ") || "",
+      email: user?.email || "",
+    };
+  });
+
+  const [accountEmail, setAccountEmail] = useState(user?.email || "");
   const [hasProfile, setHasProfile] = useState(false);
   const [currentResume, setCurrentResume] = useState("");
   const [currentProfilePicture, setCurrentProfilePicture] = useState("");
@@ -108,8 +370,8 @@ export default function ApplicantProfile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("personal");
-  const [profileCompletion, setProfileCompletion] = useState(0);
+  const [activeTab, setActiveTab] = useState("personal");
+  const [uploadProgress, setUploadProgress] = useState({});
 
   const loadProfile = useCallback(
     async ({ silent = false } = {}) => {
@@ -120,30 +382,30 @@ export default function ApplicantProfile() {
         const profile = res.data?.data;
         if (!profile) {
           setHasProfile(false);
-          setForm({
-            ...EMPTY_APPLICANT_PROFILE,
-          });
+          setForm((prev) => ({
+            ...prev,
+            firstName: prev.firstName || user?.name?.split(" ")[0] || "",
+            lastName: prev.lastName || user?.name?.split(" ")[1] || "",
+          }));
           setCurrentResume("");
           setCurrentProfilePicture("");
           setAccountEmail(user?.email || "");
           return;
         }
-        applyProfileToState(profile, {
-          setAccountEmail,
-          setForm,
-          setCurrentResume,
-          setCurrentProfilePicture,
-          setHasProfile,
-        });
+        const accountEmail = profile.account?.email || "";
+        setAccountEmail(accountEmail);
+        setForm(profileToForm(profile));
+        setCurrentResume(profile.resume || "");
+        setCurrentProfilePicture(profile.profilePicture || "");
+        setHasProfile(true);
       } catch (err) {
         setHasProfile(false);
-        setForm({ ...EMPTY_APPLICANT_PROFILE });
         setError(getApiErrorMessage(err, "Failed to load your profile."));
       } finally {
         if (!silent) setLoading(false);
       }
     },
-    [user?.email],
+    [user?.email, user?.name],
   );
 
   useEffect(() => {
@@ -151,32 +413,31 @@ export default function ApplicantProfile() {
     loadProfile();
   }, [token, loadProfile]);
 
-  // Calculate profile completion
-  useEffect(() => {
-    const requiredFields = [
-      form.firstName,
-      form.lastName,
-      accountEmail || user?.email,
-      form.phone,
-      form.address,
-      form.profession,
-      form.yearsOfExperience,
-      form.skills,
-      form.education && form.education.length > 0,
-    ];
-    const filledCount = requiredFields.filter(
-      (field) => field && (typeof field !== "object" || field.length > 0),
-    ).length;
-    const completion = Math.round((filledCount / requiredFields.length) * 100);
-    setProfileCompletion(completion);
-  }, [form, accountEmail, user?.email]);
-
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: name === "resume" || name === "profilePicture" ? files[0] : value,
-    }));
+
+    if (name === "resume" || name === "profilePicture") {
+      const file = files[0];
+      if (file) {
+        setUploadProgress((prev) => ({ ...prev, [name]: 0 }));
+        const interval = setInterval(() => {
+          setUploadProgress((prev) => {
+            const newProgress = (prev[name] || 0) + 20;
+            if (newProgress >= 100) clearInterval(interval);
+            return { ...prev, [name]: Math.min(newProgress, 100) };
+          });
+        }, 200);
+      }
+      setForm((prev) => ({
+        ...prev,
+        [name]: file,
+      }));
+    } else {
+      setForm((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const handleEducationChange = (index, field, value) => {
@@ -201,6 +462,8 @@ export default function ApplicantProfile() {
           college: "",
           fieldOfStudy: "",
           graduationYear: "",
+          cgpa: "",
+          exitExamScore: "",
         },
       ],
     }));
@@ -218,6 +481,7 @@ export default function ApplicantProfile() {
     setError("");
     setSuccess("");
     setSaving(true);
+
     try {
       const data = formToFormData(form);
       if (hasProfile) {
@@ -238,19 +502,54 @@ export default function ApplicantProfile() {
     }
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   const getInitials = () => {
     const first = form.firstName || user?.name?.split(" ")[0] || "";
     const last = form.lastName || user?.name?.split(" ")[1] || "";
     return `${first.charAt(0)}${last.charAt(0)}`.toUpperCase();
   };
 
-  const sidebarLinks = [
-    { id: "personal", label: "Personal Info", icon: User },
-    { id: "contact", label: "Contact", icon: Phone },
-    { id: "professional", label: "Professional", icon: Briefcase },
-    { id: "education", label: "Education", icon: GraduationCap },
-    { id: "skills", label: "Skills", icon: Code },
-    { id: "documents", label: "Documents", icon: FileText },
+  const sections = [
+    {
+      id: "personal",
+      label: "Personal Info",
+      icon: User,
+      description: "Your basic personal details",
+    },
+    {
+      id: "contact",
+      label: "Contact",
+      icon: Phone,
+      description: "How employers can reach you",
+    },
+    {
+      id: "professional",
+      label: "Professional",
+      icon: Briefcase,
+      description: "Your work experience and career details",
+    },
+    {
+      id: "education",
+      label: "Education",
+      icon: GraduationCap,
+      description: "Your educational background",
+    },
+    {
+      id: "skills",
+      label: "Skills",
+      icon: Code,
+      description: "List your skills and competencies",
+    },
+    {
+      id: "documents",
+      label: "Documents",
+      icon: FileText,
+      description: "Upload your resume and other documents",
+    },
   ];
 
   if (loading) {
@@ -267,8 +566,18 @@ export default function ApplicantProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
-      {/* Mobile Menu Overlay */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-200 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden fixed top-4 left-4 z-50">
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="p-2 rounded-xl bg-white/80 backdrop-blur-sm shadow-lg dark:bg-slate-900/80 hover:bg-white dark:hover:bg-slate-900 transition-colors"
+        >
+          <Menu className="h-6 w-6 text-slate-700 dark:text-slate-300" />
+        </button>
+      </div>
+
+      {/* Mobile Navigation Drawer */}
       {mobileMenuOpen && (
         <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
@@ -276,10 +585,9 @@ export default function ApplicantProfile() {
         />
       )}
 
-      {/* Mobile Navigation Drawer */}
       <div
         className={`
-        fixed left-0 top-0 z-50 h-full w-72 transform transition-transform duration-300 ease-in-out bg-white dark:bg-slate-900 shadow-2xl
+        fixed left-0 top-0 z-50 h-full w-72 sm:w-80 transform transition-transform duration-300 ease-in-out bg-white dark:bg-slate-900 shadow-2xl lg:hidden
         ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
       `}
       >
@@ -318,7 +626,7 @@ export default function ApplicantProfile() {
               />
               <NavItem
                 icon={Briefcase}
-                label="My Applications"
+                label="Applications"
                 to="/applicant/applications"
               />
               <NavItem icon={BookOpen} label="Saved Jobs" to="/saved-jobs" />
@@ -332,9 +640,13 @@ export default function ApplicantProfile() {
           <div className="p-6 border-t border-slate-200 dark:border-slate-700">
             <div className="flex items-center gap-3 mb-4 p-3 rounded-xl bg-slate-50 dark:bg-slate-800">
               <Avatar className="h-10 w-10">
-                <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
-                  {getInitials()}
-                </AvatarFallback>
+                {currentProfilePicture ? (
+                  <AvatarImage src={currentProfilePicture} alt="Profile" />
+                ) : (
+                  <AvatarFallback className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white">
+                    {getInitials()}
+                  </AvatarFallback>
+                )}
               </Avatar>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-slate-900 dark:text-white">
@@ -345,7 +657,10 @@ export default function ApplicantProfile() {
                 </p>
               </div>
             </div>
-            <button className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-950/50 dark:hover:text-red-400 transition-all">
+            <button
+              onClick={handleLogout}
+              className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-slate-600 hover:bg-red-50 hover:text-red-600 dark:text-slate-400 dark:hover:bg-red-950/50 dark:hover:text-red-400 transition-all"
+            >
               <LogOut className="h-5 w-5" />
               <span className="font-medium">Logout</span>
             </button>
@@ -354,145 +669,178 @@ export default function ApplicantProfile() {
       </div>
 
       {/* Main Content */}
-      <div>
-        <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">
-                  {hasProfile ? "My Profile" : "Complete Your Profile"}
-                </h1>
-                <p className="text-slate-600 dark:text-slate-400">
-                  {hasProfile
-                    ? "Manage your personal information and professional details"
-                    : "Create your profile to start applying for jobs"}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <div className="text-right">
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Profile Completion
-                  </p>
-                  <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                    {profileCompletion}%
-                  </p>
-                </div>
-                <Progress value={profileCompletion} className="w-32 h-2" />
-              </div>
-            </div>
-          </div>
-
-          {/* Error/Success Messages */}
-          {error && (
-            <div className="mb-6 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-              <p className="text-red-600 dark:text-red-400">{error}</p>
-            </div>
-          )}
-          {success && (
-            <div className="mb-6 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 p-4 flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-              <p className="text-emerald-600 dark:text-emerald-400">
-                {success}
+      <div className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 pt-16 lg:pt-8">
+        {/* Header Section */}
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex-1">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2">
+                {hasProfile ? "My Profile" : "Complete Your Profile"}
+              </h1>
+              <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                {hasProfile
+                  ? "Manage your personal information and professional details"
+                  : "Fill in your details to start applying for jobs"}
               </p>
             </div>
-          )}
+            <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 rounded-2xl bg-white dark:bg-slate-900 shadow-sm self-start">
+              <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-500 flex-shrink-0" />
+              <span className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400 whitespace-nowrap">
+                Profile Status
+              </span>
+              <Badge className="bg-green-100 text-green-700 dark:bg-green-950/50 dark:text-green-400 text-xs">
+                {hasProfile ? "Active" : "Incomplete"}
+              </Badge>
+            </div>
+          </div>
+        </div>
 
-          <div className="grid lg:grid-cols-4 gap-6">
-            {/* Sidebar Navigation */}
-            <div className="lg:col-span-1">
-              <Card className="sticky top-6 overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl">
-                <CardContent className="p-4">
-                  <div className="flex flex-col items-center text-center mb-6">
-                    <div className="relative mb-4">
-                      <Avatar className="h-24 w-24 ring-4 ring-white dark:ring-slate-800">
-                        {currentProfilePicture ? (
-                          <AvatarImage
-                            src={currentProfilePicture}
-                            alt="Profile"
-                          />
-                        ) : (
-                          <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white text-3xl">
-                            {getInitials()}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
-                      <label
-                        htmlFor="profile-picture"
-                        className="absolute bottom-0 right-0 cursor-pointer"
-                      >
-                        <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 border-2 border-indigo-500 flex items-center justify-center shadow-lg">
-                          <Camera className="h-4 w-4 text-indigo-500" />
-                        </div>
-                      </label>
-                      <input
-                        id="profile-picture"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        name="profilePicture"
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <h3 className="font-semibold text-slate-900 dark:text-white">
-                      {form.firstName} {form.lastName}
-                    </h3>
-                    <p className="text-sm text-slate-500">
-                      {form.profession || "Professional"}
-                    </p>
+        {/* Error/Success Messages */}
+        {error && (
+          <div className="mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 px-5 py-4 flex items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0" />
+            <p className="text-red-600 dark:text-red-400">{error}</p>
+          </div>
+        )}
+        {success && (
+          <div className="mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-5 py-4 flex items-center gap-3">
+            <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+            <p className="text-emerald-600 dark:text-emerald-400">{success}</p>
+          </div>
+        )}
+
+        <div className="grid lg:grid-cols-12 gap-4 sm:gap-6">
+          {/* Sidebar Navigation with Avatar at Top */}
+          <div className="lg:col-span-3">
+            <Card className="lg:sticky lg:top-6 overflow-hidden border-0 bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 shadow-xl rounded-2xl">
+              <CardContent className="p-4 sm:p-6">
+                {/* Avatar at the top of sidebar navigation */}
+                <div className="flex flex-col items-center mb-6 pb-4 border-b border-slate-200 dark:border-slate-700">
+                  <div className="relative">
+                    <Avatar className="h-20 w-20 sm:h-24 sm:w-24 ring-4 ring-white dark:ring-slate-800 shadow-xl">
+                      {currentProfilePicture ? (
+                        <AvatarImage
+                          src={currentProfilePicture}
+                          alt="Profile"
+                        />
+                      ) : (
+                        <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-blue-600 text-white text-2xl">
+                          {getInitials()}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <label
+                      htmlFor="profile-picture-sidebar"
+                      className="absolute bottom-0 right-0 cursor-pointer"
+                    >
+                      <div className="h-7 w-7 rounded-full bg-white dark:bg-slate-800 border-2 border-indigo-500 flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+                        <Camera className="h-3 w-3 text-indigo-500" />
+                      </div>
+                    </label>
+                    <input
+                      id="profile-picture-sidebar"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      name="profilePicture"
+                      onChange={handleChange}
+                    />
                   </div>
+                  <h3 className="font-semibold text-md text-slate-900 dark:text-white mt-3">
+                    {form.firstName} {form.lastName}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {form.profession || "Professional"}
+                  </p>
+                </div>
 
-                  <nav className="space-y-1">
-                    {sidebarLinks.map((link) => {
-                      const Icon = link.icon;
-                      return (
-                        <button
-                          key={link.id}
-                          onClick={() => setActiveSection(link.id)}
-                          className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
-                            activeSection === link.id
-                              ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
-                              : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
-                          }`}
-                        >
-                          <Icon className="h-5 w-5" />
-                          <span className="font-medium">{link.label}</span>
-                        </button>
-                      );
-                    })}
-                  </nav>
-                </CardContent>
-              </Card>
+                {/* Navigation Items */}
+                <div className="space-y-1">
+                  {sections.map((section) => {
+                    const Icon = section.icon;
+                    const isActive = activeTab === section.id;
+                    return (
+                      <button
+                        key={section.id}
+                        onClick={() => setActiveTab(section.id)}
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 group ${
+                          isActive
+                            ? "bg-gradient-to-r from-indigo-50 to-indigo-100 dark:from-indigo-950/50 dark:to-indigo-900/30 text-indigo-700 dark:text-indigo-400 shadow-sm"
+                            : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                        }`}
+                      >
+                        <Icon
+                          className={`h-4 w-4 ${isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 group-hover:text-indigo-500"}`}
+                        />
+                        <span className="font-medium text-sm">
+                          {section.label}
+                        </span>
+                        {isActive && (
+                          <ChevronRight className="h-3 w-3 ml-auto" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Main Form */}
+          <div className="lg:col-span-9">
+            {/* Mobile Tab Navigation */}
+            <div className="lg:hidden mb-4 overflow-x-auto scrollbar-hide">
+              <div className="flex gap-2 pb-2 min-w-max">
+                {sections.map((section) => {
+                  const Icon = section.icon;
+                  const isActive = activeTab === section.id;
+                  return (
+                    <button
+                      key={section.id}
+                      onClick={() => setActiveTab(section.id)}
+                      className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap ${
+                        isActive
+                          ? "bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-md"
+                          : "bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                      }`}
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      <span className="hidden sm:inline">{section.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Main Form */}
-            <div className="lg:col-span-3">
+            <Card className="border-0 bg-white/80 backdrop-blur-sm dark:bg-slate-900/80 shadow-xl rounded-2xl overflow-hidden">
               <form onSubmit={handleSubmit}>
-                {/* Personal Information Section */}
-                {activeSection === "personal" && (
-                  <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={User}>
+                <div className="p-4 sm:p-6">
+                  {/* Personal Information Section */}
+                  {activeTab === "personal" && (
+                    <div className="space-y-6">
+                      <SectionTitle
+                        icon={User}
+                        description="Your basic personal details"
+                      >
                         Personal Information
                       </SectionTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                      <div className="grid gap-4 md:grid-cols-3">
+
+                      <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            First Name
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
+                            First Name *
                           </Label>
                           <Input
                             name="firstName"
                             value={form.firstName}
                             onChange={handleChange}
+                            required
                             className="rounded-xl"
-                            placeholder="Enter first name"
+                            placeholder="John"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Middle Name
                           </Label>
                           <Input
@@ -500,26 +848,27 @@ export default function ApplicantProfile() {
                             value={form.middleName}
                             onChange={handleChange}
                             className="rounded-xl"
-                            placeholder="Enter middle name"
+                            placeholder="Michael"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            Last Name
+                        <div className="space-y-2 sm:col-span-2 md:col-span-1">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
+                            Last Name *
                           </Label>
                           <Input
                             name="lastName"
                             value={form.lastName}
                             onChange={handleChange}
+                            required
                             className="rounded-xl"
-                            placeholder="Enter last name"
+                            placeholder="Doe"
                           />
                         </div>
                       </div>
 
-                      <div className="grid gap-4 md:grid-cols-3">
+                      <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Date of Birth
                           </Label>
                           <Input
@@ -531,7 +880,7 @@ export default function ApplicantProfile() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Nationality
                           </Label>
                           <Input
@@ -539,11 +888,16 @@ export default function ApplicantProfile() {
                             value={form.nationality}
                             onChange={handleChange}
                             className="rounded-xl"
-                            placeholder="Enter nationality"
+                            placeholder="Your nationality"
                           />
                         </div>
+                      </div>
+
+                      <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Gender</Label>
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
+                            Gender
+                          </Label>
                           <select
                             name="gender"
                             value={form.gender}
@@ -557,14 +911,10 @@ export default function ApplicantProfile() {
                             <option value="Prefer not to say">
                               Prefer not to say
                             </option>
-                            <option value="Other">Other</option>
                           </select>
                         </div>
-                      </div>
-
-                      <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Marital Status
                           </Label>
                           <select
@@ -578,26 +928,25 @@ export default function ApplicantProfile() {
                             <option value="Married">Married</option>
                             <option value="Divorced">Divorced</option>
                             <option value="Widowed">Widowed</option>
-                            <option value="Other">Other</option>
                           </select>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                )}
+                    </div>
+                  )}
 
-                {/* Contact Information Section */}
-                {activeSection === "contact" && (
-                  <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={Phone}>
+                  {/* Contact Information Section */}
+                  {activeTab === "contact" && (
+                    <div className="space-y-6">
+                      <SectionTitle
+                        icon={Phone}
+                        description="How employers can reach you"
+                      >
                         Contact Information
                       </SectionTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                      <div className="grid gap-4 md:grid-cols-2">
+
+                      <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Phone Number *
                           </Label>
                           <Input
@@ -610,7 +959,7 @@ export default function ApplicantProfile() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Alternative Phone
                           </Label>
                           <Input
@@ -618,13 +967,13 @@ export default function ApplicantProfile() {
                             value={form.alternativePhone}
                             onChange={handleChange}
                             className="rounded-xl"
-                            placeholder="+1 234 567 8900"
+                            placeholder="Alternative contact number"
                           />
                         </div>
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">
+                        <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                           Email Address
                         </Label>
                         <Input
@@ -632,7 +981,6 @@ export default function ApplicantProfile() {
                           readOnly
                           disabled
                           value={accountEmail || user?.email || ""}
-                          placeholder={accountEmail || user?.email || "you@example.com"}
                           className="rounded-xl bg-slate-50 dark:bg-slate-800"
                         />
                         <p className="text-xs text-slate-500">
@@ -642,7 +990,9 @@ export default function ApplicantProfile() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Address *</Label>
+                        <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
+                          Street Address *
+                        </Label>
                         <Input
                           name="address"
                           value={form.address}
@@ -653,9 +1003,11 @@ export default function ApplicantProfile() {
                         />
                       </div>
 
-                      <div className="grid gap-4 md:grid-cols-3">
+                      <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">City</Label>
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
+                            City
+                          </Label>
                           <Input
                             name="city"
                             value={form.city}
@@ -665,7 +1017,7 @@ export default function ApplicantProfile() {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Sub City
                           </Label>
                           <Input
@@ -676,8 +1028,10 @@ export default function ApplicantProfile() {
                             placeholder="Sub city"
                           />
                         </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">Region</Label>
+                        <div className="space-y-2 sm:col-span-2 md:col-span-1">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
+                            Region
+                          </Label>
                           <Input
                             name="region"
                             value={form.region}
@@ -687,34 +1041,34 @@ export default function ApplicantProfile() {
                           />
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                )}
+                    </div>
+                  )}
 
-                {/* Professional Information Section */}
-                {activeSection === "professional" && (
-                  <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={Briefcase}>
+                  {/* Professional Information Section */}
+                  {activeTab === "professional" && (
+                    <div className="space-y-6">
+                      <SectionTitle
+                        icon={Briefcase}
+                        description="Your work experience and career details"
+                      >
                         Professional Information
                       </SectionTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                      <div className="grid gap-4 md:grid-cols-2">
+
+                      <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            Profession
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
+                            Profession / Job Title
                           </Label>
                           <Input
                             name="profession"
                             value={form.profession}
                             onChange={handleChange}
                             className="rounded-xl"
-                            placeholder="e.g. Software Engineer"
+                            placeholder="e.g., Software Engineer"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Current Job Title
                           </Label>
                           <Input
@@ -722,28 +1076,29 @@ export default function ApplicantProfile() {
                             value={form.currentJobTitle}
                             onChange={handleChange}
                             className="rounded-xl"
-                            placeholder="e.g. Senior Developer"
+                            placeholder="e.g., Senior Developer"
                           />
                         </div>
                       </div>
 
-                      <div className="grid gap-4 md:grid-cols-2">
+                      <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Years of Experience
                           </Label>
                           <Input
                             type="number"
                             min="0"
+                            max="50"
                             name="yearsOfExperience"
                             value={form.yearsOfExperience}
                             onChange={handleChange}
                             className="rounded-xl"
-                            placeholder="0"
+                            placeholder="Years of professional experience"
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">
+                          <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                             Employment Status
                           </Label>
                           <select
@@ -753,380 +1108,173 @@ export default function ApplicantProfile() {
                             className={selectClass}
                           >
                             <option value="">Select status</option>
-                            <option value="Employed">Employed</option>
-                            <option value="Unemployed">Unemployed</option>
+                            <option value="Employed">Employed Full-time</option>
+                            <option value="Part-time">
+                              Employed Part-time
+                            </option>
                             <option value="Self-employed">Self-employed</option>
-                            <option value="Student">Student</option>
                             <option value="Freelance">Freelance</option>
-                            <option value="Other">Other</option>
+                            <option value="Student">Student</option>
+                            <option value="Unemployed">
+                              Currently Unemployed
+                            </option>
                           </select>
                         </div>
                       </div>
 
-                      <div className="grid gap-4 md:grid-cols-3">
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            Portfolio URL
-                          </Label>
-                          <Input
-                            type="url"
-                            name="portfolioUrl"
-                            value={form.portfolioUrl}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="https://yourportfolio.com"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            LinkedIn URL
-                          </Label>
-                          <Input
-                            type="url"
-                            name="linkedinUrl"
-                            value={form.linkedinUrl}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="https://linkedin.com/in/username"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            GitHub URL
-                          </Label>
-                          <Input
-                            type="url"
-                            name="githubUrl"
-                            value={form.githubUrl}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="https://github.com/username"
-                          />
+                      <div className="space-y-4">
+                        <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
+                          Professional Links
+                        </Label>
+                        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                          <div className="relative">
+                            <Globe className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                              type="url"
+                              name="portfolioUrl"
+                              value={form.portfolioUrl}
+                              onChange={handleChange}
+                              className="rounded-xl pl-10"
+                              placeholder="Portfolio website"
+                            />
+                          </div>
+                          <div className="relative">
+                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                              type="url"
+                              name="linkedinUrl"
+                              value={form.linkedinUrl}
+                              onChange={handleChange}
+                              className="rounded-xl pl-10"
+                              placeholder="LinkedIn profile"
+                            />
+                          </div>
+                          <div className="relative">
+                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                            <Input
+                              type="url"
+                              name="githubUrl"
+                              value={form.githubUrl}
+                              onChange={handleChange}
+                              className="rounded-xl pl-10"
+                              placeholder="GitHub profile"
+                            />
+                          </div>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                )}
+                    </div>
+                  )}
 
-                {/* Education Information Section */}
-                {activeSection === "education" && (
-                  <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={GraduationCap}>
+                  {/* Education Information Section */}
+                  {activeTab === "education" && (
+                    <div className="space-y-6">
+                      <SectionTitle
+                        icon={GraduationCap}
+                        description="Your educational background"
+                      >
                         Education Information
                       </SectionTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                      <div className="grid gap-4 md:grid-cols-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/40 p-4">
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            CGPA
-                          </Label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            max="10"
-                            name="cgpa"
-                            value={form.cgpa}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="e.g. 3.75"
-                          />
-                          <p className="text-xs text-slate-500">
-                            Scale 0–10 (adjust to your institution&apos;s scale)
-                          </p>
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            Exit exam (100%)
-                          </Label>
-                          <Input
-                            type="number"
-                            step="0.01"
-                            min="0"
-                            max="100"
-                            name="exitExamScore"
-                            value={form.exitExamScore}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="e.g. 82.5"
-                          />
-                          <p className="text-xs text-slate-500">
-                            Score out of 100
-                          </p>
-                        </div>
-                      </div>
 
-                      {form.education && form.education.length > 0 ? (
-                        form.education.map((edu, index) => (
-                          <div
-                            key={index}
-                            className="p-4 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 space-y-4"
-                          >
-                            <div className="flex items-center justify-between">
-                              <h4 className="font-medium text-slate-900 dark:text-white">
-                                Education {index + 1}
-                              </h4>
-                              {form.education.length > 1 && (
-                                <Button
-                                  type="button"
-                                  onClick={() => removeEducation(index)}
-                                  variant="ghost"
-                                  size="sm"
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/30"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
-                            </div>
-                            <div className="grid gap-4 md:grid-cols-2">
-                              <div className="space-y-2">
-                                <Label className="text-sm font-medium">
-                                  Highest Education
-                                </Label>
-                                <select
-                                  value={edu.highestEducation}
-                                  onChange={(e) =>
-                                    handleEducationChange(
-                                      index,
-                                      "highestEducation",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className={selectClass}
-                                >
-                                  <option value="">Select level</option>
-                                  <option value="High School">
-                                    High School
-                                  </option>
-                                  <option value="Associate">Associate</option>
-                                  <option value="Bachelor">Bachelor</option>
-                                  <option value="Master">Master</option>
-                                  <option value="PhD">PhD</option>
-                                  <option value="Other">Other</option>
-                                </select>
-                              </div>
-                              <div className="space-y-2">
-                                <Label className="text-sm font-medium">
-                                  Graduation Year
-                                </Label>
-                                <Input
-                                  type="number"
-                                  value={edu.graduationYear}
-                                  onChange={(e) =>
-                                    handleEducationChange(
-                                      index,
-                                      "graduationYear",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="rounded-xl"
-                                  placeholder="2024"
-                                />
-                              </div>
-                            </div>
-
-                            <div className="grid gap-4 md:grid-cols-3">
-                              <div className="space-y-2">
-                                <Label className="text-sm font-medium">
-                                  University
-                                </Label>
-                                <Input
-                                  value={edu.university}
-                                  onChange={(e) =>
-                                    handleEducationChange(
-                                      index,
-                                      "university",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="rounded-xl"
-                                  placeholder="University name"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label className="text-sm font-medium">
-                                  College
-                                </Label>
-                                <Input
-                                  value={edu.college}
-                                  onChange={(e) =>
-                                    handleEducationChange(
-                                      index,
-                                      "college",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="rounded-xl"
-                                  placeholder="College name"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label className="text-sm font-medium">
-                                  Field of Study
-                                </Label>
-                                <Input
-                                  value={edu.fieldOfStudy}
-                                  onChange={(e) =>
-                                    handleEducationChange(
-                                      index,
-                                      "fieldOfStudy",
-                                      e.target.value,
-                                    )
-                                  }
-                                  className="rounded-xl"
-                                  placeholder="Computer Science"
-                                />
-                              </div>
-                            </div>
+                      <div className="space-y-4">
+                        {form.education && form.education.length > 0 ? (
+                          form.education.map((edu, index) => (
+                            <EducationCard
+                              key={index}
+                              education={edu}
+                              index={index}
+                              onUpdate={handleEducationChange}
+                              onRemove={() => removeEducation(index)}
+                              isRemovable={form.education.length > 1}
+                            />
+                          ))
+                        ) : (
+                          <div className="text-center py-8 px-4 rounded-2xl border-2 border-dashed border-slate-200 dark:border-slate-700">
+                            <GraduationCap className="h-12 w-12 text-slate-400 mx-auto mb-3" />
+                            <p className="text-slate-500 dark:text-slate-400">
+                              No education entries added yet
+                            </p>
+                            <p className="text-sm text-slate-400 mt-1">
+                              Add your educational background to increase
+                              profile completion
+                            </p>
                           </div>
-                        ))
-                      ) : (
-                        <p className="text-sm text-slate-500 dark:text-slate-400 text-center py-4">
-                          No education entries added yet
-                        </p>
-                      )}
+                        )}
 
-                      <Button
-                        type="button"
-                        onClick={addEducation}
-                        variant="outline"
-                        className="w-full border-dashed border-2 border-slate-300 dark:border-slate-600 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all"
-                      >
-                        <GraduationCap className="h-4 w-4 mr-2" />
-                        Add Education
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-
-                {/* Skills Information Section */}
-                {activeSection === "skills" && (
-                  <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={Code}>
-                        Skills Information
-                      </SectionTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-6">
-                      <p className="text-sm text-slate-500 flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4" />
-                        Enter comma-separated values for each list
-                      </p>
-
-                      <div className="grid gap-4 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">Skills</Label>
-                          <Input
-                            name="skills"
-                            value={form.skills}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="e.g. Project Management, Agile, Scrum"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            Languages
-                          </Label>
-                          <Input
-                            name="languages"
-                            value={form.languages}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="e.g. English, Spanish, French"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            Technical Skills
-                          </Label>
-                          <Input
-                            name="technicalSkills"
-                            value={form.technicalSkills}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="e.g. React, Node.js, PostgreSQL"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm font-medium">
-                            Soft Skills
-                          </Label>
-                          <Input
-                            name="softSkills"
-                            value={form.softSkills}
-                            onChange={handleChange}
-                            className="rounded-xl"
-                            placeholder="e.g. Communication, Leadership"
-                          />
-                        </div>
+                        <Button
+                          type="button"
+                          onClick={addEducation}
+                          variant="outline"
+                          className="w-full border-2 border-dashed border-indigo-300 dark:border-indigo-700 hover:border-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 transition-all rounded-xl py-6"
+                        >
+                          <GraduationCap className="h-5 w-5 mr-2" />
+                          Add Another Education
+                        </Button>
                       </div>
+                    </div>
+                  )}
 
-                      {/* Preview Skills */}
-                      {(form.skills ||
-                        form.technicalSkills ||
-                        form.softSkills ||
-                        form.languages) && (
-                        <div className="space-y-4 pt-4">
-                          {form.skills && (
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">
-                                Skills Preview
-                              </Label>
-                              <div className="flex flex-wrap gap-2">
-                                {form.skills.split(",").map((skill, idx) => (
-                                  <SkillBadge key={idx} skill={skill.trim()} />
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          {form.technicalSkills && (
-                            <div>
-                              <Label className="text-sm font-medium mb-2 block">
-                                Technical Skills Preview
-                              </Label>
-                              <div className="flex flex-wrap gap-2">
-                                {form.technicalSkills
-                                  .split(",")
-                                  .map((skill, idx) => (
-                                    <SkillBadge
-                                      key={idx}
-                                      skill={skill.trim()}
-                                    />
-                                  ))}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                )}
+                  {/* Skills Information Section */}
+                  {activeTab === "skills" && (
+                    <div className="space-y-6">
+                      <SectionTitle
+                        icon={Code}
+                        description="List your skills and competencies"
+                      >
+                        Skills & Competencies
+                      </SectionTitle>
 
-                {/* Documents Section */}
-                {activeSection === "documents" && (
-                  <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl mb-6">
-                    <CardHeader className="border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-950/30 dark:to-blue-950/30">
-                      <SectionTitle icon={FileText}>
+                      <div className="space-y-6">
+                        <SkillsInput
+                          label="Technical Skills"
+                          value={form.technicalSkills}
+                          onChange={handleChange}
+                          placeholder="e.g., React, Python, AWS"
+                          icon={Code}
+                        />
+
+                        <SkillsInput
+                          label="Soft Skills"
+                          value={form.softSkills}
+                          onChange={handleChange}
+                          placeholder="e.g., Leadership, Communication"
+                          icon={User}
+                        />
+
+                        <SkillsInput
+                          label="Languages"
+                          value={form.languages}
+                          onChange={handleChange}
+                          placeholder="e.g., English, Spanish, French"
+                          icon={Languages}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Documents Section */}
+                  {activeTab === "documents" && (
+                    <div className="space-y-6">
+                      <SectionTitle
+                        icon={FileText}
+                        description="Upload your resume and other documents"
+                      >
                         Application Documents
                       </SectionTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-6">
+
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">
+                        <Label className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-medium">
                           Resume/CV *
                         </Label>
                         {currentResume && (
-                          <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2 mb-2">
-                            <FileIcon className="h-4 w-4 text-emerald-600" />
-                            <span className="text-sm text-emerald-700 dark:text-emerald-400">
-                              Current: {currentResume}
+                          <div className="p-2 sm:p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 flex items-center gap-2 mb-3">
+                            <FileIcon className="h-4 w-4 text-emerald-600 flex-shrink-0" />
+                            <span className="text-xs sm:text-sm text-emerald-700 dark:text-emerald-400 flex-1 truncate">
+                              {currentResume}
                             </span>
+                            <CheckCircle className="h-4 w-4 text-emerald-600 flex-shrink-0" />
                           </div>
                         )}
-                        <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 text-center hover:border-indigo-500 transition-all">
+                        <div className="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-xl p-6 sm:p-8 text-center hover:border-indigo-500 transition-all cursor-pointer">
                           <input
                             type="file"
                             name="resume"
@@ -1137,44 +1285,60 @@ export default function ApplicantProfile() {
                           />
                           <label
                             htmlFor="resume-upload"
-                            className="cursor-pointer"
+                            className="cursor-pointer block"
                           >
-                            <Upload className="h-10 w-10 text-slate-400 mx-auto mb-2" />
-                            <p className="text-sm text-slate-600 dark:text-slate-400">
-                              Click to upload or drag and drop
+                            <Upload className="h-10 w-10 sm:h-12 sm:w-12 text-slate-400 mx-auto mb-2 sm:mb-3" />
+                            <p className="text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-400">
+                              Click to upload your resume
                             </p>
-                            <p className="text-xs text-slate-500 mt-1">
+                            <p className="text-xs text-slate-500 mt-1 sm:mt-2">
                               PDF, DOC, DOCX, TXT (Max 5MB)
                             </p>
                           </label>
                         </div>
+                        {uploadProgress.resume > 0 &&
+                          uploadProgress.resume < 100 && (
+                            <div className="mt-3">
+                              <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                <div
+                                  className="h-full bg-indigo-500 transition-all duration-300 rounded-full"
+                                  style={{ width: `${uploadProgress.resume}%` }}
+                                />
+                              </div>
+                              <p className="text-xs text-slate-500 mt-1 text-center">
+                                Uploading: {uploadProgress.resume}%
+                              </p>
+                            </div>
+                          )}
                       </div>
-                    </CardContent>
-                  </Card>
-                )}
+                    </div>
+                  )}
+                </div>
 
-                {/* Submit Button */}
-                <div className="flex justify-end">
+                {/* Action Buttons */}
+                <div className="border-t border-slate-200 dark:border-slate-700 px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-end gap-3">
                   <Button
                     type="submit"
                     disabled={saving}
-                    className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg transition-all rounded-xl px-8 py-2 text-lg"
+                    className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white shadow-lg hover:shadow-xl rounded-xl px-6"
                   >
                     {saving ? (
-                      <>
-                        <div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                        Saving...
-                      </>
+                      <div className="flex items-center gap-2">
+                        <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>Saving...</span>
+                      </div>
                     ) : (
-                      <>
-                        <Save className="mr-2 h-5 w-5" />
-                        {hasProfile ? "Update Profile" : "Create Profile"}
-                      </>
+                      <div className="flex items-center gap-2">
+                        <Save className="h-5 w-5" />
+                        <span>
+                          {hasProfile ? "Update Profile" : "Save Profile"}
+                        </span>
+                      </div>
                     )}
                   </Button>
                 </div>
               </form>
-            </div>
+            </Card>
           </div>
         </div>
       </div>
@@ -1187,7 +1351,7 @@ function NavItem({ icon: Icon, label, to, active = false }) {
   return (
     <Link
       to={to}
-      className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all ${
+      className={`flex items-center gap-3 rounded-xl px-4 py-3 transition-all duration-200 ${
         active
           ? "bg-gradient-to-r from-indigo-50 to-blue-50 text-indigo-600 dark:from-indigo-950/50 dark:to-blue-950/50 dark:text-indigo-400"
           : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
