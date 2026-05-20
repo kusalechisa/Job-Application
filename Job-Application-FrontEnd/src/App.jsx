@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import ForgotPassword from "./pages/forgotPassword";
@@ -56,9 +58,15 @@ export default function App() {
           >
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/jobs" element={<AdminJobs />} />
-            <Route path="/admin/jobs/:jobId/applications" element={<AdminJobApplications />} />
+            <Route
+              path="/admin/jobs/:jobId/applications"
+              element={<AdminJobApplications />}
+            />
             <Route path="/admin/applications" element={<AdminApplications />} />
-            <Route path="/admin/applications/:applicationId" element={<AdminApplicationDetail />} />
+            <Route
+              path="/admin/applications/:applicationId"
+              element={<AdminApplicationDetail />}
+            />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/stats" element={<AdminStats />} />
           </Route>
@@ -75,8 +83,8 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+        <ToastContainer />
       </AuthProvider>
     </BrowserRouter>
   );
 }
-

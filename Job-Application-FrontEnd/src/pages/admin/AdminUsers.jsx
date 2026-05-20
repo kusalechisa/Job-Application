@@ -1499,7 +1499,9 @@ export default function AdminUsers() {
                               <SelectValue placeholder="Select column" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="default">Default: active</SelectItem>
+                              <SelectItem value="default">
+                                Default: active
+                              </SelectItem>
                               {importPreview[0]?.map((col, idx) => (
                                 <SelectItem key={idx} value={idx.toString()}>
                                   Column {idx + 1}: {col}

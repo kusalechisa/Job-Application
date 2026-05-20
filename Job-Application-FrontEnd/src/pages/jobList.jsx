@@ -285,7 +285,7 @@ export default function JobList() {
       setTimeout(() => setError(""), 5000);
       return;
     }
- 
+
     if (profileCompletion < 50) {
       setError(
         "Complete your profile (50%+) to apply for jobs. Go to Profile page.",
@@ -350,7 +350,7 @@ export default function JobList() {
     {
       icon: Briefcase,
       label: "Find Jobs",
-      href: "/applicant/jobs",
+      href: "/joblist",
       active: true,
     },
     {

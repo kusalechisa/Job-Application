@@ -63,13 +63,12 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "@/lib/apiError";
 import StatusBadge from "@/components/StatusBadge";
+import { toast } from "react-toastify";
 
 export default function AppliedJobList() {
   const [applications, setApplications] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [selectedApplication, setSelectedApplication] = useState(null);
   const [timelineOpen, setTimelineOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -81,12 +80,11 @@ export default function AppliedJobList() {
 
   const loadApplications = async () => {
     setLoading(true);
-    setError("");
     try {
       const res = await getMyApplications();
       setApplications(res.data.data || []);
     } catch (err) {
-      setError(getApiErrorMessage(err, "Unable to load your applications."));
+      toast.error(getApiErrorMessage(err, "Unable to load your applications."));
     } finally {
       setLoading(false);
     }
@@ -107,16 +105,12 @@ export default function AppliedJobList() {
   const handleUpdateResume = async (applicationId) => {
     const resume = window.prompt("Enter updated resume text or file path:");
     if (!resume) return;
-    setError("");
-    setSuccess("");
     try {
       await updateApplication(applicationId, { resume });
-      setSuccess("Application updated successfully!");
-      setTimeout(() => setSuccess(""), 3000);
+      toast.success("Application updated successfully!");
       loadApplications();
     } catch (err) {
-      setError(getApiErrorMessage(err, "Unable to update application."));
-      setTimeout(() => setError(""), 3000);
+      toast.error(getApiErrorMessage(err, "Unable to update application."));
     }
   };
 
@@ -127,16 +121,12 @@ export default function AppliedJobList() {
       )
     )
       return;
-    setError("");
-    setSuccess("");
     try {
       await withdrawApplication(applicationId);
-      setSuccess("Application withdrawn successfully.");
-      setTimeout(() => setSuccess(""), 3000);
+      toast.success("Application withdrawn successfully.");
       loadApplications();
     } catch (err) {
-      setError(getApiErrorMessage(err, "Unable to withdraw."));
-      setTimeout(() => setError(""), 3000);
+      toast.error(getApiErrorMessage(err, "Unable to withdraw."));
     }
   };
 
@@ -251,7 +241,7 @@ export default function AppliedJobList() {
 
   const sidebarLinks = [
     { icon: Home, label: "Dashboard", href: "/applicant" },
-    { icon: Search, label: "Find Jobs", href: "/applicant/jobs" },
+    { icon: Search, label: "Find Jobs", href: "/joblist" },
     {
       icon: Briefcase,
       label: "My Applications",
@@ -493,20 +483,6 @@ export default function AppliedJobList() {
             </div>
           </div>
 
-          {/* Error/Success Messages */}
-          {error && (
-            <div className="mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 dark:bg-rose-950 dark:border-rose-800 dark:text-rose-300 flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 dark:bg-emerald-950 dark:border-emerald-800 dark:text-emerald-300 flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
-              {success}
-            </div>
-          )}
-
           {/* Applications Content */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
@@ -531,7 +507,7 @@ export default function AppliedJobList() {
                   asChild
                   className="bg-gradient-to-r from-indigo-500 to-blue-600"
                 >
-                  <Link to="/applicant/jobs">Browse Jobs</Link>
+                  <Link to="/joblist">Browse Jobs</Link>
                 </Button>
               </CardContent>
             </Card>
@@ -1078,7 +1054,7 @@ export default function AppliedJobList() {
                             size="sm"
                             className="mt-3"
                           >
-                            <Link to="/applicant/jobs">Browse More Jobs</Link>
+                            <Link to="/joblist">Browse More Jobs</Link>
                           </Button>
                         </div>
                       </div>
