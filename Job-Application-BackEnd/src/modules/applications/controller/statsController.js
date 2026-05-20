@@ -67,6 +67,7 @@ export const getApplicationStats = async (req, res) => {
         id: true,
         title: true,
         company: true,
+        location: true,
         _count: {
           select: { applications: true },
         },

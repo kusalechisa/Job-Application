@@ -586,28 +586,6 @@ export default function AppliedJobList() {
                           </TableCell>
                           <TableCell onClick={(e) => e.stopPropagation()}>
                             <div className="flex flex-wrap gap-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleViewTimeline(item)}
-                                className="gap-1"
-                              >
-                                <Eye className="h-3 w-3" />
-                                <span className="hidden sm:inline">View</span>
-                              </Button>
-                              {item.status === "Applied" && (
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handleUpdateResume(item.id)}
-                                  className="gap-1"
-                                >
-                                  <Download className="h-3 w-3" />
-                                  <span className="hidden sm:inline">
-                                    Update
-                                  </span>
-                                </Button>
-                              )}
                               {item.status !== "Accepted" &&
                                 item.status !== "Rejected" && (
                                   <Button
@@ -710,26 +688,6 @@ export default function AppliedJobList() {
                       className="flex gap-2 pt-4 border-t border-slate-200 dark:border-slate-700"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleViewTimeline(item)}
-                        className="flex-1 gap-1"
-                      >
-                        <Eye className="h-3 w-3" />
-                        Timeline
-                      </Button>
-                      {item.status === "Applied" && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleUpdateResume(item.id)}
-                          className="flex-1 gap-1"
-                        >
-                          <Download className="h-3 w-3" />
-                          Update
-                        </Button>
-                      )}
                       {item.status !== "Accepted" &&
                         item.status !== "Rejected" && (
                           <Button
@@ -778,32 +736,6 @@ export default function AppliedJobList() {
               </Button>
             </div>
           )}
-
-          {/* Tips Card */}
-          <Card className="mt-6 overflow-hidden border-0 bg-gradient-to-r from-indigo-500 to-blue-600 text-white shadow-xl">
-            <CardContent className="p-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <Award className="h-6 w-6" />
-                  <div>
-                    <h3 className="font-semibold text-lg">Application Tips</h3>
-                    <p className="text-white/90 text-sm mt-1">
-                      Keep your profile updated to increase your chances of
-                      getting hired. Companies prefer candidates with complete
-                      profiles and relevant skills.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  asChild
-                  variant="secondary"
-                  className="bg-white text-indigo-600 hover:bg-slate-100"
-                >
-                  <Link to="/profile">Update Profile</Link>
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
 

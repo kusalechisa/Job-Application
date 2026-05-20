@@ -167,30 +167,6 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div>
         <main className="p-4 md:p-6 lg:p-8">
-          {/* Welcome Section */}
-          <div className="mb-8 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 md:p-8 text-white">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold mb-2">
-                  Welcome back, Admin! 👋
-                </h1>
-                <p className="text-white/90">
-                  Here's what's happening with your job portal today.
-                </p>
-              </div>
-              <div className="mt-4 md:mt-0 flex gap-3">
-                <button className="px-4 py-2 bg-white/20 rounded-xl hover:bg-white/30 transition-all backdrop-blur-sm flex items-center gap-2">
-                  <Download className="h-4 w-4" />
-                  Export Report
-                </button>
-                <button className="px-4 py-2 bg-white rounded-xl text-purple-600 hover:shadow-lg transition-all flex items-center gap-2">
-                  <Settings className="h-4 w-4" />
-                  Settings
-                </button>
-              </div>
-            </div>
-          </div>
-
           {/* Statistics Cards - Responsive Grid */}
           <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6">
             <EnhancedStatCard

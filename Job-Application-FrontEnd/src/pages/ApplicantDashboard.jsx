@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -36,6 +36,7 @@ import {
 } from "@/lib/jobDeadline";
 
 export default function ApplicantDashboard() {
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     jobsApplied: 0,
     savedJobs: 0,
@@ -46,7 +47,21 @@ export default function ApplicantDashboard() {
   const [recentApplications, setRecentApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [profileData, setProfileData] = useState(null);
+  // Add these state declarations
+  const [popupMessage, setPopupMessage] = useState('');
+  const [popupType, setPopupType] = useState('');
   const { user, token } = useAuth();
+
+  // Add the showPopup function
+  const showPopup = (message, type = 'info') => {
+    setPopupMessage(message);
+    setPopupType(type);
+    // Auto-hide after 3 seconds
+    setTimeout(() => {
+      setPopupMessage('');
+      setPopupType('');
+    }, 3000);
+  };
 
   const motivationalTips = [
     "Complete your profile to increase visibility to recruiters",
@@ -143,15 +158,29 @@ export default function ApplicantDashboard() {
 
     try {
       await applyForJob(jobId);
+      showPopup("Application submitted successfully!", "success");
       const appsRes = await getMyApplications();
       setRecentApplications(appsRes.data.data.slice(0, 5));
       setStats((prev) => ({ ...prev, jobsApplied: prev.jobsApplied + 1 }));
     } catch (error) {
-      const message =
-        error?.response?.data?.message || "Unable to submit application.";
-      showPopup(message, "error");
       console.error("Error applying for job:", error);
+      // Handle specific error cases
+      if (error?.response?.status === 409) {
+        showPopup("You have already applied for this position", "error");
+      } else if (error?.response?.data?.message) {
+        showPopup(error.response.data.message, "error");
+      } else {
+        showPopup("Unable to submit application. Please try again.", "error");
+      }
     }
+  };
+
+  const handleCardClick = () => {
+    navigate(`/joblist`);
+  };
+
+  const handleApplicationRowClick = (applicationId) => {
+    navigate(`/application/${applicationId}`);
   };
 
   if (loading) {
@@ -174,6 +203,21 @@ export default function ApplicantDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-sky-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      {/* Popup Notification - Add this right after the opening div */}
+      {popupMessage && (
+        <div className={`fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg ${
+          popupType === 'success' ? 'bg-green-500' : 
+          popupType === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        } text-white transition-all duration-300 animate-in slide-in-from-top-2`}>
+          <div className="flex items-center gap-2">
+            {popupType === 'success' && <CheckCircle2 className="h-5 w-5" />}
+            {popupType === 'error' && <XCircle className="h-5 w-5" />}
+            {popupType === 'info' && <Bell className="h-5 w-5" />}
+            <span>{popupMessage}</span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="border-b border-slate-200/60 bg-white/80 backdrop-blur-xl dark:border-slate-800/60 dark:bg-slate-900/80 sticky top-0 z-10">
         <div className="max-w-7xl mx-auto px-4 lg:px-6 py-4">
@@ -208,6 +252,7 @@ export default function ApplicantDashboard() {
         </div>
       </div>
 
+      {/* Rest of your existing JSX remains the same */}
       <div className="max-w-7xl mx-auto px-4 lg:px-6 py-6 space-y-6">
         {/* Motivational Tip */}
         <Card className="bg-gradient-to-r from-sky-500 to-indigo-600 border-0 text-white">
@@ -226,7 +271,7 @@ export default function ApplicantDashboard() {
 
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow">
+          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/appliedjobs")}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -249,7 +294,7 @@ export default function ApplicantDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow">
+          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/saved-jobs")}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -272,7 +317,7 @@ export default function ApplicantDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow">
+          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/interviews")}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -295,7 +340,7 @@ export default function ApplicantDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow">
+          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/profile")}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -318,7 +363,7 @@ export default function ApplicantDashboard() {
           </Card>
         </div>
 
-        {/* Main Content Grid */}
+        {/* Keep the rest of your existing JSX exactly as it was */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Recommended Jobs */}
           <div className="lg:col-span-2 space-y-6">
@@ -348,8 +393,9 @@ export default function ApplicantDashboard() {
                     const deadlinePassed = isJobClosedForApplications(job);
                     return (
                       <Card
-                        key={job.id}
-                        className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-md transition-shadow"
+                      
+                        className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-md transition-shadow cursor-pointer"
+                        onClick={() => handleCardClick()}
                       >
                         <CardContent className="p-5">
                           <div className="space-y-3">
@@ -375,14 +421,21 @@ export default function ApplicantDashboard() {
                               <Button
                                 size="sm"
                                 className="flex-1 bg-sky-600 hover:bg-sky-700 disabled:opacity-60"
-                                onClick={() => handleApply(job.id)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleApply(job.id);
+                                }}
                                 disabled={deadlinePassed}
                               >
                                 {deadlinePassed
                                   ? "Deadline Reached"
                                   : "Apply Now"}
                               </Button>
-                              <Button size="sm" variant="outline">
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={(e) => e.stopPropagation()}
+                              >
                                 <Bookmark className="h-4 w-4" />
                               </Button>
                             </div>
@@ -442,7 +495,8 @@ export default function ApplicantDashboard() {
                         recentApplications.map((app) => (
                           <tr
                             key={app.id}
-                            className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30"
+                            className="border-b border-slate-100 dark:border-slate-800/50 hover:bg-slate-50 dark:hover:bg-slate-800/30 cursor-pointer"
+                            onClick={() => handleApplicationRowClick(app.id)}
                           >
                             <td className="py-3 px-4">
                               <div>
@@ -550,7 +604,8 @@ export default function ApplicantDashboard() {
                     {recentApplications.slice(0, 3).map((app, index) => (
                       <div
                         key={app.id}
-                        className="relative pl-6 pb-4 border-l-2 border-slate-200 dark:border-slate-800 last:pb-0"
+                        className="relative pl-6 pb-4 border-l-2 border-slate-200 dark:border-slate-800 last:pb-0 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/30 rounded-lg transition-colors"
+                        onClick={() => handleApplicationRowClick(app.id)}
                       >
                         <div
                           className={`absolute left-0 top-0 w-3 h-3 rounded-full border-2 bg-white dark:bg-slate-900 ${
