@@ -143,7 +143,7 @@ export default function Register() {
                   <User className="w-8 h-8" />
                 </div>
                 <CardTitle className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-                  Join Our Community
+                  Join Addis Mesob
                 </CardTitle>
                 <p className="text-white/90 text-lg max-w-md mx-auto">
                   Create your account and start your journey with us today
