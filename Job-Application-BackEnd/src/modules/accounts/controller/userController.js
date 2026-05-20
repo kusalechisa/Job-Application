@@ -132,8 +132,16 @@ export const getUsers = async (req, res) => {
             cgpa: true,
             exitExamScore: true,
             _count: { select: { applications: true } },
+            education: {
+              select: {
+                cgpa: true,
+                exitExamScore: true,
+                highestEducation: true,
+              },
+            },
           },
         },
+        _count: { select: { jobsPosted: true } },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -426,7 +434,7 @@ export const updateUserById = async (req, res) => {
     }
 
     const { id } = req.params;
-    const { name, email, role } = req.body;
+    const { name, email, role, status, password } = req.body;
 
     const updateData = {};
     if (name) updateData.name = name;
@@ -445,11 +453,15 @@ export const updateUserById = async (req, res) => {
       updateData.email = email;
     }
     if (role) updateData.role = role;
+    if (status) updateData.status = status;
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
 
     const user = await prisma.account.update({
       where: { id },
       data: updateData,
-      select: { id: true, name: true, email: true, role: true, createdAt: true, updatedAt: true },
+      select: { id: true, name: true, email: true, role: true, status: true, createdAt: true, updatedAt: true },
     });
 
     return res.status(200).json({

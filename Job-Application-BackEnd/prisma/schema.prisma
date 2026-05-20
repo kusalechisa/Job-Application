@@ -25,6 +25,7 @@ model Account {
   email       String   @unique
   password    String
   role        Role     @default(Applicant)
+  status      String   @default("active")
 
   applicant   Applicant?
   jobsPosted  Job[]    @relation("PostedJobs")

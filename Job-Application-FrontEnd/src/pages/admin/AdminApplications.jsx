@@ -44,6 +44,18 @@ import {
   Menu
 } from "lucide-react";
 
+function getApplicantCGPA(applicant) {
+  if (applicant?.cgpa != null) return Number(applicant.cgpa);
+  const edu = applicant?.education?.find(e => e.cgpa != null);
+  return edu?.cgpa != null ? Number(edu.cgpa) : null;
+}
+
+function getApplicantExitExam(applicant) {
+  if (applicant?.exitExamScore != null) return Number(applicant.exitExamScore);
+  const edu = applicant?.education?.find(e => e.exitExamScore != null);
+  return edu?.exitExamScore != null ? Number(edu.exitExamScore) : null;
+}
+
 function inApplicantScoreRange(value, minStr, maxStr) {
   if (minStr === "" && maxStr === "") return true;
   if (value == null || value === "") return false;
@@ -133,13 +145,13 @@ export default function AdminApplications() {
 
       if (filters.cgpaMin !== "" || filters.cgpaMax !== "") {
         filtered = filtered.filter((app) =>
-          inApplicantScoreRange(app.applicant?.cgpa, filters.cgpaMin, filters.cgpaMax),
+          inApplicantScoreRange(getApplicantCGPA(app.applicant), filters.cgpaMin, filters.cgpaMax),
         );
       }
       if (filters.exitExamMin !== "" || filters.exitExamMax !== "") {
         filtered = filtered.filter((app) =>
           inApplicantScoreRange(
-            app.applicant?.exitExamScore,
+            getApplicantExitExam(app.applicant),
             filters.exitExamMin,
             filters.exitExamMax,
           ),
@@ -630,10 +642,10 @@ export default function AdminApplications() {
                               </div>
                             </TableCell>
                             <TableCell className="hidden lg:table-cell text-sm text-slate-600 dark:text-slate-300">
-                              {formatApplicantMetric(app.applicant?.cgpa)}
+                              {formatApplicantMetric(getApplicantCGPA(app.applicant))}
                             </TableCell>
                             <TableCell className="hidden lg:table-cell text-sm text-slate-600 dark:text-slate-300">
-                              {formatApplicantMetric(app.applicant?.exitExamScore)}
+                              {formatApplicantMetric(getApplicantExitExam(app.applicant))}
                             </TableCell>
                             <TableCell className="hidden lg:table-cell">
                               <div>
@@ -702,8 +714,8 @@ export default function AdminApplications() {
                         <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
                           <Award className="h-3 w-3 text-slate-400" />
                           <span>
-                            CGPA {formatApplicantMetric(app.applicant?.cgpa)} · Exit{" "}
-                            {formatApplicantMetric(app.applicant?.exitExamScore)}
+                            CGPA {formatApplicantMetric(getApplicantCGPA(app.applicant))} · Exit{" "}
+                            {formatApplicantMetric(getApplicantExitExam(app.applicant))}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-sm">
@@ -810,10 +822,10 @@ export default function AdminApplications() {
                             <Award className="h-4 w-4 text-slate-400" />
                             <span>
                               CGPA:{" "}
-                              {formatApplicantMetric(selectedApplication.applicant?.cgpa)} · Exit
+                              {formatApplicantMetric(getApplicantCGPA(selectedApplication.applicant))} · Exit
                               exam (100%):{" "}
                               {formatApplicantMetric(
-                                selectedApplication.applicant?.exitExamScore,
+                                getApplicantExitExam(selectedApplication.applicant),
                               )}
                             </span>
                           </div>
