@@ -62,7 +62,54 @@ import {
   Star,
   FileSpreadsheet,
   Trash2,
+  MoreVertical,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+
+// Dropdown Menu Component
+function DropdownMenu({ children, trigger }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isOpen && !event.target.closest('.dropdown-menu')) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isOpen]);
+
+  return (
+    <div className="relative dropdown-menu">
+      <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer">
+        {trigger}
+      </div>
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-slate-800 ring-1 ring-black ring-opacity-5 z-50">
+          <div className="py-1" role="menu">
+            {children}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DropdownMenuItem({ onClick, children, icon: Icon, className = "" }) {
+  return (
+    <button
+      onClick={() => {
+        onClick();
+      }}
+      className={`flex items-center gap-2 w-full px-4 py-2 text-sm text-left text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors ${className}`}
+      role="menuitem"
+    >
+      {Icon && <Icon className="h-4 w-4" />}
+      {children}
+    </button>
+  );
+}
 
 const emptyUser = {
   name: "",
@@ -111,6 +158,19 @@ export default function AdminUsers() {
     role: "",
     status: "",
   });
+
+  // Popup state
+  const [popupMessage, setPopupMessage] = useState('');
+  const [popupType, setPopupType] = useState('');
+
+  const showPopup = (message, type = 'info') => {
+    setPopupMessage(message);
+    setPopupType(type);
+    setTimeout(() => {
+      setPopupMessage('');
+      setPopupType('');
+    }, 3000);
+  };
 
   const loadUsers = async () => {
     setLoading(true);
@@ -190,7 +250,7 @@ export default function AdminUsers() {
       setResetPasswordModalOpen(false);
       setNewPassword("");
       setSelectedUserForReset(null);
-      alert("Password reset successfully");
+      showPopup("Password reset successfully", "success");
     } catch (err) {
       showPopup(getApiErrorMessage(err), "error");
     }
@@ -200,6 +260,7 @@ export default function AdminUsers() {
     try {
       const newStatus = user.status === "active" ? "suspended" : "active";
       await updateUserById(user.id, { status: newStatus });
+      showPopup(`User ${newStatus === "active" ? "activated" : "suspended"} successfully`, "success");
       loadUsers();
     } catch (err) {
       showPopup(getApiErrorMessage(err), "error");
@@ -239,8 +300,10 @@ export default function AdminUsers() {
           payload.password = form.password;
         }
         await updateUserById(editingId, payload);
+        showPopup("User updated successfully", "success");
       } else {
         await createUser(form);
+        showPopup("User created successfully", "success");
       }
       setModalOpen(false);
       loadUsers();
@@ -323,6 +386,7 @@ export default function AdminUsers() {
     const csv = convertToCSV(selectedData);
     downloadCSV(csv, `users_export_${new Date().toISOString()}.csv`);
     setSelectedUsers([]);
+    showPopup(`Exported ${selectedData.length} users successfully`, "success");
   };
 
   const convertToCSV = (data) => {
@@ -390,7 +454,7 @@ export default function AdminUsers() {
 
         // Call API to import users
         await importUsers(importedData);
-        alert(`Successfully imported ${importedData.length} users!`);
+        showPopup(`Successfully imported ${importedData.length} users!`, "success");
         setImportModalOpen(false);
         setImportFile(null);
         setImportPreview([]);
@@ -449,6 +513,21 @@ export default function AdminUsers() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
+      {/* Popup Notification */}
+      {popupMessage && (
+        <div className={`fixed top-4 right-4 z-50 p-4 rounded-md shadow-lg ${
+          popupType === 'success' ? 'bg-green-500' : 
+          popupType === 'error' ? 'bg-red-500' : 'bg-blue-500'
+        } text-white transition-all duration-300 animate-in slide-in-from-top-2`}>
+          <div className="flex items-center gap-2">
+            {popupType === 'success' && <CheckCircle className="h-5 w-5" />}
+            {popupType === 'error' && <AlertCircle className="h-5 w-5" />}
+            {popupType === 'info' && <Clock className="h-5 w-5" />}
+            <span>{popupMessage}</span>
+          </div>
+        </div>
+      )}
+
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div
@@ -821,7 +900,7 @@ export default function AdminUsers() {
                         <TableHead className="font-semibold hidden xl:table-cell">
                           Activity
                         </TableHead>
-                        <TableHead className="font-semibold">Actions</TableHead>
+                        <TableHead className="font-semibold w-16">Actions</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -893,7 +972,6 @@ export default function AdminUsers() {
                             <TableCell className="hidden lg:table-cell text-sm text-slate-600 dark:text-slate-300">
                               {user.role === "Applicant"
                                 ? (() => {
-                                    // Try applicant-level first, then fall back to education records
                                     if (user.applicant?.cgpa != null)
                                       return Number(
                                         user.applicant.cgpa,
@@ -916,7 +994,6 @@ export default function AdminUsers() {
                             <TableCell className="hidden lg:table-cell text-sm text-slate-600 dark:text-slate-300">
                               {user.role === "Applicant"
                                 ? (() => {
-                                    // Try applicant-level first, then fall back to education records
                                     if (user.applicant?.exitExamScore != null)
                                       return Number(
                                         user.applicant.exitExamScore,
@@ -972,46 +1049,40 @@ export default function AdminUsers() {
                               </div>
                             </TableCell>
                             <TableCell>
-                              <div className="flex flex-wrap gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
+                              <DropdownMenu
+                                trigger={
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    <MoreVertical className="h-4 w-4" />
+                                  </Button>
+                                }
+                              >
+                                <DropdownMenuItem
                                   onClick={() => openEdit(user)}
-                                  title="Edit"
-                                  className="h-8 w-8 p-0"
+                                  icon={Pencil}
                                 >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
+                                  Edit User
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
                                   onClick={() => {
                                     setSelectedUserForReset(user);
                                     setResetPasswordModalOpen(true);
                                   }}
-                                  title="Reset Password"
-                                  className="h-8 w-8 p-0"
+                                  icon={Key}
                                 >
-                                  <Key className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
+                                  Reset Password
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
                                   onClick={() => handleToggleStatus(user)}
-                                  title={
-                                    user.status === "active"
-                                      ? "Suspend"
-                                      : "Activate"
-                                  }
-                                  className="h-8 w-8 p-0"
+                                  icon={user.status === "active" ? Ban : CheckCircle}
+                                  className={user.status === "active" ? "text-amber-600" : "text-emerald-600"}
                                 >
-                                  {user.status === "active" ? (
-                                    <Ban className="h-4 w-4 text-amber-600" />
-                                  ) : (
-                                    <CheckCircle className="h-4 w-4 text-emerald-600" />
-                                  )}
-                                </Button>
-                              </div>
+                                  {user.status === "active" ? "Suspend User" : "Activate User"}
+                                </DropdownMenuItem>
+                              </DropdownMenu>
                             </TableCell>
                           </TableRow>
                         ))
@@ -1038,6 +1109,40 @@ export default function AdminUsers() {
                           </h3>
                           <p className="text-xs text-slate-500">{user.email}</p>
                         </div>
+                        <DropdownMenu
+                          trigger={
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          }
+                        >
+                          <DropdownMenuItem
+                            onClick={() => openEdit(user)}
+                            icon={Pencil}
+                          >
+                            Edit User
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => {
+                              setSelectedUserForReset(user);
+                              setResetPasswordModalOpen(true);
+                            }}
+                            icon={Key}
+                          >
+                            Reset Password
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleToggleStatus(user)}
+                            icon={user.status === "active" ? Ban : CheckCircle}
+                            className={user.status === "active" ? "text-amber-600" : "text-emerald-600"}
+                          >
+                            {user.status === "active" ? "Suspend User" : "Activate User"}
+                          </DropdownMenuItem>
+                        </DropdownMenu>
                       </div>
                       <div className="space-y-2 mb-3">
                         <div className="flex items-center justify-between">
@@ -1125,29 +1230,6 @@ export default function AdminUsers() {
                               : "N/A"}
                           </span>
                         </div>
-                      </div>
-                      <div className="flex gap-2 pt-3 border-t border-slate-200 dark:border-slate-700">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => openEdit(user)}
-                          className="flex-1"
-                        >
-                          <Pencil className="h-3 w-3 mr-1" /> Edit
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleToggleStatus(user)}
-                          className="flex-1"
-                        >
-                          {user.status === "active" ? (
-                            <Ban className="h-3 w-3 mr-1" />
-                          ) : (
-                            <CheckCircle className="h-3 w-3 mr-1" />
-                          )}
-                          {user.status === "active" ? "Suspend" : "Activate"}
-                        </Button>
                       </div>
                     </div>
                   ))}
@@ -1584,7 +1666,6 @@ function StatCard({ label, value, icon: Icon, color }) {
   const colors = {
     indigo: "from-indigo-500 to-indigo-600",
     blue: "from-blue-500 to-blue-600",
-    blue: "from-blue-500 to-blue-600",
     emerald: "from-emerald-500 to-emerald-600",
     amber: "from-amber-500 to-amber-600",
     teal: "from-teal-500 to-teal-600",
@@ -1604,6 +1685,3 @@ function StatCard({ label, value, icon: Icon, color }) {
     </div>
   );
 }
-
-// Missing import
-import { Link } from "react-router-dom";
