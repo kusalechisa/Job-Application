@@ -167,10 +167,10 @@ export default function AppliedJobList() {
     ];
 
     if (
-      application.status === "reviewed" ||
-      application.status === "interview" ||
-      application.status === "accepted" ||
-      application.status === "rejected"
+      application.status === "Reviewed" ||
+      application.status === "Interview" ||
+      application.status === "Accepted" ||
+      application.status === "Rejected"
     ) {
       timeline.push({
         status: "Application Reviewed",
@@ -181,7 +181,7 @@ export default function AppliedJobList() {
       });
     }
 
-    if (application.status === "interview") {
+    if (application.status === "Interview") {
       timeline.push({
         status: "Interview Scheduled",
         date: application.updatedAt,
@@ -191,7 +191,7 @@ export default function AppliedJobList() {
       });
     }
 
-    if (application.status === "accepted") {
+    if (application.status === "Accepted") {
       timeline.push({
         status: "Offer Extended",
         date: application.updatedAt,
@@ -201,7 +201,7 @@ export default function AppliedJobList() {
       });
     }
 
-    if (application.status === "rejected") {
+    if (application.status === "Rejected") {
       timeline.push({
         status: "Application Not Selected",
         date: application.updatedAt,
@@ -234,16 +234,15 @@ export default function AppliedJobList() {
   // Statistics
   const stats = {
     total: applications.length,
-    accepted: applications.filter((a) => a.status === "accepted").length,
-    rejected: applications.filter((a) => a.status === "rejected").length,
-    pending: applications.filter(
-      (a) => a.status === "applied" || a.status === "reviewed",
-    ).length,
-    interview: applications.filter((a) => a.status === "interview").length,
+    accepted: applications.filter((a) => a.status === "Accepted").length,
+    rejected: applications.filter((a) => a.status === "Rejected").length,
+    applied: applications.filter((a) => a.status === "Applied").length,
+    reviewed: applications.filter((a) => a.status === "Reviewed").length,
+    interview: applications.filter((a) => a.status === "Interview").length,
     reviewRate:
       applications.length > 0
         ? Math.round(
-            (applications.filter((a) => a.status !== "applied").length /
+            (applications.filter((a) => a.status !== "Applied").length /
               applications.length) *
               100,
           )
@@ -381,7 +380,7 @@ export default function AppliedJobList() {
 
         <div className="max-w-7xl mx-auto px-4 lg:px-6 py-6">
           {/* Stats Overview */}
-          <div className="mb-6 grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="mb-6 grid grid-cols-2 md:grid-cols-6 gap-4">
             <StatCard
               label="Total Applications"
               value={stats.total}
@@ -389,10 +388,16 @@ export default function AppliedJobList() {
               color="indigo"
             />
             <StatCard
-              label="In Review"
-              value={stats.pending}
+              label="Applied"
+              value={stats.applied}
               icon={Clock}
               color="amber"
+            />
+            <StatCard
+              label="In Review"
+              value={stats.reviewed}
+              icon={Eye}
+              color="purple"
             />
             <StatCard
               label="Interview"
@@ -421,7 +426,7 @@ export default function AppliedJobList() {
               className="w-full"
               onValueChange={setStatusFilter}
             >
-              <TabsList className="grid w-full grid-cols-5 bg-slate-100 dark:bg-slate-800">
+              <TabsList className="grid w-full grid-cols-6 bg-slate-100 dark:bg-slate-800">
                 <TabsTrigger value="all" className="gap-2">
                   All
                   <Badge variant="secondary" className="ml-1">
@@ -429,9 +434,15 @@ export default function AppliedJobList() {
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="applied" className="gap-2">
-                  Pending
+                  Applied
                   <Badge variant="secondary" className="ml-1">
-                    {stats.pending}
+                    {stats.applied}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger value="reviewed" className="gap-2">
+                  In Review
+                  <Badge variant="secondary" className="ml-1">
+                    {stats.reviewed}
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger value="interview" className="gap-2">
@@ -602,7 +613,7 @@ export default function AppliedJobList() {
                                 <Eye className="h-3 w-3" />
                                 <span className="hidden sm:inline">View</span>
                               </Button>
-                              {item.status === "applied" && (
+                              {item.status === "Applied" && (
                                 <Button
                                   variant="outline"
                                   size="sm"
@@ -615,8 +626,8 @@ export default function AppliedJobList() {
                                   </span>
                                 </Button>
                               )}
-                              {item.status !== "accepted" &&
-                                item.status !== "rejected" && (
+                              {item.status !== "Accepted" &&
+                                item.status !== "Rejected" && (
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -726,7 +737,7 @@ export default function AppliedJobList() {
                         <Eye className="h-3 w-3" />
                         Timeline
                       </Button>
-                      {item.status === "applied" && (
+                      {item.status === "Applied" && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -737,8 +748,8 @@ export default function AppliedJobList() {
                           Update
                         </Button>
                       )}
-                      {item.status !== "accepted" &&
-                        item.status !== "rejected" && (
+                      {item.status !== "Accepted" &&
+                        item.status !== "Rejected" && (
                           <Button
                             size="sm"
                             variant="outline"
@@ -937,7 +948,7 @@ export default function AppliedJobList() {
               </div>
 
               {/* Interview Details (if applicable) - Responsive */}
-              {selectedApplication.status === "interview" && (
+              {selectedApplication.status === "Interview" && (
                 <div className="space-y-4">
                   <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm sm:text-base">
                     <Video className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
@@ -1011,7 +1022,7 @@ export default function AppliedJobList() {
               )}
 
               {/* Offer Details (if applicable) - Responsive */}
-              {selectedApplication.status === "accepted" && (
+              {selectedApplication.status === "Accepted" && (
                 <div className="space-y-4">
                   <h4 className="font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2 text-sm sm:text-base">
                     <Award className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
@@ -1046,7 +1057,7 @@ export default function AppliedJobList() {
               )}
 
               {/* Rejection Details (if applicable) - Responsive */}
-              {selectedApplication.status === "rejected" && (
+              {selectedApplication.status === "Rejected" && (
                 <div className="space-y-4">
                   <Card className="border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-950/30">
                     <CardContent className="p-4 sm:p-6">
@@ -1085,7 +1096,7 @@ export default function AppliedJobList() {
                 >
                   Close
                 </Button>
-                {selectedApplication.status === "applied" && (
+                {selectedApplication.status === "Applied" && (
                   <Button
                     onClick={() => handleUpdateResume(selectedApplication.id)}
                     className="w-full sm:w-auto order-1 sm:order-2 bg-gradient-to-r from-indigo-500 to-blue-600"
@@ -1094,8 +1105,8 @@ export default function AppliedJobList() {
                     Update Resume
                   </Button>
                 )}
-                {selectedApplication.status !== "accepted" &&
-                  selectedApplication.status !== "rejected" && (
+                {selectedApplication.status !== "Accepted" &&
+                  selectedApplication.status !== "Rejected" && (
                     <Button
                       variant="destructive"
                       onClick={() => handleWithdraw(selectedApplication.id)}
@@ -1119,9 +1130,9 @@ function StatCard({ label, value, icon: Icon, color }) {
   const colors = {
     indigo: "from-indigo-500 to-indigo-600",
     amber: "from-amber-500 to-amber-600",
+    purple: "from-purple-500 to-purple-600",
     blue: "from-blue-500 to-blue-600",
     emerald: "from-emerald-500 to-emerald-600",
-    blue: "from-blue-500 to-blue-600",
   };
 
   return (
