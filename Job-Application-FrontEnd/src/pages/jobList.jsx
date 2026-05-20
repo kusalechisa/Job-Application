@@ -92,12 +92,12 @@ export default function JobList() {
 
   // Filters
   const [filters, setFilters] = useState({
-    location: "",
+    location: "all",
     salaryRange: "",
-    category: "",
-    workMode: "",
-    experience: "",
-    jobType: "",
+    category: "all",
+    workMode: "all",
+    experience: "all",
+    jobType: "all",
   });
 
   const { token, user } = useAuth();
@@ -169,19 +169,19 @@ export default function JobList() {
   useEffect(() => {
     let filtered = [...jobs];
 
-    if (filters.location) {
+    if (filters.location && filters.location !== "all") {
       filtered = filtered.filter((job) =>
         job.location?.toLowerCase().includes(filters.location.toLowerCase()),
       );
     }
 
-    if (filters.category) {
+    if (filters.category && filters.category !== "all") {
       filtered = filtered.filter(
         (job) => job.type?.toLowerCase() === filters.category.toLowerCase(),
       );
     }
 
-    if (filters.workMode) {
+    if (filters.workMode && filters.workMode !== "all") {
       filtered = filtered.filter((job) => {
         const jobWorkMode = job.workType?.toLowerCase() || "";
         if (filters.workMode === "remote")
@@ -194,7 +194,7 @@ export default function JobList() {
       });
     }
 
-    if (filters.experience) {
+    if (filters.experience && filters.experience !== "all") {
       filtered = filtered.filter((job) => {
         const jobExp = job.experience?.toLowerCase() || "";
         if (filters.experience === "entry")
@@ -207,7 +207,7 @@ export default function JobList() {
       });
     }
 
-    if (filters.jobType) {
+    if (filters.jobType && filters.jobType !== "all") {
       filtered = filtered.filter((job) => {
         const jobType = job.employmentType?.toLowerCase() || "";
         if (filters.jobType === "full-time") return jobType.includes("full");
@@ -285,7 +285,7 @@ export default function JobList() {
       setTimeout(() => setError(""), 5000);
       return;
     }
-
+ 
     if (profileCompletion < 50) {
       setError(
         "Complete your profile (50%+) to apply for jobs. Go to Profile page.",
@@ -332,12 +332,12 @@ export default function JobList() {
 
   const clearFilters = () => {
     setFilters({
-      location: "",
+      location: "all",
       salaryRange: "",
-      category: "",
-      workMode: "",
-      experience: "",
-      jobType: "",
+      category: "all",
+      workMode: "all",
+      experience: "all",
+      jobType: "all",
     });
     setShowFilters(false);
   };
@@ -532,7 +532,7 @@ export default function JobList() {
                   >
                     <Filter className="h-4 w-4" />
                     Filters
-                    {Object.values(filters).some((f) => f) && (
+                    {Object.values(filters).some((f) => f && f !== "all") && (
                       <Badge variant="secondary" className="ml-2">
                         Active
                       </Badge>
@@ -576,7 +576,7 @@ export default function JobList() {
                           <SelectValue placeholder="Location" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All Locations</SelectItem>
+                          <SelectItem value="all">All Locations</SelectItem>
                           <SelectItem value="remote">Remote</SelectItem>
                           <SelectItem value="new york">New York</SelectItem>
                           <SelectItem value="san francisco">
@@ -597,7 +597,7 @@ export default function JobList() {
                           <SelectValue placeholder="Work Mode" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All Modes</SelectItem>
+                          <SelectItem value="all">All Modes</SelectItem>
                           <SelectItem value="remote">Remote</SelectItem>
                           <SelectItem value="onsite">On-site</SelectItem>
                           <SelectItem value="hybrid">Hybrid</SelectItem>
@@ -614,7 +614,7 @@ export default function JobList() {
                           <SelectValue placeholder="Experience Level" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All Levels</SelectItem>
+                          <SelectItem value="all">All Levels</SelectItem>
                           <SelectItem value="entry">
                             Entry Level (0-2 years)
                           </SelectItem>
@@ -637,7 +637,7 @@ export default function JobList() {
                           <SelectValue placeholder="Job Type" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All Types</SelectItem>
+                          <SelectItem value="all">All Types</SelectItem>
                           <SelectItem value="full-time">Full-time</SelectItem>
                           <SelectItem value="part-time">Part-time</SelectItem>
                           <SelectItem value="contract">Contract</SelectItem>
@@ -655,7 +655,7 @@ export default function JobList() {
                           <SelectValue placeholder="Category" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All Categories</SelectItem>
+                          <SelectItem value="all">All Categories</SelectItem>
                           <SelectItem value="engineering">
                             Engineering
                           </SelectItem>
@@ -667,11 +667,11 @@ export default function JobList() {
                       </Select>
                     </div>
 
-                    {(filters.location ||
-                      filters.workMode ||
-                      filters.experience ||
-                      filters.jobType ||
-                      filters.category) && (
+                    {(filters.location !== "all" ||
+                      filters.workMode !== "all" ||
+                      filters.experience !== "all" ||
+                      filters.jobType !== "all" ||
+                      filters.category !== "all") && (
                       <div className="mt-4 flex justify-end">
                         <Button
                           variant="ghost"

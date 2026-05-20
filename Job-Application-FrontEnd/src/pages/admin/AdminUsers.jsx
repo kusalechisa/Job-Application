@@ -82,8 +82,8 @@ export default function AdminUsers() {
   const [saving, setSaving] = useState(false);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
-    role: "",
-    status: "",
+    role: "all",
+    status: "all",
   });
   const [applicantFilters, setApplicantFilters] = useState({
     cgpaMin: "",
@@ -140,12 +140,12 @@ export default function AdminUsers() {
       }
 
       // Client-side filtering for role
-      if (filters.role) {
+      if (filters.role && filters.role !== "all") {
         list = list.filter((user) => user.role === filters.role);
       }
 
       // Client-side filtering for status
-      if (filters.status) {
+      if (filters.status && filters.status !== "all") {
         list = list.filter((user) => user.status === filters.status);
       }
 
@@ -162,7 +162,7 @@ export default function AdminUsers() {
   }, [search, filters, applicantFilters]);
 
   const clearFilters = () => {
-    setFilters({ role: "", status: "" });
+    setFilters({ role: "all", status: "all" });
     setApplicantFilters({
       cgpaMin: "",
       cgpaMax: "",
@@ -676,7 +676,7 @@ export default function AdminUsers() {
                           <SelectValue placeholder="All roles" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All roles</SelectItem>
+                          <SelectItem value="all">All roles</SelectItem>
                           <SelectItem value="Admin">Admin</SelectItem>
                           <SelectItem value="Applicant">Applicant</SelectItem>
                         </SelectContent>
@@ -696,7 +696,7 @@ export default function AdminUsers() {
                           <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All statuses</SelectItem>
+                          <SelectItem value="all">All statuses</SelectItem>
                           <SelectItem value="active">Active</SelectItem>
                           <SelectItem value="suspended">Suspended</SelectItem>
                         </SelectContent>
@@ -1474,7 +1474,7 @@ export default function AdminUsers() {
                               <SelectValue placeholder="Select column" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">
+                              <SelectItem value="default">
                                 Default: Applicant
                               </SelectItem>
                               {importPreview[0]?.map((col, idx) => (
@@ -1499,7 +1499,7 @@ export default function AdminUsers() {
                               <SelectValue placeholder="Select column" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="">Default: active</SelectItem>
+                              <SelectItem value="default">Default: active</SelectItem>
                               {importPreview[0]?.map((col, idx) => (
                                 <SelectItem key={idx} value={idx.toString()}>
                                   Column {idx + 1}: {col}

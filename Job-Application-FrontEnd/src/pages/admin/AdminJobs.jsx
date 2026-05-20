@@ -30,6 +30,13 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Pencil,
   Trash2,
   Download,
@@ -50,6 +57,7 @@ import {
   CheckCircle,
   Clock,
   Zap,
+  MoreHorizontal,
 } from "lucide-react";
 
 const emptyJob = {
@@ -115,9 +123,9 @@ export default function AdminJobs() {
   const [form, setForm] = useState(emptyJob);
   const [saving, setSaving] = useState(false);
   const [filters, setFilters] = useState({
-    status: "",
-    workType: "",
-    employmentType: "",
+    status: "all",
+    workType: "all",
+    employmentType: "all",
   });
   const [showFilters, setShowFilters] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -129,9 +137,9 @@ export default function AdminJobs() {
     setError("");
     try {
       const params = { page, limit: 10, search };
-      if (filters.status) params.status = filters.status;
-      if (filters.workType) params.workType = filters.workType;
-      if (filters.employmentType)
+      if (filters.status && filters.status !== "all") params.status = filters.status;
+      if (filters.workType && filters.workType !== "all") params.workType = filters.workType;
+      if (filters.employmentType && filters.employmentType !== "all")
         params.employmentType = filters.employmentType;
       const res = await getJobs(params);
       setJobs(res.data.data || []);
@@ -233,7 +241,7 @@ export default function AdminJobs() {
   };
 
   const clearFilters = () => {
-    setFilters({ status: "", workType: "", employmentType: "" });
+    setFilters({ status: "all", workType: "all", employmentType: "all" });
     setShowFilters(false);
   };
 
@@ -453,7 +461,7 @@ export default function AdminJobs() {
                   >
                     <Filter className="h-4 w-4" />
                     Filters
-                    {Object.values(filters).some((f) => f) && (
+                    {Object.values(filters).some((f) => f && f !== "all") && (
                       <Badge variant="secondary" className="ml-2">
                         Active
                       </Badge>
@@ -501,7 +509,7 @@ export default function AdminJobs() {
                           <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All statuses</SelectItem>
+                          <SelectItem value="all">All statuses</SelectItem>
                           <SelectItem value="active">Active</SelectItem>
                           <SelectItem value="closed">Closed</SelectItem>
                           <SelectItem value="draft">Draft</SelectItem>
@@ -522,7 +530,7 @@ export default function AdminJobs() {
                           <SelectValue placeholder="All types" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All types</SelectItem>
+                          <SelectItem value="all">All types</SelectItem>
                           <SelectItem value="remote">Remote</SelectItem>
                           <SelectItem value="on-site">On-site</SelectItem>
                           <SelectItem value="hybrid">Hybrid</SelectItem>
@@ -543,7 +551,7 @@ export default function AdminJobs() {
                           <SelectValue placeholder="All types" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All types</SelectItem>
+                          <SelectItem value="all">All types</SelectItem>
                           <SelectItem value="full-time">Full-time</SelectItem>
                           <SelectItem value="part-time">Part-time</SelectItem>
                           <SelectItem value="contract">Contract</SelectItem>
@@ -676,63 +684,47 @@ export default function AdminJobs() {
                                 : "N/A"}
                             </TableCell>
                             <TableCell>
-                              <div className="flex flex-wrap gap-1">
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => openEdit(job)}
-                                  title="Edit"
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <Pencil className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleDuplicate(job)}
-                                  title="Duplicate"
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <Copy className="h-4 w-4" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleTogglePublish(job)}
-                                  title={
-                                    job.status === "active"
-                                      ? "Unpublish"
-                                      : "Publish"
-                                  }
-                                  className="h-8 w-8 p-0"
-                                >
-                                  {job.status === "active" ? (
-                                    <EyeOff className="h-4 w-4" />
-                                  ) : (
-                                    <Eye className="h-4 w-4" />
-                                  )}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() => handleDelete(job.id)}
-                                  title="Delete"
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <Trash2 className="h-4 w-4 text-red-600" />
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="ghost"
-                                  onClick={() =>
-                                    handleDownload(job.id, job.title)
-                                  }
-                                  title="Download Applications"
-                                  className="h-8 w-8 p-0"
-                                >
-                                  <Download className="h-4 w-4" />
-                                </Button>
-                              </div>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-8 w-8 p-0"
+                                  >
+                                    <MoreHorizontal className="h-4 w-4" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-52">
+                                  <DropdownMenuItem onClick={() => openEdit(job)}>
+                                    <Pencil className="h-4 w-4 mr-2" />
+                                    Edit
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDuplicate(job)}>
+                                    <Copy className="h-4 w-4 mr-2" />
+                                    Duplicate
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleTogglePublish(job)}>
+                                    {job.status === "active" ? (
+                                      <EyeOff className="h-4 w-4 mr-2" />
+                                    ) : (
+                                      <Eye className="h-4 w-4 mr-2" />
+                                    )}
+                                    {job.status === "active" ? "Unpublish" : "Publish"}
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDownload(job.id, job.title)}>
+                                    <Download className="h-4 w-4 mr-2" />
+                                    Export Applications
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onClick={() => handleDelete(job.id)}
+                                    variant="destructive"
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-2" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
                             </TableCell>
                           </TableRow>
                         ))

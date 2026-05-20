@@ -467,10 +467,14 @@ export default function ApplicantDashboard() {
                               <StatusBadge status={app.status} />
                             </td>
                             <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">
-                              {new Date(app.createdAt).toLocaleDateString()}
+                              {new Date(
+                                app.appliedAt || app.createdAt,
+                              ).toLocaleDateString()}
                             </td>
                             <td className="py-3 px-4 text-sm text-slate-600 dark:text-slate-400">
-                              {new Date(app.updatedAt).toLocaleDateString()}
+                              {app.updatedAt
+                                ? new Date(app.updatedAt).toLocaleDateString()
+                                : "N/A"}
                             </td>
                           </tr>
                         ))
@@ -576,7 +580,9 @@ export default function ApplicantDashboard() {
                           <div className="flex items-center gap-2 mt-1">
                             <StatusBadge status={app.status} />
                             <span className="text-xs text-slate-500">
-                              {new Date(app.createdAt).toLocaleDateString()}
+                              {new Date(
+                                app.appliedAt || app.createdAt,
+                              ).toLocaleDateString()}
                             </span>
                           </div>
                         </div>

@@ -85,7 +85,7 @@ export default function AdminApplications() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
-    status: "",
+    status: "all",
     education: "",
     experience: "",
     location: "",
@@ -124,7 +124,7 @@ export default function AdminApplications() {
       }
       
       // Client-side filtering for status
-      if (filters.status) {
+      if (filters.status && filters.status !== "all") {
         filtered = filtered.filter(app => app.status === filters.status);
       }
       
@@ -172,7 +172,7 @@ export default function AdminApplications() {
 
   const clearFilters = () => {
     setFilters({
-      status: "",
+      status: "all",
       education: "",
       experience: "",
       location: "",
@@ -462,7 +462,7 @@ export default function AdminApplications() {
                           <SelectValue placeholder="All statuses" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">All statuses</SelectItem>
+                          <SelectItem value="all">All statuses</SelectItem>
                           <SelectItem value="Applied">Applied</SelectItem>
                           <SelectItem value="Reviewed">Reviewed</SelectItem>
                           <SelectItem value="Accepted">Accepted</SelectItem>
