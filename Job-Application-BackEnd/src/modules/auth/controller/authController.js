@@ -137,7 +137,7 @@ export const forgotPassword = async (req, res) => {
       });
       
       // Create reset URL
-      const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+      const frontendUrl = process.env.FRONTEND_URL || 'https://job-application-a-mesob.vercel.app';
       const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
       
       // Get user's name
