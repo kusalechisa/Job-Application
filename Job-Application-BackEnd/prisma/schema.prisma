@@ -92,6 +92,8 @@ model Education {
   college          String?
   fieldOfStudy     String?
   graduationYear   Int?
+  cgpa             Float?
+  exitExamScore    Float?
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
