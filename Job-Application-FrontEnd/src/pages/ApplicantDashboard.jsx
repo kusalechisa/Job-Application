@@ -317,7 +317,7 @@ export default function ApplicantDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/interviews")}>
+          <Card className="border-slate-200/60 dark:border-slate-800/60 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("")}>
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
