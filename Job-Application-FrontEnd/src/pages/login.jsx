@@ -35,7 +35,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 bg-[radial-gradient(circle_at_top_left,_rgba(56,189,248,0.18),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.18),_transparent_24%)]">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-slate-950 bg-[radial-gradient(circle_at_top_left,_rgba(56,0,255,0.18),_transparent_94%),radial-gradient(circle_at_bottom_right,_rgba(16,185,129,0.18),_transparent_24%)]">
       <div className="relative z-10 flex items-center justify-center w-full max-w-lg">
         <Card className="w-full rounded-[2rem] border border-white/10 bg-slate-900/95 shadow-[0_30px_60px_-30px_rgba(15,23,42,0.9)] backdrop-blur-xl">
           <div className="relative mb-8 flex justify-center pt-8">

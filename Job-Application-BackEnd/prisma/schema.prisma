@@ -26,6 +26,10 @@ model Account {
   password    String
   role        Role     @default(Applicant)
   status      String   @default("active")
+  
+  // Add these two fields for password reset
+  resetPasswordToken    String?   @unique
+  resetPasswordExpires  DateTime?
 
   applicant   Applicant?
   jobsPosted  Job[]    @relation("PostedJobs")
