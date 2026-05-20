@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Progress } from "@/components/ui/progress";
+import { showPopup } from "@/components/FloatingPopup";
 import {
   User,
   Mail,
@@ -66,7 +67,14 @@ const getEducationLevel = (highestEducation) => {
   }
   return "other";
 };
-
+  const showPopup = (message, type = 'info') => {
+    setPopupMessage(message);
+    setPopupType(type);
+    setTimeout(() => {
+      setPopupMessage('');
+      setPopupType('');
+    }, 3000);
+  };
 function SectionTitle({ children, icon: Icon, description }) {
   return (
     <div className="mb-4 sm:mb-6">
