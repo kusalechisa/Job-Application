@@ -8,6 +8,7 @@ import {
 } from "../../../api/Endpoints/Jobs.jsx";
 import { downloadApplicantsExcel } from "../../../api/Endpoints/Applications.jsx";
 import { getApiErrorMessage } from "@/lib/apiError";
+import { showPopup } from "@/components/FloatingPopup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -117,7 +118,6 @@ export default function AdminJobs() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyJob);
@@ -134,11 +134,12 @@ export default function AdminJobs() {
 
   const fetchJobs = async () => {
     setLoading(true);
-    setError("");
     try {
       const params = { page, limit: 10, search };
-      if (filters.status && filters.status !== "all") params.status = filters.status;
-      if (filters.workType && filters.workType !== "all") params.workType = filters.workType;
+      if (filters.status && filters.status !== "all")
+        params.status = filters.status;
+      if (filters.workType && filters.workType !== "all")
+        params.workType = filters.workType;
       if (filters.employmentType && filters.employmentType !== "all")
         params.employmentType = filters.employmentType;
       const res = await getJobs(params);
@@ -255,7 +256,7 @@ export default function AdminJobs() {
       link.click();
       window.URL.revokeObjectURL(url);
     } catch (err) {
-      setError(getApiErrorMessage(err, "Download failed."));
+      showPopup(getApiErrorMessage(err, "Download failed."), "error");
     }
   };
 
@@ -364,13 +365,6 @@ export default function AdminJobs() {
               </Button>
             </div>
           </div>
-
-          {error && (
-            <div className="mb-6 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-              <p className="text-red-600 dark:text-red-400">{error}</p>
-            </div>
-          )}
 
           {/* Stats Overview */}
           <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -694,24 +688,39 @@ export default function AdminJobs() {
                                     <MoreHorizontal className="h-4 w-4" />
                                   </Button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-52">
-                                  <DropdownMenuItem onClick={() => openEdit(job)}>
+                                <DropdownMenuContent
+                                  align="end"
+                                  className="w-52"
+                                >
+                                  <DropdownMenuItem
+                                    onClick={() => openEdit(job)}
+                                  >
                                     <Pencil className="h-4 w-4 mr-2" />
                                     Edit
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDuplicate(job)}>
+                                  <DropdownMenuItem
+                                    onClick={() => handleDuplicate(job)}
+                                  >
                                     <Copy className="h-4 w-4 mr-2" />
                                     Duplicate
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleTogglePublish(job)}>
+                                  <DropdownMenuItem
+                                    onClick={() => handleTogglePublish(job)}
+                                  >
                                     {job.status === "active" ? (
                                       <EyeOff className="h-4 w-4 mr-2" />
                                     ) : (
                                       <Eye className="h-4 w-4 mr-2" />
                                     )}
-                                    {job.status === "active" ? "Unpublish" : "Publish"}
+                                    {job.status === "active"
+                                      ? "Unpublish"
+                                      : "Publish"}
                                   </DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => handleDownload(job.id, job.title)}>
+                                  <DropdownMenuItem
+                                    onClick={() =>
+                                      handleDownload(job.id, job.title)
+                                    }
+                                  >
                                     <Download className="h-4 w-4 mr-2" />
                                     Export Applications
                                   </DropdownMenuItem>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getDashboardData } from "../../../api/Endpoints/Applications.jsx";
 import { getApiErrorMessage } from "@/lib/apiError";
+import { showPopup } from "@/components/FloatingPopup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -69,7 +70,6 @@ const COLORS = ["#6366f1", "#8b5cf6", "#ec4899", "#f43f5e", "#f97316"];
 
 export default function AdminDashboard() {
   const [dashboardData, setDashboardData] = useState(null);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -79,7 +79,7 @@ export default function AdminDashboard() {
         const res = await getDashboardData();
         setDashboardData(res.data.data);
       } catch (err) {
-        setError(getApiErrorMessage(err));
+        showPopup(getApiErrorMessage(err), "error");
       } finally {
         setLoading(false);
       }
@@ -167,12 +167,6 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <div>
         <main className="p-4 md:p-6 lg:p-8">
-          {error && (
-            <div className="mb-6 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4">
-              <p className="text-red-600 dark:text-red-400">{error}</p>
-            </div>
-          )}
-
           {/* Welcome Section */}
           <div className="mb-8 rounded-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 p-6 md:p-8 text-white">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between">

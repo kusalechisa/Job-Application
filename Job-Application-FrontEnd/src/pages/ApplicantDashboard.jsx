@@ -45,7 +45,6 @@ export default function ApplicantDashboard() {
   const [recommendedJobs, setRecommendedJobs] = useState([]);
   const [recentApplications, setRecentApplications] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [applyError, setApplyError] = useState("");
   const [profileData, setProfileData] = useState(null);
   const { user, token } = useAuth();
 
@@ -138,12 +137,10 @@ export default function ApplicantDashboard() {
   const handleApply = async (jobId) => {
     const job = recommendedJobs.find((j) => j.id === jobId);
     if (job && isJobClosedForApplications(job)) {
-      setApplyError(JOB_DEADLINE_PASSED_MESSAGE);
-      setTimeout(() => setApplyError(""), 5000);
+      showPopup(JOB_DEADLINE_PASSED_MESSAGE, "error");
       return;
     }
 
-    setApplyError("");
     try {
       await applyForJob(jobId);
       const appsRes = await getMyApplications();
@@ -152,8 +149,7 @@ export default function ApplicantDashboard() {
     } catch (error) {
       const message =
         error?.response?.data?.message || "Unable to submit application.";
-      setApplyError(message);
-      setTimeout(() => setApplyError(""), 5000);
+      showPopup(message, "error");
       console.error("Error applying for job:", error);
     }
   };
@@ -347,11 +343,6 @@ export default function ApplicantDashboard() {
                 </Link>
               </CardHeader>
               <CardContent>
-                {applyError && (
-                  <p className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400">
-                    {applyError}
-                  </p>
-                )}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {recommendedJobs.map((job) => {
                     const deadlinePassed = isJobClosedForApplications(job);

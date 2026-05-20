@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import Login from "./pages/login";
+import FloatingPopup from "./components/FloatingPopup";
 import Register from "./pages/register";
 import ForgotPassword from "./pages/forgotPassword";
 import ResetPassword from "./pages/resetPassword";
@@ -83,7 +82,7 @@ export default function App() {
 
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-        <ToastContainer />
+        <FloatingPopup />
       </AuthProvider>
     </BrowserRouter>
   );

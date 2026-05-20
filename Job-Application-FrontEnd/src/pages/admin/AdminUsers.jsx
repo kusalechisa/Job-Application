@@ -75,7 +75,6 @@ const emptyUser = {
 export default function AdminUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyUser);
@@ -151,7 +150,7 @@ export default function AdminUsers() {
 
       setUsers(list);
     } catch (err) {
-      setError(getApiErrorMessage(err));
+      showPopup(getApiErrorMessage(err), "error");
     } finally {
       setLoading(false);
     }
@@ -183,7 +182,7 @@ export default function AdminUsers() {
 
   const handleResetPassword = async () => {
     if (!newPassword) {
-      setError("Password is required");
+      showPopup("Password is required", "error");
       return;
     }
     try {
@@ -191,10 +190,9 @@ export default function AdminUsers() {
       setResetPasswordModalOpen(false);
       setNewPassword("");
       setSelectedUserForReset(null);
-      setError("");
       alert("Password reset successfully");
     } catch (err) {
-      setError(getApiErrorMessage(err));
+      showPopup(getApiErrorMessage(err), "error");
     }
   };
 
@@ -204,7 +202,7 @@ export default function AdminUsers() {
       await updateUserById(user.id, { status: newStatus });
       loadUsers();
     } catch (err) {
-      setError(getApiErrorMessage(err));
+      showPopup(getApiErrorMessage(err), "error");
     }
   };
 
@@ -229,7 +227,6 @@ export default function AdminUsers() {
   const handleSave = async (e) => {
     e.preventDefault();
     setSaving(true);
-    setError("");
     try {
       if (editingId) {
         const payload = {
@@ -248,7 +245,7 @@ export default function AdminUsers() {
       setModalOpen(false);
       loadUsers();
     } catch (err) {
-      setError(getApiErrorMessage(err));
+      showPopup(getApiErrorMessage(err), "error");
     } finally {
       setSaving(false);
     }
@@ -357,7 +354,7 @@ export default function AdminUsers() {
       setImportFile(file);
       parseFilePreview(file);
     } else {
-      setError("Please upload a valid CSV file");
+      showPopup("Please upload a valid CSV file", "error");
     }
   };
 
@@ -401,7 +398,7 @@ export default function AdminUsers() {
       };
       reader.readAsText(importFile);
     } catch (err) {
-      setError(getApiErrorMessage(err));
+      showPopup(getApiErrorMessage(err), "error");
     } finally {
       setImporting(false);
     }
@@ -778,13 +775,6 @@ export default function AdminUsers() {
               )}
             </CardContent>
           </Card>
-
-          {error && (
-            <div className="mb-6 rounded-2xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 flex items-center gap-3">
-              <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
-              <p className="text-red-600 dark:text-red-400">{error}</p>
-            </div>
-          )}
 
           {/* Users Content */}
           <Card className="overflow-hidden border-0 bg-white/70 backdrop-blur-sm dark:bg-slate-900/70 shadow-xl">

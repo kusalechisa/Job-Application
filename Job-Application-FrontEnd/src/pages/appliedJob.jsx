@@ -63,7 +63,7 @@ import {
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "@/lib/apiError";
 import StatusBadge from "@/components/StatusBadge";
-import { toast } from "react-toastify";
+import { showPopup } from "@/components/FloatingPopup";
 
 export default function AppliedJobList() {
   const [applications, setApplications] = useState([]);
@@ -84,7 +84,10 @@ export default function AppliedJobList() {
       const res = await getMyApplications();
       setApplications(res.data.data || []);
     } catch (err) {
-      toast.error(getApiErrorMessage(err, "Unable to load your applications."));
+      showPopup(
+        getApiErrorMessage(err, "Unable to load your applications."),
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -107,10 +110,13 @@ export default function AppliedJobList() {
     if (!resume) return;
     try {
       await updateApplication(applicationId, { resume });
-      toast.success("Application updated successfully!");
+      showPopup("Application updated successfully!", "success");
       loadApplications();
     } catch (err) {
-      toast.error(getApiErrorMessage(err, "Unable to update application."));
+      showPopup(
+        getApiErrorMessage(err, "Unable to update application."),
+        "error",
+      );
     }
   };
 
@@ -123,10 +129,10 @@ export default function AppliedJobList() {
       return;
     try {
       await withdrawApplication(applicationId);
-      toast.success("Application withdrawn successfully.");
+      showPopup("Application withdrawn successfully.", "success");
       loadApplications();
     } catch (err) {
-      toast.error(getApiErrorMessage(err, "Unable to withdraw."));
+      showPopup(getApiErrorMessage(err, "Unable to withdraw."), "error");
     }
   };
 

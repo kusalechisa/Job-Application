@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../../api/Endpoints/Auth.jsx";
 import { getApiErrorMessage } from "@/lib/apiError";
+import { showPopup } from "@/components/FloatingPopup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -45,12 +46,12 @@ export default function ResetPassword() {
       <div className="flex min-h-screen items-center justify-center bg-slate-950 p-4">
         <Card className="w-full max-w-md border border-white/10 bg-slate-900/95">
           <CardHeader>
-            <CardTitle className="text-center text-white">Reset Password</CardTitle>
+            <CardTitle className="text-center text-white">
+              Reset Password
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {error && <p className="text-sm text-rose-400">{error}</p>}
-              {message && <p className="text-sm text-emerald-400">{message}</p>}
               <div className="space-y-2">
                 <Label className="text-slate-200">Reset Token</Label>
                 <Input
@@ -65,7 +66,9 @@ export default function ResetPassword() {
                 <Input
                   type="password"
                   value={form.newPassword}
-                  onChange={(e) => setForm({ ...form, newPassword: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, newPassword: e.target.value })
+                  }
                   required
                   className="bg-slate-950 text-white"
                 />
@@ -75,7 +78,9 @@ export default function ResetPassword() {
                 <Input
                   type="password"
                   value={form.confirmPassword}
-                  onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, confirmPassword: e.target.value })
+                  }
                   required
                   className="bg-slate-950 text-white"
                 />
@@ -95,8 +100,3 @@ export default function ResetPassword() {
     </>
   );
 }
-
-
-
-
-

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { getJobById, applyForJob } from "../../api/Endpoints/Jobs.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "@/lib/apiError";
+import { showPopup } from "@/components/FloatingPopup";
 import {
   isJobClosedForApplications,
   JOB_DEADLINE_PASSED_MESSAGE,
@@ -56,19 +57,24 @@ export default function JobDetail() {
   };
 
   if (loading) return <p className="p-6 text-slate-500">Loading job...</p>;
-  if (!job) return <p className="p-6 text-rose-600">{error || "Job not found."}</p>;
+  if (!job) return <p className="p-6 text-rose-600">Job not found.</p>;
 
   const deadlinePassed = isJobClosedForApplications(job);
 
   return (
     <div className="mx-auto max-w-3xl p-4 sm:p-6">
-      <Link to="/joblist" className="mb-4 inline-block text-sm text-sky-600 hover:underline">
+      <Link
+        to="/joblist"
+        className="mb-4 inline-block text-sm text-sky-600 hover:underline"
+      >
         Back to jobs
       </Link>
       <Card className="rounded-[1.5rem] border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         <CardHeader className="space-y-3">
           <div className="flex flex-wrap items-start justify-between gap-3">
-            <CardTitle className="text-2xl text-slate-900 dark:text-slate-100">{job.title}</CardTitle>
+            <CardTitle className="text-2xl text-slate-900 dark:text-slate-100">
+              {job.title}
+            </CardTitle>
             <Badge
               className={
                 deadlinePassed
@@ -97,11 +103,13 @@ export default function JobDetail() {
               This job is no longer accepting applications.
             </div>
           )}
-          {error && <p className="text-sm text-rose-600">{error}</p>}
-          {success && <p className="text-sm text-emerald-600">{success}</p>}
           <section>
-            <h3 className="mb-2 font-semibold text-slate-900 dark:text-slate-100">Description</h3>
-            <p className="whitespace-pre-wrap text-slate-600 dark:text-slate-400">{job.description}</p>
+            <h3 className="mb-2 font-semibold text-slate-900 dark:text-slate-100">
+              Description
+            </h3>
+            <p className="whitespace-pre-wrap text-slate-600 dark:text-slate-400">
+              {job.description}
+            </p>
           </section>
           {job.postedBy && (
             <p className="text-sm text-slate-500">
@@ -122,6 +130,3 @@ export default function JobDetail() {
     </div>
   );
 }
-
-
-

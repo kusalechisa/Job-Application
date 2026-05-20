@@ -5,6 +5,7 @@ import { refreshToken } from "../../api/Endpoints/Auth.jsx";
 import { setAuthToken } from "../../api/axiosInstance.jsx";
 import { useAuth } from "../context/AuthContext";
 import { getApiErrorMessage } from "@/lib/apiError";
+import { showPopup } from "@/components/FloatingPopup";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,11 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { 
-  User, 
-  Lock, 
-  Bell, 
-  Palette, 
+import {
+  User,
+  Lock,
+  Bell,
+  Palette,
   Monitor,
   Camera,
   Shield,
@@ -45,7 +46,7 @@ import {
   CreditCard,
   Gift,
   HelpCircle,
-  BookOpen
+  BookOpen,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 
@@ -56,13 +57,20 @@ export default function AccountSettings() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
-  const [profile, setProfile] = useState({ name: user?.name || "", email: user?.email || "" });
-  const [passwords, setPasswords] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
-  const [profileMsg, setProfileMsg] = useState({ error: "", success: "" });
-  const [passwordMsg, setPasswordMsg] = useState({ error: "", success: "" });
+  const [profile, setProfile] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+  });
+  const [passwords, setPasswords] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
-  const [profilePicture, setProfilePicture] = useState(user?.profilePicture || "");
+  const [profilePicture, setProfilePicture] = useState(
+    user?.profilePicture || "",
+  );
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [notifications, setNotifications] = useState({
     emailNotifications: true,
@@ -103,23 +111,22 @@ export default function AccountSettings() {
 
   const getInitials = (name) => {
     return name
-      .split(' ')
-      .map(word => word[0])
-      .join('')
+      .split(" ")
+      .map((word) => word[0])
+      .join("")
       .toUpperCase()
       .slice(0, 2);
   };
 
   const saveProfile = async (e) => {
     e.preventDefault();
-    setProfileMsg({ error: "", success: "" });
     setSavingProfile(true);
     try {
       const res = await updateMe(profile);
       updateUser(res.data.data);
-      setProfileMsg({ error: "", success: "Profile updated successfully!" });
+      showPopup("Profile updated successfully!", "success");
     } catch (err) {
-      setProfileMsg({ error: getApiErrorMessage(err), success: "" });
+      showPopup(getApiErrorMessage(err), "error");
     } finally {
       setSavingProfile(false);
     }
@@ -128,30 +135,33 @@ export default function AccountSettings() {
   const savePassword = async (e) => {
     e.preventDefault();
     if (passwords.newPassword !== passwords.confirmPassword) {
-      setPasswordMsg({ error: "Passwords do not match.", success: "" });
+      showPopup("Passwords do not match.", "error");
       return;
     }
     if (passwords.newPassword.length < 6) {
-      setPasswordMsg({ error: "Password must be at least 6 characters.", success: "" });
+      showPopup("Password must be at least 6 characters.", "error");
       return;
     }
-    setPasswordMsg({ error: "", success: "" });
     setSavingPassword(true);
     try {
       await changePassword({
         currentPassword: passwords.currentPassword,
         newPassword: passwords.newPassword,
       });
-      const res = await refreshToken();
-      const { token: newToken, user: refreshedUser } = res.data.data;
+      const newToken = await refreshToken();
       localStorage.setItem("token", newToken);
+      const refreshedUser = await updateMe(profile);
       localStorage.setItem("user", JSON.stringify(refreshedUser));
       setAuthToken(newToken);
       updateUser(refreshedUser);
-      setPasswordMsg({ error: "", success: "Password changed successfully!" });
-      setPasswords({ currentPassword: "", newPassword: "", confirmPassword: "" });
+      showPopup("Password changed successfully!", "success");
+      setPasswords({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     } catch (err) {
-      setPasswordMsg({ error: getApiErrorMessage(err), success: "" });
+      showPopup(getApiErrorMessage(err), "error");
     } finally {
       setSavingPassword(false);
     }
@@ -173,35 +183,64 @@ export default function AccountSettings() {
   };
 
   const handleLogoutAllSessions = () => {
-    if (window.confirm("Are you sure you want to logout from all devices? You will need to sign in again on each device.")) {
-      setSessions(sessions.filter(s => s.current));
+    if (
+      window.confirm(
+        "Are you sure you want to logout from all devices? You will need to sign in again on each device.",
+      )
+    ) {
+      setSessions(sessions.filter((s) => s.current));
       alert("Logged out from all other devices successfully.");
     }
   };
 
   const handleLogoutSession = (sessionId) => {
     if (window.confirm("Are you sure you want to logout this session?")) {
-      setSessions(sessions.filter(s => s.id !== sessionId));
+      setSessions(sessions.filter((s) => s.id !== sessionId));
     }
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const tabs = [
-    { id: "profile", label: "Profile", icon: User, description: "Manage your personal information" },
-    { id: "security", label: "Security", icon: Lock, description: "Password and 2FA settings" },
-    { id: "notifications", label: "Notifications", icon: Bell, description: "Configure your alerts" },
-    { id: "appearance", label: "Appearance", icon: Palette, description: "Theme and language" },
-    { id: "sessions", label: "Sessions", icon: Monitor, description: "Active login sessions" },
+    {
+      id: "profile",
+      label: "Profile",
+      icon: User,
+      description: "Manage your personal information",
+    },
+    {
+      id: "security",
+      label: "Security",
+      icon: Lock,
+      description: "Password and 2FA settings",
+    },
+    {
+      id: "notifications",
+      label: "Notifications",
+      icon: Bell,
+      description: "Configure your alerts",
+    },
+    {
+      id: "appearance",
+      label: "Appearance",
+      icon: Palette,
+      description: "Theme and language",
+    },
+    {
+      id: "sessions",
+      label: "Sessions",
+      icon: Monitor,
+      description: "Active login sessions",
+    },
   ];
 
   const sidebarLinks = [
@@ -210,24 +249,31 @@ export default function AccountSettings() {
     { icon: Users, label: "Users", href: "/admin/users" },
     { icon: FileText, label: "Applications", href: "/admin/applications" },
     { icon: TrendingUp, label: "Analytics", href: "/admin/stats" },
-    { icon: Settings, label: "Settings", href: "/admin/settings", active: true },
+    {
+      icon: Settings,
+      label: "Settings",
+      href: "/admin/settings",
+      active: true,
+    },
   ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800">
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 z-40 bg-black/50 lg:hidden"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
-      
+
       {/* Mobile Navigation Drawer */}
-      <div className={`
+      <div
+        className={`
         fixed left-0 top-0 z-50 h-full w-72 transform transition-transform duration-300 ease-in-out bg-white dark:bg-slate-900 shadow-2xl
-        ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
+        ${mobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+      `}
+      >
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-slate-200 dark:border-slate-700">
             <div className="flex items-center justify-between">
@@ -236,11 +282,18 @@ export default function AccountSettings() {
                   <Briefcase className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="font-bold text-slate-900 dark:text-white">JobPortal</h2>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">Admin Panel</p>
+                  <h2 className="font-bold text-slate-900 dark:text-white">
+                    JobPortal
+                  </h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                    Admin Panel
+                  </p>
                 </div>
               </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -271,7 +324,9 @@ export default function AccountSettings() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <p className="text-sm font-semibold text-slate-900 dark:text-white">{user?.name}</p>
+                <p className="text-sm font-semibold text-slate-900 dark:text-white">
+                  {user?.name}
+                </p>
                 <p className="text-xs text-slate-500">{user?.email}</p>
               </div>
             </div>
@@ -285,7 +340,6 @@ export default function AccountSettings() {
 
       {/* Main Content */}
       <div>
-        
         <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
           {/* Header */}
           <div className="mb-8">
@@ -298,7 +352,6 @@ export default function AccountSettings() {
                   Manage your account settings and preferences
                 </p>
               </div>
-               
             </div>
           </div>
 
@@ -354,7 +407,10 @@ export default function AccountSettings() {
                           </AvatarFallback>
                         )}
                       </Avatar>
-                      <label htmlFor="profile-picture" className="absolute bottom-0 right-0 cursor-pointer">
+                      <label
+                        htmlFor="profile-picture"
+                        className="absolute bottom-0 right-0 cursor-pointer"
+                      >
                         <div className="h-8 w-8 rounded-full bg-white dark:bg-slate-800 border-2 border-indigo-500 flex items-center justify-center shadow-lg hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                           <Camera className="h-4 w-4 text-indigo-500" />
                         </div>
@@ -368,10 +424,19 @@ export default function AccountSettings() {
                       </label>
                     </div>
                     <div className="text-center sm:text-left">
-                      <h3 className="font-semibold text-slate-900 dark:text-white">Profile Picture</h3>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">JPG, PNG or GIF. Max size 2MB.</p>
+                      <h3 className="font-semibold text-slate-900 dark:text-white">
+                        Profile Picture
+                      </h3>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                        JPG, PNG or GIF. Max size 2MB.
+                      </p>
                       {profilePicture && (
-                        <Button variant="outline" size="sm" onClick={() => setProfilePicture("")} className="text-red-600">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setProfilePicture("")}
+                          className="text-red-600"
+                        >
                           Remove Photo
                         </Button>
                       )}
@@ -380,47 +445,40 @@ export default function AccountSettings() {
 
                   {/* Profile Form */}
                   <form onSubmit={saveProfile} className="space-y-4">
-                    {profileMsg.error && (
-                      <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
-                        <X className="h-4 w-4" />
-                        {profileMsg.error}
-                      </div>
-                    )}
-                    {profileMsg.success && (
-                      <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-sm flex items-center gap-2">
-                        <Check className="h-4 w-4" />
-                        {profileMsg.success}
-                      </div>
-                    )}
-                    
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
                         <Label className="text-sm font-medium">Full Name</Label>
-                        <Input 
-                          value={profile.name} 
-                          onChange={(e) => setProfile({ ...profile, name: e.target.value })} 
+                        <Input
+                          value={profile.name}
+                          onChange={(e) =>
+                            setProfile({ ...profile, name: e.target.value })
+                          }
                           placeholder="Enter your full name"
-                          required 
+                          required
                           className="rounded-xl"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Email Address</Label>
-                        <Input 
-                          type="email" 
-                          value={profile.email} 
-                          onChange={(e) => setProfile({ ...profile, email: e.target.value })} 
+                        <Label className="text-sm font-medium">
+                          Email Address
+                        </Label>
+                        <Input
+                          type="email"
+                          value={profile.email}
+                          onChange={(e) =>
+                            setProfile({ ...profile, email: e.target.value })
+                          }
                           placeholder="Enter your email"
-                          required 
+                          required
                           className="rounded-xl"
                         />
                       </div>
                     </div>
-                    
+
                     <div className="flex justify-end">
-                      <Button 
-                        type="submit" 
-                        disabled={savingProfile} 
+                      <Button
+                        type="submit"
+                        disabled={savingProfile}
                         className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg transition-all rounded-xl px-6"
                       >
                         {savingProfile ? (
@@ -453,75 +511,95 @@ export default function AccountSettings() {
                   </CardHeader>
                   <CardContent className="p-6">
                     <form onSubmit={savePassword} className="space-y-4">
-                      {passwordMsg.error && (
-                        <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 text-sm flex items-center gap-2">
-                          <AlertTriangle className="h-4 w-4" />
-                          {passwordMsg.error}
-                        </div>
-                      )}
-                      {passwordMsg.success && (
-                        <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 text-sm flex items-center gap-2">
-                          <Check className="h-4 w-4" />
-                          {passwordMsg.success}
-                        </div>
-                      )}
-                      
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium">Current Password</Label>
+                        <Label className="text-sm font-medium">
+                          Current Password
+                        </Label>
                         <div className="relative">
-                          <Input 
-                            type={showCurrentPassword ? "text" : "password"} 
-                            value={passwords.currentPassword} 
-                            onChange={(e) => setPasswords({ ...passwords, currentPassword: e.target.value })} 
-                            required 
+                          <Input
+                            type={showCurrentPassword ? "text" : "password"}
+                            value={passwords.currentPassword}
+                            onChange={(e) =>
+                              setPasswords({
+                                ...passwords,
+                                currentPassword: e.target.value,
+                              })
+                            }
+                            required
                             className="rounded-xl pr-10"
                           />
                           <button
                             type="button"
-                            onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                            onClick={() =>
+                              setShowCurrentPassword(!showCurrentPassword)
+                            }
                             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                           >
-                            {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            {showCurrentPassword ? (
+                              <EyeOff className="h-4 w-4" />
+                            ) : (
+                              <Eye className="h-4 w-4" />
+                            )}
                           </button>
                         </div>
                       </div>
-                      
+
                       <div className="grid gap-4 md:grid-cols-2">
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">New Password</Label>
+                          <Label className="text-sm font-medium">
+                            New Password
+                          </Label>
                           <div className="relative">
-                            <Input 
-                              type={showNewPassword ? "text" : "password"} 
-                              value={passwords.newPassword} 
-                              onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })} 
-                              required 
+                            <Input
+                              type={showNewPassword ? "text" : "password"}
+                              value={passwords.newPassword}
+                              onChange={(e) =>
+                                setPasswords({
+                                  ...passwords,
+                                  newPassword: e.target.value,
+                                })
+                              }
+                              required
                               className="rounded-xl pr-10"
                             />
                             <button
                               type="button"
-                              onClick={() => setShowNewPassword(!showNewPassword)}
+                              onClick={() =>
+                                setShowNewPassword(!showNewPassword)
+                              }
                               className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
                             >
-                              {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                              {showNewPassword ? (
+                                <EyeOff className="h-4 w-4" />
+                              ) : (
+                                <Eye className="h-4 w-4" />
+                              )}
                             </button>
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <Label className="text-sm font-medium">Confirm Password</Label>
-                          <Input 
-                            type="password" 
-                            value={passwords.confirmPassword} 
-                            onChange={(e) => setPasswords({ ...passwords, confirmPassword: e.target.value })} 
-                            required 
+                          <Label className="text-sm font-medium">
+                            Confirm Password
+                          </Label>
+                          <Input
+                            type="password"
+                            value={passwords.confirmPassword}
+                            onChange={(e) =>
+                              setPasswords({
+                                ...passwords,
+                                confirmPassword: e.target.value,
+                              })
+                            }
+                            required
                             className="rounded-xl"
                           />
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-end">
-                        <Button 
-                          type="submit" 
-                          disabled={savingPassword} 
+                        <Button
+                          type="submit"
+                          disabled={savingPassword}
                           className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white hover:shadow-lg transition-all rounded-xl px-6"
                         >
                           {savingPassword ? (
@@ -548,10 +626,17 @@ export default function AccountSettings() {
                   <CardContent className="p-6">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                       <div>
-                        <h3 className="font-semibold text-slate-900 dark:text-white">2FA Authentication</h3>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">Add an extra layer of security to your account</p>
+                        <h3 className="font-semibold text-slate-900 dark:text-white">
+                          2FA Authentication
+                        </h3>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          Add an extra layer of security to your account
+                        </p>
                       </div>
-                      <Switch checked={twoFactorEnabled} onCheckedChange={setTwoFactorEnabled} />
+                      <Switch
+                        checked={twoFactorEnabled}
+                        onCheckedChange={setTwoFactorEnabled}
+                      />
                     </div>
                     {twoFactorEnabled && (
                       <div className="mt-4 p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl border border-emerald-200 dark:border-emerald-800">
@@ -559,7 +644,10 @@ export default function AccountSettings() {
                           <Check className="h-5 w-5" />
                           <span className="font-medium">2FA is enabled</span>
                         </div>
-                        <p className="text-sm text-emerald-600 dark:text-emerald-500 mt-1">Your account is protected with two-factor authentication.</p>
+                        <p className="text-sm text-emerald-600 dark:text-emerald-500 mt-1">
+                          Your account is protected with two-factor
+                          authentication.
+                        </p>
                       </div>
                     )}
                   </CardContent>
@@ -585,30 +673,66 @@ export default function AccountSettings() {
                       <Mail className="h-4 w-4 text-indigo-500" />
                       Email Notifications
                     </h3>
-                    
+
                     <div className="space-y-3">
                       <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                         <div>
-                          <p className="font-medium text-slate-900 dark:text-white">Email Notifications</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">Receive email updates about your account</p>
+                          <p className="font-medium text-slate-900 dark:text-white">
+                            Email Notifications
+                          </p>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            Receive email updates about your account
+                          </p>
                         </div>
-                        <Switch checked={notifications.emailNotifications} onCheckedChange={(checked) => setNotifications({ ...notifications, emailNotifications: checked })} />
+                        <Switch
+                          checked={notifications.emailNotifications}
+                          onCheckedChange={(checked) =>
+                            setNotifications({
+                              ...notifications,
+                              emailNotifications: checked,
+                            })
+                          }
+                        />
                       </div>
 
                       <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                         <div>
-                          <p className="font-medium text-slate-900 dark:text-white">Job Updates</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">Get notified about new job opportunities</p>
+                          <p className="font-medium text-slate-900 dark:text-white">
+                            Job Updates
+                          </p>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            Get notified about new job opportunities
+                          </p>
                         </div>
-                        <Switch checked={notifications.jobUpdates} onCheckedChange={(checked) => setNotifications({ ...notifications, jobUpdates: checked })} />
+                        <Switch
+                          checked={notifications.jobUpdates}
+                          onCheckedChange={(checked) =>
+                            setNotifications({
+                              ...notifications,
+                              jobUpdates: checked,
+                            })
+                          }
+                        />
                       </div>
 
                       <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                         <div>
-                          <p className="font-medium text-slate-900 dark:text-white">Application Status</p>
-                          <p className="text-sm text-slate-600 dark:text-slate-400">Receive updates on your application status</p>
+                          <p className="font-medium text-slate-900 dark:text-white">
+                            Application Status
+                          </p>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            Receive updates on your application status
+                          </p>
                         </div>
-                        <Switch checked={notifications.applicationStatus} onCheckedChange={(checked) => setNotifications({ ...notifications, applicationStatus: checked })} />
+                        <Switch
+                          checked={notifications.applicationStatus}
+                          onCheckedChange={(checked) =>
+                            setNotifications({
+                              ...notifications,
+                              applicationStatus: checked,
+                            })
+                          }
+                        />
                       </div>
                     </div>
                   </div>
@@ -618,13 +742,25 @@ export default function AccountSettings() {
                       <AlertTriangle className="h-4 w-4 text-amber-500" />
                       System Alerts
                     </h3>
-                    
+
                     <div className="flex items-center justify-between p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50">
                       <div>
-                        <p className="font-medium text-slate-900 dark:text-white">System Alerts</p>
-                        <p className="text-sm text-slate-600 dark:text-slate-400">Receive important system notifications</p>
+                        <p className="font-medium text-slate-900 dark:text-white">
+                          System Alerts
+                        </p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          Receive important system notifications
+                        </p>
                       </div>
-                      <Switch checked={notifications.systemAlerts} onCheckedChange={(checked) => setNotifications({ ...notifications, systemAlerts: checked })} />
+                      <Switch
+                        checked={notifications.systemAlerts}
+                        onCheckedChange={(checked) =>
+                          setNotifications({
+                            ...notifications,
+                            systemAlerts: checked,
+                          })
+                        }
+                      />
                     </div>
                   </div>
                 </CardContent>
@@ -649,7 +785,7 @@ export default function AccountSettings() {
                       <Monitor className="h-4 w-4 text-indigo-500" />
                       Theme
                     </h3>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <button
                         onClick={() => setTheme("light")}
@@ -663,8 +799,12 @@ export default function AccountSettings() {
                           <Sun className="h-5 w-5 text-amber-500" />
                         </div>
                         <div className="text-left">
-                          <p className="font-medium text-slate-900 dark:text-white">Light Mode</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">Clean and bright interface</p>
+                          <p className="font-medium text-slate-900 dark:text-white">
+                            Light Mode
+                          </p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
+                            Clean and bright interface
+                          </p>
                         </div>
                       </button>
 
@@ -680,8 +820,12 @@ export default function AccountSettings() {
                           <Moon className="h-5 w-5 text-indigo-500" />
                         </div>
                         <div className="text-left">
-                          <p className="font-medium text-slate-900 dark:text-white">Dark Mode</p>
-                          <p className="text-xs text-slate-600 dark:text-slate-400">Easy on the eyes</p>
+                          <p className="font-medium text-slate-900 dark:text-white">
+                            Dark Mode
+                          </p>
+                          <p className="text-xs text-slate-600 dark:text-slate-400">
+                            Easy on the eyes
+                          </p>
                         </div>
                       </button>
                     </div>
@@ -692,9 +836,11 @@ export default function AccountSettings() {
                       <Globe className="h-4 w-4 text-indigo-500" />
                       Language
                     </h3>
-                    
+
                     <div className="space-y-2">
-                      <Label className="text-sm font-medium">Preferred Language</Label>
+                      <Label className="text-sm font-medium">
+                        Preferred Language
+                      </Label>
                       <select
                         value={language}
                         onChange={(e) => setLanguage(e.target.value)}
@@ -727,7 +873,12 @@ export default function AccountSettings() {
                         Manage your active sessions across devices
                       </p>
                     </div>
-                    <Button variant="outline" size="sm" onClick={handleLogoutAllSessions} className="gap-2 rounded-xl">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={handleLogoutAllSessions}
+                      className="gap-2 rounded-xl"
+                    >
                       <LogOut className="h-4 w-4" />
                       Logout All Devices
                     </Button>
@@ -745,17 +896,27 @@ export default function AccountSettings() {
                     >
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                         <div className="flex gap-4">
-                          <div className={`rounded-lg p-2 ${session.current ? "bg-indigo-500" : "bg-slate-200 dark:bg-slate-700"}`}>
-                            <Smartphone className={`h-5 w-5 ${session.current ? "text-white" : "text-slate-600 dark:text-slate-400"}`} />
+                          <div
+                            className={`rounded-lg p-2 ${session.current ? "bg-indigo-500" : "bg-slate-200 dark:bg-slate-700"}`}
+                          >
+                            <Smartphone
+                              className={`h-5 w-5 ${session.current ? "text-white" : "text-slate-600 dark:text-slate-400"}`}
+                            />
                           </div>
                           <div>
                             <div className="flex flex-wrap items-center gap-2 mb-1">
-                              <h4 className="font-semibold text-slate-900 dark:text-white">{session.device}</h4>
+                              <h4 className="font-semibold text-slate-900 dark:text-white">
+                                {session.device}
+                              </h4>
                               {session.current && (
-                                <Badge className="bg-indigo-500 text-white">Current Session</Badge>
+                                <Badge className="bg-indigo-500 text-white">
+                                  Current Session
+                                </Badge>
                               )}
                             </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">{session.browser}</p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                              {session.browser}
+                            </p>
                             <div className="flex flex-wrap gap-3 mt-2 text-xs text-slate-500 dark:text-slate-500">
                               <span className="flex items-center gap-1">
                                 <MapPin className="h-3 w-3" />
@@ -787,9 +948,12 @@ export default function AccountSettings() {
                     <div className="flex gap-3">
                       <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400 flex-shrink-0" />
                       <div>
-                        <h4 className="font-semibold text-amber-900 dark:text-amber-400">Security Tip</h4>
+                        <h4 className="font-semibold text-amber-900 dark:text-amber-400">
+                          Security Tip
+                        </h4>
                         <p className="text-sm text-amber-700 dark:text-amber-500 mt-1">
-                          Regularly review your active sessions and logout from devices you don't recognize or no longer use.
+                          Regularly review your active sessions and logout from
+                          devices you don't recognize or no longer use.
                         </p>
                       </div>
                     </div>

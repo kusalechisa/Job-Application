@@ -367,8 +367,6 @@ export default function ApplicantProfile() {
   const [currentProfilePicture, setCurrentProfilePicture] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("personal");
   const [uploadProgress, setUploadProgress] = useState({});
@@ -376,7 +374,6 @@ export default function ApplicantProfile() {
   const loadProfile = useCallback(
     async ({ silent = false } = {}) => {
       if (!silent) setLoading(true);
-      if (!silent) setError("");
       try {
         const res = await getApplicantProfile();
         const profile = res.data?.data;
@@ -400,7 +397,11 @@ export default function ApplicantProfile() {
         setHasProfile(true);
       } catch (err) {
         setHasProfile(false);
-        setError(getApiErrorMessage(err, "Failed to load your profile."));
+        if (!silent)
+          showPopup(
+            getApiErrorMessage(err, "Failed to load your profile."),
+            "error",
+          );
       } finally {
         if (!silent) setLoading(false);
       }
@@ -478,25 +479,21 @@ export default function ApplicantProfile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     setSaving(true);
 
     try {
       const data = formToFormData(form);
       if (hasProfile) {
         await updateApplicantProfile(data);
-        setSuccess("Profile updated successfully!");
+        showPopup("Profile updated successfully!", "success");
         await loadProfile({ silent: true });
       } else {
         await createApplicantProfile(data);
-        setSuccess("Profile created successfully!");
+        showPopup("Profile created successfully!", "success");
         await loadProfile({ silent: true });
       }
-      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
-      setError(getApiErrorMessage(err, "Failed to save profile."));
-      setTimeout(() => setError(""), 3000);
+      showPopup(getApiErrorMessage(err, "Failed to save profile."), "error");
     } finally {
       setSaving(false);
     }
@@ -694,20 +691,6 @@ export default function ApplicantProfile() {
             </div>
           </div>
         </div>
-
-        {/* Error/Success Messages */}
-        {error && (
-          <div className="mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 px-5 py-4 flex items-center gap-3">
-            <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 flex-shrink-0" />
-            <p className="text-red-600 dark:text-red-400">{error}</p>
-          </div>
-        )}
-        {success && (
-          <div className="mb-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 px-5 py-4 flex items-center gap-3">
-            <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-            <p className="text-emerald-600 dark:text-emerald-400">{success}</p>
-          </div>
-        )}
 
         <div className="grid lg:grid-cols-12 gap-4 sm:gap-6">
           {/* Sidebar Navigation with Avatar at Top */}

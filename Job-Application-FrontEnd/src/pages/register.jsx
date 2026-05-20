@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { login as LoginAPI, register as RegisterAPI } from "../../api/Endpoints/Auth.jsx";
+import {
+  login as LoginAPI,
+  register as RegisterAPI,
+} from "../../api/Endpoints/Auth.jsx";
 import { getDashboardPath } from "@/lib/constants";
 import { createApplicantProfile } from "../../api/Endpoints/Jobs.jsx";
 import { formToFormData } from "@/lib/applicantProfileForm";
@@ -9,23 +12,24 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  Phone, 
-  MapPin, 
-  Calendar, 
-  Upload, 
+import {
+  User,
+  Mail,
+  Lock,
+  Phone,
+  MapPin,
+  Calendar,
+  Upload,
   FileText,
   AlertCircle,
   CheckCircle,
   Eye,
   EyeOff,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 
-const selectClass = "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-900 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-400";
+const selectClass =
+  "w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-slate-900 outline-none transition-all duration-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:border-indigo-400";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -47,7 +51,6 @@ export default function Register() {
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [uploadProgress, setUploadProgress] = useState({});
@@ -56,14 +59,14 @@ export default function Register() {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    
+
     if (name === "resume" || name === "profilePicture") {
       const file = files[0];
       if (file) {
         // Simulate upload progress
-        setUploadProgress(prev => ({ ...prev, [name]: 0 }));
+        setUploadProgress((prev) => ({ ...prev, [name]: 0 }));
         const interval = setInterval(() => {
-          setUploadProgress(prev => {
+          setUploadProgress((prev) => {
             const newProgress = (prev[name] || 0) + 20;
             if (newProgress >= 100) clearInterval(interval);
             return { ...prev, [name]: Math.min(newProgress, 100) };
@@ -88,11 +91,12 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
 
     try {
       setLoading(true);
-      const fullName = [form.firstName, form.middleName, form.lastName].filter(Boolean).join(" ");
+      const fullName = [form.firstName, form.middleName, form.lastName]
+        .filter(Boolean)
+        .join(" ");
       await RegisterAPI({
         name: fullName,
         email: form.email,
@@ -110,7 +114,11 @@ export default function Register() {
       await createApplicantProfile(profileData);
       navigate(getDashboardPath("Applicant"));
     } catch (err) {
-      setError(err?.response?.data?.message || "Registration failed. Please try again.");
+      showPopup(
+        err?.response?.data?.message ||
+          "Registration failed. Please try again.",
+        "error",
+      );
     } finally {
       setLoading(false);
     }
@@ -149,14 +157,6 @@ export default function Register() {
 
           <CardContent className="px-8 py-10 lg:px-12">
             <form onSubmit={handleSubmit} className="space-y-8">
-              {/* Error Alert */}
-              {error && (
-                <div className="flex items-center gap-3 rounded-2xl bg-red-500/10 border border-red-500/20 px-5 py-4 text-red-700 dark:text-red-400 animate-in slide-in-from-top-2">
-                  <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                  <p className="text-sm font-medium">{error}</p>
-                </div>
-              )}
-
               {/* Personal Information Section */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
@@ -165,32 +165,38 @@ export default function Register() {
                 </h3>
                 <div className="grid gap-5 md:grid-cols-3">
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">First Name *</Label>
-                    <Input 
-                      name="firstName" 
-                      value={form.firstName} 
-                      onChange={handleChange} 
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      First Name *
+                    </Label>
+                    <Input
+                      name="firstName"
+                      value={form.firstName}
+                      onChange={handleChange}
                       required
                       className="rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                       placeholder="John"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Middle Name</Label>
-                    <Input 
-                      name="middleName" 
-                      value={form.middleName} 
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Middle Name
+                    </Label>
+                    <Input
+                      name="middleName"
+                      value={form.middleName}
                       onChange={handleChange}
                       className="rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                       placeholder="Michael"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Last Name *</Label>
-                    <Input 
-                      name="lastName" 
-                      value={form.lastName} 
-                      onChange={handleChange} 
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Last Name *
+                    </Label>
+                    <Input
+                      name="lastName"
+                      value={form.lastName}
+                      onChange={handleChange}
                       required
                       className="rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                       placeholder="Doe"
@@ -207,14 +213,16 @@ export default function Register() {
                 </h3>
                 <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Email Address *</Label>
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Email Address *
+                    </Label>
                     <div className="relative">
                       <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <Input 
-                        type="email" 
-                        name="email" 
-                        value={form.email} 
-                        onChange={handleChange} 
+                      <Input
+                        type="email"
+                        name="email"
+                        value={form.email}
+                        onChange={handleChange}
                         required
                         className="rounded-xl border-slate-200 pl-10 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                         placeholder="john.doe@example.com"
@@ -222,14 +230,16 @@ export default function Register() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Password *</Label>
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Password *
+                    </Label>
                     <div className="relative">
                       <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <Input 
-                        type={showPassword ? "text" : "password"} 
-                        name="password" 
-                        value={form.password} 
-                        onChange={handleChange} 
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        name="password"
+                        value={form.password}
+                        onChange={handleChange}
                         required
                         className="rounded-xl border-slate-200 pl-10 pr-10 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                         placeholder="Create a strong password"
@@ -239,7 +249,11 @@ export default function Register() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
                       >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
                       </button>
                     </div>
                     {/* Password strength indicator */}
@@ -254,10 +268,10 @@ export default function Register() {
                                   ? passwordStrength === 1
                                     ? "bg-red-500"
                                     : passwordStrength === 2
-                                    ? "bg-yellow-500"
-                                    : passwordStrength === 3
-                                    ? "bg-green-500"
-                                    : "bg-emerald-500"
+                                      ? "bg-yellow-500"
+                                      : passwordStrength === 3
+                                        ? "bg-green-500"
+                                        : "bg-emerald-500"
                                   : "bg-slate-200 dark:bg-slate-700"
                               }`}
                             />
@@ -284,13 +298,15 @@ export default function Register() {
                 </h3>
                 <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Phone Number *</Label>
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Phone Number *
+                    </Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <Input 
-                        name="phone" 
-                        value={form.phone} 
-                        onChange={handleChange} 
+                      <Input
+                        name="phone"
+                        value={form.phone}
+                        onChange={handleChange}
                         required
                         className="rounded-xl border-slate-200 pl-10 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                         placeholder="+1 234 567 8900"
@@ -298,12 +314,14 @@ export default function Register() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Alternative Phone</Label>
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Alternative Phone
+                    </Label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                      <Input 
-                        name="alternativePhone" 
-                        value={form.alternativePhone} 
+                      <Input
+                        name="alternativePhone"
+                        value={form.alternativePhone}
                         onChange={handleChange}
                         className="rounded-xl border-slate-200 pl-10 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                         placeholder="Optional"
@@ -321,11 +339,13 @@ export default function Register() {
                 </h3>
                 <div className="space-y-5">
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Street Address *</Label>
-                    <Input 
-                      name="address" 
-                      value={form.address} 
-                      onChange={handleChange} 
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Street Address *
+                    </Label>
+                    <Input
+                      name="address"
+                      value={form.address}
+                      onChange={handleChange}
                       required
                       className="rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                       placeholder="123 Main Street"
@@ -333,30 +353,36 @@ export default function Register() {
                   </div>
                   <div className="grid gap-5 md:grid-cols-3">
                     <div className="space-y-2">
-                      <Label className="text-slate-700 dark:text-slate-300 font-medium">City</Label>
-                      <Input 
-                        name="city" 
-                        value={form.city} 
+                      <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                        City
+                      </Label>
+                      <Input
+                        name="city"
+                        value={form.city}
                         onChange={handleChange}
                         className="rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                         placeholder="New York"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-slate-700 dark:text-slate-300 font-medium">Sub City</Label>
-                      <Input 
-                        name="subCity" 
-                        value={form.subCity} 
+                      <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                        Sub City
+                      </Label>
+                      <Input
+                        name="subCity"
+                        value={form.subCity}
                         onChange={handleChange}
                         className="rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                         placeholder="Manhattan"
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-slate-700 dark:text-slate-300 font-medium">Region</Label>
-                      <Input 
-                        name="region" 
-                        value={form.region} 
+                      <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                        Region
+                      </Label>
+                      <Input
+                        name="region"
+                        value={form.region}
                         onChange={handleChange}
                         className="rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                         placeholder="New York"
@@ -374,18 +400,27 @@ export default function Register() {
                 </h3>
                 <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Date of Birth</Label>
-                    <Input 
-                      type="date" 
-                      name="dateOfBirth" 
-                      value={form.dateOfBirth} 
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Date of Birth
+                    </Label>
+                    <Input
+                      type="date"
+                      name="dateOfBirth"
+                      value={form.dateOfBirth}
                       onChange={handleChange}
                       className="rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500/20 transition-all duration-200"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Marital Status</Label>
-                    <select name="maritalStatus" value={form.maritalStatus} onChange={handleChange} className={selectClass}>
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Marital Status
+                    </Label>
+                    <select
+                      name="maritalStatus"
+                      value={form.maritalStatus}
+                      onChange={handleChange}
+                      className={selectClass}
+                    >
                       <option value="">Select status</option>
                       <option value="Single">Single</option>
                       <option value="Married">Married</option>
@@ -405,44 +440,54 @@ export default function Register() {
                 </h3>
                 <div className="grid gap-5 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Profile Picture</Label>
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Profile Picture
+                    </Label>
                     <div className="relative">
-                      <Input 
-                        type="file" 
-                        name="profilePicture" 
-                        onChange={handleChange} 
+                      <Input
+                        type="file"
+                        name="profilePicture"
+                        onChange={handleChange}
                         accept="image/*"
                         className="rounded-xl border-slate-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all duration-200 cursor-pointer"
                       />
-                      {uploadProgress.profilePicture > 0 && uploadProgress.profilePicture < 100 && (
-                        <div className="mt-2 h-1 bg-slate-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-indigo-500 transition-all duration-300 rounded-full"
-                            style={{ width: `${uploadProgress.profilePicture}%` }}
-                          />
-                        </div>
-                      )}
+                      {uploadProgress.profilePicture > 0 &&
+                        uploadProgress.profilePicture < 100 && (
+                          <div className="mt-2 h-1 bg-slate-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-indigo-500 transition-all duration-300 rounded-full"
+                              style={{
+                                width: `${uploadProgress.profilePicture}%`,
+                              }}
+                            />
+                          </div>
+                        )}
                     </div>
-                    <p className="text-xs text-slate-500">Recommended: Square image, max 5MB</p>
+                    <p className="text-xs text-slate-500">
+                      Recommended: Square image, max 5MB
+                    </p>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-slate-700 dark:text-slate-300 font-medium">Resume/CV</Label>
+                    <Label className="text-slate-700 dark:text-slate-300 font-medium">
+                      Resume/CV
+                    </Label>
                     <div className="relative">
-                      <Input 
-                        type="file" 
-                        name="resume" 
-                        onChange={handleChange} 
+                      <Input
+                        type="file"
+                        name="resume"
+                        onChange={handleChange}
                         accept=".pdf,.doc,.docx,.txt"
                         className="rounded-xl border-slate-200 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-all duration-200 cursor-pointer"
                       />
-                      {uploadProgress.resume > 0 && uploadProgress.resume < 100 && (
-                        <div className="mt-2 h-1 bg-slate-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-indigo-500 transition-all duration-300 rounded-full"
-                            style={{ width: `${uploadProgress.resume}%` }}
-                          />
-                        </div>
-                      )}
+                      {uploadProgress.resume > 0 &&
+                        uploadProgress.resume < 100 && (
+                          <div className="mt-2 h-1 bg-slate-200 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-indigo-500 transition-all duration-300 rounded-full"
+                              style={{ width: `${uploadProgress.resume}%` }}
+                            />
+                          </div>
+                        )}
                       {form.resume && (
                         <div className="mt-2 flex items-center gap-2 text-xs text-green-600">
                           <CheckCircle className="w-3 h-3" />
@@ -450,15 +495,17 @@ export default function Register() {
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-slate-500">Accepted formats: PDF, DOC, DOCX, TXT (Max 10MB)</p>
+                    <p className="text-xs text-slate-500">
+                      Accepted formats: PDF, DOC, DOCX, TXT (Max 10MB)
+                    </p>
                   </div>
                 </div>
               </div>
 
               {/* Submit Button */}
-              <Button 
+              <Button
                 className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl"
-                type="submit" 
+                type="submit"
                 disabled={loading}
               >
                 {loading ? (
@@ -478,8 +525,8 @@ export default function Register() {
               <div className="text-center pt-2">
                 <p className="text-slate-600 dark:text-slate-400">
                   Already have an account?{" "}
-                  <Link 
-                    to="/login" 
+                  <Link
+                    to="/login"
                     className="font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors duration-200 inline-flex items-center gap-1 group"
                   >
                     Sign in

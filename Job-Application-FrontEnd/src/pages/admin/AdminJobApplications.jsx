@@ -3,9 +3,17 @@ import { Link, useParams } from "react-router-dom";
 import { getApplicationsForJob } from "../../../api/Endpoints/Applications.jsx";
 import { getJobById } from "../../../api/Endpoints/Jobs.jsx";
 import { getApiErrorMessage } from "@/lib/apiError";
+import { showPopup } from "@/components/FloatingPopup";
 import StatusBadge from "@/components/StatusBadge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { APPLICATION_STATUSES } from "@/lib/constants";
 
 export default function AdminJobApplications() {
@@ -22,12 +30,15 @@ export default function AdminJobApplications() {
       try {
         const [jobRes, appsRes] = await Promise.all([
           getJobById(jobId),
-          getApplicationsForJob(jobId, statusFilter ? { status: statusFilter } : {}),
+          getApplicationsForJob(
+            jobId,
+            statusFilter ? { status: statusFilter } : {},
+          ),
         ]);
         setJob(jobRes.data.data);
         setApplications(appsRes.data.data || []);
       } catch (err) {
-        setError(getApiErrorMessage(err));
+        showPopup(getApiErrorMessage(err), "error");
       } finally {
         setLoading(false);
       }
@@ -50,12 +61,13 @@ export default function AdminJobApplications() {
           >
             <option value="">All statuses</option>
             {APPLICATION_STATUSES.map((s) => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s}>
+                {s}
+              </option>
             ))}
           </select>
         </CardHeader>
         <CardContent>
-          {error && <p className="mb-3 text-rose-600">{error}</p>}
           {loading ? (
             <p className="text-slate-500">Loading...</p>
           ) : (
@@ -84,10 +96,17 @@ export default function AdminJobApplications() {
                         ? app.applicant.exitExamScore
                         : "—"}
                     </TableCell>
-                    <TableCell><StatusBadge status={app.status} /></TableCell>
-                    <TableCell>{new Date(app.appliedAt).toLocaleDateString()}</TableCell>
                     <TableCell>
-                      <Link to={`/admin/applications/${app.id}`} className="text-sky-600 hover:underline text-sm">
+                      <StatusBadge status={app.status} />
+                    </TableCell>
+                    <TableCell>
+                      {new Date(app.appliedAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>
+                      <Link
+                        to={`/admin/applications/${app.id}`}
+                        className="text-sky-600 hover:underline text-sm"
+                      >
                         View
                       </Link>
                     </TableCell>
@@ -101,6 +120,3 @@ export default function AdminJobApplications() {
     </div>
   );
 }
-
-
-

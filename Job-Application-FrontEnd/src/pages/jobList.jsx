@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { showPopup } from "@/components/FloatingPopup";
 import {
   Select,
   SelectContent,
@@ -75,8 +76,6 @@ export default function JobList() {
     limit: 12,
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [search, setSearch] = useState("");
   const [savedJobs, setSavedJobs] = useState(() => {
     const saved = localStorage.getItem("savedJobs");
@@ -107,7 +106,6 @@ export default function JobList() {
   // Fetch jobs
   const fetchJobs = async () => {
     setLoading(true);
-    setError("");
     try {
       const res = await getJobs({
         page: currentPage,
@@ -124,8 +122,9 @@ export default function JobList() {
         },
       );
     } catch (err) {
-      setError(
+      showPopup(
         err?.response?.data?.message || "Unable to load jobs at the moment.",
+        "error",
       );
     } finally {
       setLoading(false);
@@ -281,36 +280,32 @@ export default function JobList() {
 
     const job = findJobById(jobId);
     if (job && isJobClosedForApplications(job)) {
-      setError(JOB_DEADLINE_PASSED_MESSAGE);
-      setTimeout(() => setError(""), 5000);
+      showPopup(JOB_DEADLINE_PASSED_MESSAGE, "error");
       return;
     }
 
     if (profileCompletion < 50) {
-      setError(
+      showPopup(
         "Complete your profile (50%+) to apply for jobs. Go to Profile page.",
+        "error",
       );
-      setTimeout(() => setError(""), 5000);
       return;
     }
 
-    setError("");
-    setSuccess("");
     try {
       await applyForJob(jobId);
-      setSuccess("Application submitted successfully!");
-      setTimeout(() => setSuccess(""), 3000);
+      showPopup("Application submitted successfully!", "success");
     } catch (err) {
       const errorMessage =
         err?.response?.data?.message || "Unable to submit application.";
       if (errorMessage.includes("Applicant profile not found")) {
-        setError(
+        showPopup(
           "Please complete your applicant profile before applying for jobs.",
+          "error",
         );
       } else {
-        setError(errorMessage);
+        showPopup(errorMessage, "error");
       }
-      setTimeout(() => setError(""), 5000);
     }
   };
 
@@ -689,20 +684,6 @@ export default function JobList() {
               </div>
             </CardContent>
           </Card>
-
-          {/* Error/Success Messages */}
-          {error && (
-            <div className="mb-4 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 dark:bg-rose-950 dark:border-rose-800 dark:text-rose-300 flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 dark:bg-emerald-950 dark:border-emerald-800 dark:text-emerald-300 flex items-center gap-2">
-              <CheckCircle className="h-5 w-5" />
-              {success}
-            </div>
-          )}
 
           {/* Job Cards Grid/List View */}
           {loading ? (
